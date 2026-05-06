@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sorting Algorithm Visualizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #161920;
+      --surface2: #1e2230;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --text: #e8eaf0;
+      --text-muted: #6b7280;
+      --text-dim: #9ca3af;
+      --blue: #3b82f6;
+      --blue-dim: #1d4ed8;
+      --orange: #f59e0b;
+      --coral: #ef4444;
+      --pink: #ec4899;
+      --green: #10b981;
+      --accent: #6366f1;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .header-tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 4px;
+      padding: 2px 8px;
+      letter-spacing: 0.05em;
+    }
+
+    /* Algo selector */
+    .algo-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 5px;
+    }
+    .algo-tab {
+      flex: 1;
+      padding: 8px 0;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .algo-tab:hover { color: var(--text-dim); background: var(--surface2); }
+    .algo-tab.active { color: var(--text); background: var(--surface2); box-shadow: inset 0 0 0 1px var(--border2); }
+
+    /* Bar area */
+    .bar-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.25rem 0;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .bar-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 200px;
+    }
+    .bar {
+      flex: 1;
+      border-radius: 3px 3px 0 0;
+      transition: height 0.16s cubic-bezier(0.4,0,0.2,1), background 0.16s;
+      min-width: 5px;
+    }
+    .bar.default  { background: #1d4ed8; }
+    .bar.comparing{ background: var(--orange); box-shadow: 0 0 8px rgba(245,158,11,0.4); }
+    .bar.swapping { background: var(--coral); box-shadow: 0 0 8px rgba(239,68,68,0.4); }
+    .bar.pivot    { background: var(--pink); box-shadow: 0 0 8px rgba(236,72,153,0.4); }
+    .bar.sorted   { background: var(--green); }
+
+    /* Status bar */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0 4px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .status-msg {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      min-height: 18px;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding-bottom: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 2px;
+    }
+
+    /* Controls row */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 7px 16px;
+      border-radius: 7px;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .ctrl-btn:hover { background: var(--surface2); color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .ctrl-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .ctrl-btn.primary:hover { background: #4f46e5; }
+
+    .speed-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    input[type=range] {
+      width: 80px;
+      accent-color: var(--accent);
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .stat-val {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    /* Code block */
+    .code-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .code-filename {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+    .code-body {
+      padding: 16px 18px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      line-height: 1.7;
+      color: #a5b4fc;
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .kw { color: #f472b6; }
+    .fn { color: #34d399; }
+    .cm { color: #4b5563; font-style: italic; }
+    .num { color: #fb923c; }
+
+    /* Complexity */
+    .complexity {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+    .complexity b { color: var(--text-dim); font-weight: 500; }
+
+    @media (max-width: 540px) {
+      .stats { grid-template-columns: repeat(3,1fr); }
+      .controls { gap: 7px; }
+      .ctrl-btn { padding: 7px 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>sorting.c</h1>
+    <span class="header-tag">VISUALIZER</span>
+  </div>
+
+  <div class="algo-tabs">
+    <button class="algo-tab active" id="btn-bubble" onclick="setAlgo('bubble')">bubble_sort()</button>
+    <button class="algo-tab" id="btn-merge"  onclick="setAlgo('merge')">merge_sort()</button>
+    <button class="algo-tab" id="btn-quick"  onclick="setAlgo('quick')">quick_sort()</button>
+    <button class="algo-tab" id="btn-selection" onclick="setAlgo('selection')">selection_sort()</button>
+  </div>
+
+  <div class="bar-section">
+    <div class="bar-area" id="bar-area"></div>
+    <div class="status-row">
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#1d4ed8"></span>unsorted</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>comparing</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>swapping</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#ec4899"></span>pivot / min</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>sorted</span>
+      </div>
+      <div class="status-msg" id="status">press play or step to begin</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn primary" id="btn-play"  onclick="playPause()">▶ play</button>
+    <button class="ctrl-btn" id="btn-step"  onclick="stepOnce()">step ›</button>
+    <button class="ctrl-btn" id="btn-reset" onclick="resetVis()">↺ reset</button>
+    <button class="ctrl-btn" onclick="shuffle()">⇌ shuffle</button>
+    <div class="speed-wrap">
+      speed
+      <input type="range" min="1" max="5" value="3" id="speed-slider" oninput="document.getElementById('speed-label').textContent=this.value">
+      <span id="speed-label">3</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="stat-label">Comparisons</div><div class="stat-val" id="stat-cmp">0</div></div>
+    <div class="stat-card"><div class="stat-label">Swaps / writes</div><div class="stat-val" id="stat-swp">0</div></div>
+    <div class="stat-card"><div class="stat-label">Step</div><div class="stat-val" id="stat-step">0/0</div></div>
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="code-dot" style="background:#ef4444"></span>
+      <span class="code-dot" style="background:#f59e0b"></span>
+      <span class="code-dot" style="background:#10b981"></span>
+      <span class="code-filename" id="code-filename">bubble_sort.c</span>
+    </div>
+    <div class="code-body" id="code-block"></div>
+  </div>
+
+  <div class="complexity" id="complexity-area"></div>
+</div>
+
+<script>
+const N = 20;
+let arr = [], steps = [], stepIdx = 0, playing = false, timer = null, algo = 'bubble';
+
+const rawCodes = {
+  bubble: `<span class="kw">void</span> <span class="fn">bubble_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> n) {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n - <span class="num">1</span>; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j < n - i - <span class="num">1</span>; j++) {
+      <span class="kw">if</span> (a[j] > a[j+<span class="num">1</span>]) {    <span class="cm">// compare adjacent</span>
+        <span class="kw">int</span> tmp = a[j];
+        a[j]   = a[j+<span class="num">1</span>];       <span class="cm">// swap</span>
+        a[j+<span class="num">1</span>] = tmp;
+      }
+    }
+  }
+}`,
+  merge: `<span class="kw">void</span> <span class="fn">merge</span>(<span class="kw">int</span> a[], <span class="kw">int</span> l, <span class="kw">int</span> m, <span class="kw">int</span> r) {
+  <span class="kw">int</span> n1=m-l+<span class="num">1</span>, n2=r-m;
+  <span class="kw">int</span> L[n1], R[n2];
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i<n1;i++) L[i]=a[l+i];
+  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">0</span>;j<n2;j++) R[j]=a[m+<span class="num">1</span>+j];
+  <span class="kw">int</span> i=<span class="num">0</span>,j=<span class="num">0</span>,k=l;
+  <span class="kw">while</span>(i<n1 && j<n2)
+    a[k++]=(L[i]<=R[j])?L[i++]:R[j++]; <span class="cm">// compare & write</span>
+  <span class="kw">while</span>(i<n1) a[k++]=L[i++];
+  <span class="kw">while</span>(j<n2) a[k++]=R[j++];
+}
+<span class="kw">void</span> <span class="fn">merge_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> l, <span class="kw">int</span> r) {
+  <span class="kw">if</span>(l<r){ <span class="kw">int</span> m=(l+r)/<span class="num">2</span>;
+    <span class="fn">merge_sort</span>(a,l,m);
+    <span class="fn">merge_sort</span>(a,m+<span class="num">1</span>,r);
+    <span class="fn">merge</span>(a,l,m,r);
+  }
+}`,
+  quick: `<span class="kw">int</span> <span class="fn">partition</span>(<span class="kw">int</span> a[], <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
+  <span class="kw">int</span> pivot = a[hi]; <span class="cm">// choose pivot</span>
+  <span class="kw">int</span> i = lo - <span class="num">1</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> j = lo; j < hi; j++) {
+    <span class="kw">if</span> (a[j] <= pivot) { <span class="cm">// compare with pivot</span>
+      i++;
+      <span class="kw">int</span> tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+  }
+  <span class="kw">int</span> tmp=a[i+<span class="num">1</span>]; a[i+<span class="num">1</span>]=a[hi]; a[hi]=tmp;
+  <span class="kw">return</span> i + <span class="num">1</span>;
+}
+<span class="kw">void</span> <span class="fn">quick_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
+  <span class="kw">if</span> (lo < hi) {
+    <span class="kw">int</span> p = <span class="fn">partition</span>(a, lo, hi);
+    <span class="fn">quick_sort</span>(a, lo, p - <span class="num">1</span>);
+    <span class="fn">quick_sort</span>(a, p + <span class="num">1</span>, hi);
+  }
+}`,
+  selection: `<span class="kw">void</span> <span class="fn">selection_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> n) {
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n - <span class="num">1</span>; i++) {
+    <span class="kw">int</span> min_idx = i;        <span class="cm">// assume current is min</span>
+    <span class="kw">for</span> (<span class="kw">int</span> j = i + <span class="num">1</span>; j < n; j++) {
+      <span class="kw">if</span> (a[j] < a[min_idx]) { <span class="cm">// found new min</span>
+        min_idx = j;
+      }
+    }
+    <span class="kw">if</span> (min_idx != i) {     <span class="cm">// swap min into place</span>
+      <span class="kw">int</span> tmp   = a[i];
+      a[i]       = a[min_idx];
+      a[min_idx] = tmp;
+    }
+  }
+}`
+};
+
+const filenames = { bubble: 'bubble_sort.c', merge: 'merge_sort.c', quick: 'quick_sort.c', selection: 'selection_sort.c' };
+
+const complexity = {
+  bubble:    'Best: <b>O(n)</b> &nbsp;·&nbsp; Average: <b>O(n²)</b> &nbsp;·&nbsp; Worst: <b>O(n²)</b> &nbsp;·&nbsp; Space: <b>O(1)</b> &nbsp;·&nbsp; Stable: <b>Yes</b>',
+  merge:     'Best: <b>O(n log n)</b> &nbsp;·&nbsp; Average: <b>O(n log n)</b> &nbsp;·&nbsp; Worst: <b>O(n log n)</b> &nbsp;·&nbsp; Space: <b>O(n)</b> &nbsp;·&nbsp; Stable: <b>Yes</b>',
+  quick:     'Best: <b>O(n log n)</b> &nbsp;·&nbsp; Average: <b>O(n log n)</b> &nbsp;·&nbsp; Worst: <b>O(n²)</b> &nbsp;·&nbsp; Space: <b>O(log n)</b> &nbsp;·&nbsp; Stable: <b>No</b>',
+  selection: 'Best: <b>O(n²)</b> &nbsp;·&nbsp; Average: <b>O(n²)</b> &nbsp;·&nbsp; Worst: <b>O(n²)</b> &nbsp;·&nbsp; Space: <b>O(1)</b> &nbsp;·&nbsp; Stable: <b>No</b>'
+};
+
+function randArr(n){ return Array.from({length:n},()=>Math.floor(Math.random()*85)+12); }
+
+function* bubbleSteps(a){
+  let n=a.length,cmps=0,swps=0;
+  for(let i=0;i<n-1;i++){
+    for(let j=0;j<n-i-1;j++){
+      cmps++;
+      yield {arr:[...a],comparing:[j,j+1],swapping:[],sorted:[...Array(i).keys()].map(k=>n-1-k),pivot:[],cmps,swps,msg:`comparing a[${j}]=${a[j]} and a[${j+1}]=${a[j+1]}`};
+      if(a[j]>a[j+1]){swps++;[a[j],a[j+1]]=[a[j+1],a[j]];
+        yield {arr:[...a],comparing:[],swapping:[j,j+1],sorted:[...Array(i).keys()].map(k=>n-1-k),pivot:[],cmps,swps,msg:`swapped → a[${j}]=${a[j]}, a[${j+1}]=${a[j+1]}`};
+      }
+    }
+  }
+  yield {arr:[...a],comparing:[],swapping:[],sorted:[...Array(n).keys()],pivot:[],cmps,swps,msg:'sorted!'};
+}
+
+function* mergeSteps(a){
+  let cmps=0,swps=0;
+  function* ms(arr,l,r,orig){
+    if(l>=r)return;
+    let m=Math.floor((l+r)/2);
+    yield* ms(arr,l,m,orig);
+    yield* ms(arr,m+1,r,orig);
+    let L=arr.slice(l,m+1),R=arr.slice(m+1,r+1),i=0,j=0,k=l;
+    while(i<L.length&&j<R.length){
+      cmps++;
+      yield {arr:[...orig],comparing:[l+i,m+1+j],swapping:[],sorted:[],pivot:[],cmps,swps,msg:`merging: comparing ${L[i]} and ${R[j]}`};
+      orig[k++]=(L[i]<=R[j])?L[i++]:R[j++];swps++;
+      yield {arr:[...orig],comparing:[],swapping:[k-1],sorted:[],pivot:[],cmps,swps,msg:`wrote ${orig[k-1]} → position ${k-1}`};
+    }
+    while(i<L.length){orig[k++]=L[i++];swps++;yield {arr:[...orig],comparing:[],swapping:[k-1],sorted:[],pivot:[],cmps,swps,msg:`wrote ${orig[k-1]} → position ${k-1}`};}
+    while(j<R.length){orig[k++]=R[j++];swps++;yield {arr:[...orig],comparing:[],swapping:[k-1],sorted:[],pivot:[],cmps,swps,msg:`wrote ${orig[k-1]} → position ${k-1}`};}
+  }
+  let copy=[...a];yield* ms(copy,0,copy.length-1,copy);
+  yield {arr:[...copy],comparing:[],swapping:[],sorted:[...Array(copy.length).keys()],pivot:[],cmps,swps,msg:'sorted!'};
+}
+
+function* quickSteps(a){
+  let cmps=0,swps=0;
+  function* qs(arr,lo,hi){
+    if(lo>=hi)return;
+    let pivot=arr[hi],i=lo-1;
+    yield {arr:[...arr],comparing:[],swapping:[],sorted:[],pivot:[hi],cmps,swps,msg:`pivot = ${pivot} (index ${hi})`};
+    for(let j=lo;j<hi;j++){
+      cmps++;
+      yield {arr:[...arr],comparing:[j,hi],swapping:[],sorted:[],pivot:[hi],cmps,swps,msg:`comparing a[${j}]=${arr[j]} with pivot ${pivot}`};
+      if(arr[j]<=pivot){i++;[arr[i],arr[j]]=[arr[j],arr[i]];swps++;
+        yield {arr:[...arr],comparing:[],swapping:[i,j],sorted:[],pivot:[hi],cmps,swps,msg:`swapped a[${i}] and a[${j}]`};
+      }
+    }
+    [arr[i+1],arr[hi]]=[arr[hi],arr[i+1]];swps++;
+    yield {arr:[...arr],comparing:[],swapping:[i+1,hi],sorted:[i+1],pivot:[],cmps,swps,msg:`pivot placed at index ${i+1}`};
+    yield* qs(arr,lo,i);yield* qs(arr,i+2,hi);
+  }
+  let copy=[...a];yield* qs(copy,0,copy.length-1);
+  yield {arr:[...copy],comparing:[],swapping:[],sorted:[...Array(copy.length).keys()],pivot:[],cmps,swps,msg:'sorted!'};
+}
+
+function* selectionSteps(a){
+  let n=a.length,cmps=0,swps=0;
+  let sorted=[];
+  for(let i=0;i<n-1;i++){
+    let minIdx=i;
+    yield {arr:[...a],comparing:[],swapping:[],sorted:[...sorted],pivot:[minIdx],cmps,swps,msg:`pass ${i+1}: current min = a[${minIdx}]=${a[minIdx]}`};
+    for(let j=i+1;j<n;j++){
+      cmps++;
+      yield {arr:[...a],comparing:[j],swapping:[],sorted:[...sorted],pivot:[minIdx],cmps,swps,msg:`comparing a[${j}]=${a[j]} with min a[${minIdx}]=${a[minIdx]}`};
+      if(a[j]<a[minIdx]){
+        minIdx=j;
+        yield {arr:[...a],comparing:[],swapping:[],sorted:[...sorted],pivot:[minIdx],cmps,swps,msg:`new min found: a[${minIdx}]=${a[minIdx]}`};
+      }
+    }
+    if(minIdx!==i){swps++;[a[i],a[minIdx]]=[a[minIdx],a[i]];
+      yield {arr:[...a],comparing:[],swapping:[i,minIdx],sorted:[...sorted],pivot:[],cmps,swps,msg:`swapped a[${i}] and a[${minIdx}]`};
+    }
+    sorted.push(i);
+    yield {arr:[...a],comparing:[],swapping:[],sorted:[...sorted],pivot:[],cmps,swps,msg:`a[${i}]=${a[i]} is in place`};
+  }
+  sorted.push(n-1);
+  yield {arr:[...a],comparing:[],swapping:[],sorted:[...Array(n).keys()],pivot:[],cmps,swps,msg:'sorted!'};
+}
+
+function buildSteps(){
+  let gen=algo==='bubble'?bubbleSteps([...arr]):algo==='merge'?mergeSteps([...arr]):algo==='quick'?quickSteps([...arr]):selectionSteps([...arr]);
+  steps=[...gen];
+}
+
+function renderStep(s){
+  const area=document.getElementById('bar-area');
+  const maxVal=Math.max(...s.arr);
+  area.innerHTML='';
+  s.arr.forEach((v,i)=>{
+    let cl='bar ';
+    if(s.sorted&&s.sorted.includes(i)) cl+='sorted';
+    else if(s.swapping.includes(i)) cl+='swapping';
+    else if(s.comparing.includes(i)) cl+='comparing';
+    else if(s.pivot&&s.pivot.includes(i)) cl+='pivot';
+    else cl+='default';
+    const bar=document.createElement('div');
+    bar.className=cl;
+    bar.style.height=Math.max(4,Math.round((v/maxVal)*180))+'px';
+    bar.title=v;
+    area.appendChild(bar);
+  });
+  document.getElementById('status').textContent=s.msg||'';
+  document.getElementById('stat-cmp').textContent=s.cmps;
+  document.getElementById('stat-swp').textContent=s.swps;
+  document.getElementById('stat-step').textContent=(stepIdx+1)+'/'+steps.length;
+}
+
+function getDelay(){return [700,380,180,70,15][parseInt(document.getElementById('speed-slider').value)-1];}
+
+function shuffle(){
+  stop();arr=randArr(N);buildSteps();stepIdx=0;
+  renderStep(steps[0]);
+  document.getElementById('stat-cmp').textContent='0';
+  document.getElementById('stat-swp').textContent='0';
+  document.getElementById('stat-step').textContent='0/'+steps.length;
+  document.getElementById('status').textContent='press play or step to begin';
+  document.getElementById('btn-play').textContent='▶ play';
+}
+
+function setAlgo(a){
+  algo=a;
+  ['bubble','merge','quick','selection'].forEach(x=>document.getElementById('btn-'+x).classList.toggle('active',x===a));
+  document.getElementById('code-block').innerHTML=rawCodes[a];
+  document.getElementById('code-filename').textContent=filenames[a];
+  document.getElementById('complexity-area').innerHTML=complexity[a];
+  shuffle();
+}
+
+function stepOnce(){
+  if(stepIdx<steps.length){renderStep(steps[stepIdx]);stepIdx++;}
+  if(stepIdx>=steps.length){stop();document.getElementById('btn-play').textContent='✓ done';}
+}
+
+function playPause(){
+  if(playing){stop();return;}
+  if(stepIdx>=steps.length)resetVis();
+  playing=true;
+  document.getElementById('btn-play').textContent='⏸ pause';
+  document.getElementById('btn-step').disabled=true;
+  function tick(){
+    if(!playing||stepIdx>=steps.length){stop();if(stepIdx>=steps.length)document.getElementById('btn-play').textContent='✓ done';return;}
+    renderStep(steps[stepIdx]);stepIdx++;timer=setTimeout(tick,getDelay());
+  }
+  tick();
+}
+
+function stop(){
+  playing=false;clearTimeout(timer);
+  document.getElementById('btn-play').textContent='▶ play';
+  document.getElementById('btn-step').disabled=false;
+}
+
+function resetVis(){
+  stop();stepIdx=0;
+  if(steps.length)renderStep(steps[0]);
+  document.getElementById('stat-cmp').textContent='0';
+  document.getElementById('stat-swp').textContent='0';
+  document.getElementById('stat-step').textContent='0/'+steps.length;
+  document.getElementById('btn-play').textContent='▶ play';
+  document.getElementById('status').textContent='press play or step to begin';
+}
+
+setAlgo('bubble');
+</script>
+</body>
+</html>
