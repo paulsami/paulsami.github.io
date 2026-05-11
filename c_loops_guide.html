@@ -1,0 +1,390 @@
+
+<h2 class="sr-only">Interactive guide to C loops: for, while, and do-while with step-by-step execution, flowcharts, and code examples.</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.tabs{display:flex;gap:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem}
+.tab{flex:1;padding:8px 4px;font-family:var(--font-mono);font-size:.7rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.75;padding:12px 14px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.2)}
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}
+.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;background:#6366f1;border-radius:2px;transition:width .2s}
+.smsg{font-family:var(--font-mono);font-size:.7rem;color:var(--color-text-secondary);min-height:20px;margin-bottom:8px}
+.vrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 12px;min-width:60px}
+.vlbl{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:1.1rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);word-break:break-all}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-top:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#ede9fe;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-a{background:#fef3c7;color:#78350f;border:0.5px solid #fcd34d}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.cmpgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.ccard{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;border-top-width:2px}
+.cc-title{font-family:var(--font-mono);font-size:.8rem;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.cc-desc{font-size:.72rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:8px}
+.cc-code{font-family:var(--font-mono);font-size:.64rem;background:var(--color-background-primary);border-radius:var(--border-radius-md);padding:7px 10px;color:#a78bfa}
+.qbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+@media(max-width:500px){.two{grid-template-columns:1fr}.cmpgrid{grid-template-columns:1fr}.qbtns{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+<div class="tabs">
+  <button class="tab active" onclick="show('for',this)">for loop</button>
+  <button class="tab" onclick="show('while',this)">while loop</button>
+  <button class="tab" onclick="show('dowhile',this)">do-while loop</button>
+  <button class="tab" onclick="show('cmp',this)">comparison</button>
+</div>
+
+<div class="pane on" id="pane-for">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> for_loop.c</div>
+      <pre id="pre-for"><span class="cl" id="f0"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) {</span>
+<span class="cl" id="f1">    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, i); <span class="cm">// body</span></span>
+<span class="cl" id="f2">}</span>
+<span class="cl"><span class="cm">// prints: 0 1 2 3 4</span></span></pre>
+    </div>
+    <svg width="100%" viewBox="0 0 280 400" role="img"><title>For loop flowchart</title><desc>Flowchart: Start, then init i=0, then check i less than 5: if false go to End, if true execute printf(i) then i++ then loop back to check.</desc>
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="90" y="10" width="100" height="32" rx="16" fill="#6366f1"/>
+      <text x="140" y="31" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="#fff" font-weight="500">Start</text>
+      <line x1="140" y1="42" x2="140" y2="62" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah)"/>
+      <rect x="60" y="64" width="160" height="38" rx="6" fill="var(--color-background-primary)" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+      <text x="140" y="80" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-primary)" font-weight="500">int i = 0</text>
+      <text x="140" y="95" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-secondary)">initialise once</text>
+      <line x1="140" y1="102" x2="140" y2="122" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah)"/>
+      <polygon points="140,124 215,152 140,180 65,152" fill="var(--color-background-primary)" stroke="#f59e0b" stroke-width="1"/>
+      <text x="140" y="149" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-primary)" font-weight="500">i &lt; 5?</text>
+      <text x="140" y="164" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-secondary)">condition</text>
+      <line x1="215" y1="152" x2="248" y2="152" stroke="#ef4444" stroke-width="1" marker-end="url(#ah)"/>
+      <text x="222" y="145" font-family="var(--font-mono)" font-size="9" fill="#ef4444">false</text>
+      <rect x="248" y="136" width="26" height="32" rx="16" fill="#ef4444"/>
+      <text x="261" y="157" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="#fff" font-weight="500">End</text>
+      <line x1="140" y1="180" x2="140" y2="206" stroke="#10b981" stroke-width="1" marker-end="url(#ah)"/>
+      <text x="148" y="197" font-family="var(--font-mono)" font-size="9" fill="#10b981">true</text>
+      <rect x="55" y="208" width="170" height="38" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="0.5"/>
+      <text x="140" y="225" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="#3730a3" font-weight="500">printf("%d", i)</text>
+      <text x="140" y="239" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="#4338ca">body executes</text>
+      <line x1="140" y1="246" x2="140" y2="266" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah)"/>
+      <rect x="60" y="268" width="160" height="38" rx="6" fill="var(--color-background-primary)" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+      <text x="140" y="285" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-primary)" font-weight="500">i++</text>
+      <text x="140" y="299" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--color-text-secondary)">update</text>
+      <path d="M60 287 L28 287 L28 152 L65 152" fill="none" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah)"/>
+    </svg>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step-by-step execution</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="fStep()">Next step ›</button>
+      <button class="btn" onclick="fReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="f-cnt">step 0 / 17</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="f-bar" style="width:0%"></div></div>
+    <div class="smsg" id="f-msg">Press Next step to begin.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">i</div><div class="vval" id="f-i">—</div></div>
+      <div class="vbox"><div class="vlbl">condition</div><div class="vval" id="f-cd">—</div></div>
+      <div class="vbox"><div class="vlbl">iteration</div><div class="vval" id="f-it">0</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="f-out"></div>
+  </div>
+  <div class="note">Use <code>for</code> when you know exactly how many times to loop. The init, condition, and update are all on one line — great for counting.</div>
+  <div class="badges"><span class="badge b-v">init runs once</span><span class="badge b-a">condition checked before each iteration</span><span class="badge b-g">update runs after body</span></div>
+</div>
+
+<div class="pane" id="pane-while">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> while_loop.c</div>
+      <pre><span class="cl" id="w0"><span class="kw">int</span> n = <span class="num">3</span>;</span>
+<span class="cl" id="w1"><span class="kw">while</span> (n &gt; <span class="num">0</span>) {</span>
+<span class="cl" id="w2">    <span class="fn">printf</span>(<span class="str">"%d\n"</span>, n);</span>
+<span class="cl" id="w3">    n--;</span>
+<span class="cl" id="w4">}</span>
+<span class="cl"><span class="cm">// prints: 3 2 1</span></span></pre>
+    </div>
+    <svg width="100%" viewBox="0 0 280 360" role="img"><title>While loop flowchart</title><desc>While loop: Start, declare n=3, check n greater than 0: false goes to End, true runs printf n then n-- then loops back to condition check.</desc>
+      <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="90" y="10" width="100" height="32" rx="16" fill="#6366f1"/>
+      <text x="140" y="31" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="#fff" font-weight="500">Start</text>
+      <line x1="140" y1="42" x2="140" y2="62" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah2)"/>
+      <rect x="60" y="64" width="160" height="32" rx="6" fill="var(--color-background-primary)" stroke="var(--color-border-secondary)" stroke-width="0.5"/>
+      <text x="140" y="84" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-primary)" font-weight="500">int n = 3</text>
+      <line x1="140" y1="96" x2="140" y2="116" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah2)"/>
+      <polygon points="140,118 215,146 140,174 65,146" fill="var(--color-background-primary)" stroke="#f59e0b" stroke-width="1"/>
+      <text x="140" y="143" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-primary)" font-weight="500">n &gt; 0?</text>
+      <text x="140" y="158" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-secondary)">check first</text>
+      <line x1="215" y1="146" x2="248" y2="146" stroke="#ef4444" stroke-width="1" marker-end="url(#ah2)"/>
+      <text x="222" y="139" font-family="var(--font-mono)" font-size="9" fill="#ef4444">false</text>
+      <rect x="248" y="130" width="26" height="32" rx="16" fill="#ef4444"/>
+      <text x="261" y="151" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="#fff" font-weight="500">End</text>
+      <line x1="140" y1="174" x2="140" y2="198" stroke="#10b981" stroke-width="1" marker-end="url(#ah2)"/>
+      <text x="148" y="190" font-family="var(--font-mono)" font-size="9" fill="#10b981">true</text>
+      <rect x="45" y="200" width="190" height="52" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="0.5"/>
+      <text x="140" y="219" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="#3730a3" font-weight="500">printf("%d", n)</text>
+      <text x="140" y="235" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="#3730a3" font-weight="500">n--</text>
+      <text x="140" y="248" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="#4338ca">body</text>
+      <path d="M45 226 L22 226 L22 146 L65 146" fill="none" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah2)"/>
+    </svg>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step-by-step execution</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="wStep()">Next step ›</button>
+      <button class="btn" onclick="wReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="w-cnt">step 0 / 11</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="w-bar" style="width:0%"></div></div>
+    <div class="smsg" id="w-msg">Press Next step to begin.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">n</div><div class="vval" id="w-n">3</div></div>
+      <div class="vbox"><div class="vlbl">condition</div><div class="vval" id="w-cd">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="w-out"></div>
+  </div>
+  <div class="note">Use <code>while</code> when you don't know the count upfront — loop as long as a condition holds. The body may never run if the condition starts false.</div>
+  <div class="badges"><span class="badge b-a">condition checked before body</span><span class="badge b-v">may run 0 times</span></div>
+</div>
+
+<div class="pane" id="pane-dowhile">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> do_while.c</div>
+      <pre><span class="cl" id="d0"><span class="kw">int</span> x;</span>
+<span class="cl" id="d1"><span class="kw">do</span> {</span>
+<span class="cl" id="d2">    <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;x); <span class="cm">// read input</span></span>
+<span class="cl" id="d3">} <span class="kw">while</span> (x &lt; <span class="num">1</span>);</span>
+<span class="cl"><span class="cm">// input: -1, 0, 2 → accepts 2</span></span></pre>
+    </div>
+    <svg width="100%" viewBox="0 0 280 380" role="img"><title>Do-while loop flowchart</title><desc>Do-while: Start, execute body first (scanf x), then check x less than 1: if true loop back to body, if false go to End.</desc>
+      <defs><marker id="ah3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <rect x="90" y="10" width="100" height="32" rx="16" fill="#6366f1"/>
+      <text x="140" y="31" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="#fff" font-weight="500">Start</text>
+      <line x1="140" y1="42" x2="140" y2="68" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah3)"/>
+      <rect x="45" y="70" width="190" height="52" rx="6" fill="#eef2ff" stroke="#6366f1" stroke-width="0.5"/>
+      <text x="140" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="#3730a3" font-weight="500">scanf("%d", &amp;x)</text>
+      <text x="140" y="105" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="#4338ca">body runs first always</text>
+      <line x1="140" y1="122" x2="140" y2="156" stroke="var(--color-border-secondary)" stroke-width="1" marker-end="url(#ah3)"/>
+      <polygon points="140,158 215,190 140,222 65,190" fill="var(--color-background-primary)" stroke="#f59e0b" stroke-width="1"/>
+      <text x="140" y="187" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--color-text-primary)" font-weight="500">x &lt; 1?</text>
+      <text x="140" y="203" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-secondary)">check after body</text>
+      <path d="M65 190 L28 190 L28 96 L45 96" fill="none" stroke="#f59e0b" stroke-width="1" marker-end="url(#ah3)"/>
+      <text x="14" y="148" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="#f59e0b" transform="rotate(-90,14,148)">true</text>
+      <line x1="140" y1="222" x2="140" y2="258" stroke="#10b981" stroke-width="1" marker-end="url(#ah3)"/>
+      <text x="148" y="244" font-family="var(--font-mono)" font-size="9" fill="#10b981">false</text>
+      <rect x="90" y="260" width="100" height="32" rx="16" fill="#ef4444"/>
+      <text x="140" y="281" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="#fff" font-weight="500">End</text>
+    </svg>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step-by-step execution (simulating input: -1, 0, 2)</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="dStep()">Next step ›</button>
+      <button class="btn" onclick="dReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="d-cnt">step 0 / 7</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="d-bar" style="width:0%"></div></div>
+    <div class="smsg" id="d-msg">Press Next step to begin.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">x (input)</div><div class="vval" id="d-x">—</div></div>
+      <div class="vbox"><div class="vlbl">condition</div><div class="vval" id="d-cd">—</div></div>
+      <div class="vbox"><div class="vlbl">attempts</div><div class="vval" id="d-it">0</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="d-out"></div>
+  </div>
+  <div class="note">The body runs at least once — condition is only checked after. Perfect for "get input and validate" patterns.</div>
+  <div class="badges"><span class="badge b-g">body runs at least once</span><span class="badge b-a">condition checked after body</span></div>
+</div>
+
+<div class="pane" id="pane-cmp">
+  <div class="cmpgrid">
+    <div class="ccard" style="border-top-color:#6366f1">
+      <div class="cc-title">for</div>
+      <div class="cc-desc">Known count. Init, condition, update in one line.</div>
+      <div class="cc-code">for (i=0; i&lt;n; i++)</div>
+      <div class="badges" style="margin-top:8px"><span class="badge b-v">known count</span></div>
+    </div>
+    <div class="ccard" style="border-top-color:#f59e0b">
+      <div class="cc-title">while</div>
+      <div class="cc-desc">Unknown count. May run zero times if condition starts false.</div>
+      <div class="cc-code">while (n &gt; 0)</div>
+      <div class="badges" style="margin-top:8px"><span class="badge b-a">unknown count</span></div>
+    </div>
+    <div class="ccard" style="border-top-color:#10b981">
+      <div class="cc-title">do-while</div>
+      <div class="cc-desc">Guaranteed first run. Condition checked after body.</div>
+      <div class="cc-code">do { } while (x&lt;1);</div>
+      <div class="badges" style="margin-top:8px"><span class="badge b-g">runs ≥ 1 time</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#6366f1"></span> special keywords</div>
+    <pre><span class="kw">break</span>;      <span class="cm">// exit the loop immediately</span>
+<span class="kw">continue</span>;   <span class="cm">// skip to next iteration</span>
+
+<span class="cm">// Infinite loops</span>
+<span class="kw">for</span> (;;) { ... }    <span class="cm">// runs forever</span>
+<span class="kw">while</span> (<span class="num">1</span>) { ... }  <span class="cm">// same effect</span>
+
+<span class="cm">// Nested loops (e.g. 3x3 grid)</span>
+<span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>; i&lt;<span class="num">3</span>; i++)
+  <span class="kw">for</span> (<span class="kw">int</span> j=<span class="num">0</span>; j&lt;<span class="num">3</span>; j++)
+    <span class="fn">printf</span>(<span class="str">"(%d,%d) "</span>, i, j);</pre>
+  </div>
+  <div class="qbtns">
+    <button class="btn" onclick="sendPrompt('Show me C examples using break and continue in loops')">break &amp; continue examples ↗</button>
+    <button class="btn" onclick="sendPrompt('Show me nested loops in C with a multiplication table')">nested loops example ↗</button>
+    <button class="btn" onclick="sendPrompt('What is an infinite loop in C and when would you use one?')">infinite loops ↗</button>
+    <button class="btn" onclick="sendPrompt('Give me beginner C loop practice problems to try')">practice problems ↗</button>
+  </div>
+</div>
+</div>
+
+<script>
+function show(id, el) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');
+  el.classList.add('active');
+}
+
+function hl(ids, prev) {
+  if (prev) prev.forEach(id => { const e=document.getElementById(id); if(e) e.classList.remove('hi'); });
+  if (ids) ids.forEach(id => { const e=document.getElementById(id); if(e) e.classList.add('hi'); });
+}
+
+const fSteps = [
+  {hl:['f0'],msg:'Init: int i = 0',i:0,cd:'—',it:0},
+  {hl:['f0'],msg:'Check condition: 0 < 5 → true',i:0,cd:'✓ true',it:1},
+  {hl:['f1'],msg:'Execute body: printf(0)',i:0,cd:'✓ true',it:1,out:'0'},
+  {hl:['f0'],msg:'Update: i++ → i = 1',i:1,cd:'—',it:1},
+  {hl:['f0'],msg:'Check condition: 1 < 5 → true',i:1,cd:'✓ true',it:2},
+  {hl:['f1'],msg:'Execute body: printf(1)',i:1,cd:'✓ true',it:2,out:'1'},
+  {hl:['f0'],msg:'Update: i++ → i = 2',i:2,cd:'—',it:2},
+  {hl:['f0'],msg:'Check condition: 2 < 5 → true',i:2,cd:'✓ true',it:3},
+  {hl:['f1'],msg:'Execute body: printf(2)',i:2,cd:'✓ true',it:3,out:'2'},
+  {hl:['f0'],msg:'Update: i++ → i = 3',i:3,cd:'—',it:3},
+  {hl:['f0'],msg:'Check condition: 3 < 5 → true',i:3,cd:'✓ true',it:4},
+  {hl:['f1'],msg:'Execute body: printf(3)',i:3,cd:'✓ true',it:4,out:'3'},
+  {hl:['f0'],msg:'Update: i++ → i = 4',i:4,cd:'—',it:4},
+  {hl:['f0'],msg:'Check condition: 4 < 5 → true',i:4,cd:'✓ true',it:5},
+  {hl:['f1'],msg:'Execute body: printf(4)',i:4,cd:'✓ true',it:5,out:'4'},
+  {hl:['f0'],msg:'Update: i++ → i = 5',i:5,cd:'—',it:5},
+  {hl:['f2'],msg:'Check condition: 5 < 5 → false. Loop ends.',i:5,cd:'✗ false',it:5},
+];
+let fi=0,fo=[],fp=null;
+function fStep(){
+  if(fi>=fSteps.length)return;
+  const s=fSteps[fi];
+  hl(s.hl,fp);fp=s.hl;
+  document.getElementById('f-msg').textContent=s.msg;
+  document.getElementById('f-i').textContent=s.i;
+  document.getElementById('f-cd').textContent=s.cd;
+  document.getElementById('f-it').textContent=s.it;
+  document.getElementById('f-cnt').textContent='step '+(fi+1)+' / '+fSteps.length;
+  document.getElementById('f-bar').style.width=((fi+1)/fSteps.length*100)+'%';
+  if(s.out!==undefined){fo.push(s.out);document.getElementById('f-out').textContent=fo.join('  ');}
+  fi++;
+}
+function fReset(){
+  fi=0;fo=[];hl(null,fp);fp=null;
+  document.getElementById('f-msg').textContent='Press Next step to begin.';
+  ['f-i','f-cd'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('f-it').textContent='0';
+  document.getElementById('f-cnt').textContent='step 0 / '+fSteps.length;
+  document.getElementById('f-bar').style.width='0%';
+  document.getElementById('f-out').textContent='';
+}
+
+const wSteps = [
+  {hl:['w0'],msg:'Declare: int n = 3',n:3,cd:'—'},
+  {hl:['w1'],msg:'Check condition: 3 > 0 → true',n:3,cd:'✓ true'},
+  {hl:['w2'],msg:'printf(3)',n:3,cd:'✓ true',out:'3'},
+  {hl:['w3'],msg:'n-- → n = 2',n:2,cd:'—'},
+  {hl:['w1'],msg:'Check condition: 2 > 0 → true',n:2,cd:'✓ true'},
+  {hl:['w2'],msg:'printf(2)',n:2,cd:'✓ true',out:'2'},
+  {hl:['w3'],msg:'n-- → n = 1',n:1,cd:'—'},
+  {hl:['w1'],msg:'Check condition: 1 > 0 → true',n:1,cd:'✓ true'},
+  {hl:['w2'],msg:'printf(1)',n:1,cd:'✓ true',out:'1'},
+  {hl:['w3'],msg:'n-- → n = 0',n:0,cd:'—'},
+  {hl:['w4'],msg:'Check condition: 0 > 0 → false. Loop ends.',n:0,cd:'✗ false'},
+];
+let wi=0,wo=[],wp=null;
+function wStep(){
+  if(wi>=wSteps.length)return;
+  const s=wSteps[wi];
+  hl(s.hl,wp);wp=s.hl;
+  document.getElementById('w-msg').textContent=s.msg;
+  document.getElementById('w-n').textContent=s.n;
+  document.getElementById('w-cd').textContent=s.cd;
+  document.getElementById('w-cnt').textContent='step '+(wi+1)+' / '+wSteps.length;
+  document.getElementById('w-bar').style.width=((wi+1)/wSteps.length*100)+'%';
+  if(s.out!==undefined){wo.push(s.out);document.getElementById('w-out').textContent=wo.join('  ');}
+  wi++;
+}
+function wReset(){
+  wi=0;wo=[];hl(null,wp);wp=null;
+  document.getElementById('w-msg').textContent='Press Next step to begin.';
+  document.getElementById('w-n').textContent='3';
+  document.getElementById('w-cd').textContent='—';
+  document.getElementById('w-cnt').textContent='step 0 / '+wSteps.length;
+  document.getElementById('w-bar').style.width='0%';
+  document.getElementById('w-out').textContent='';
+}
+
+const dSteps = [
+  {hl:['d1'],msg:'Enter do block — body runs first, no condition check yet',x:'—',cd:'—',it:0},
+  {hl:['d2'],msg:'scanf: read input → x = -1',x:-1,cd:'—',it:1,out:'got: -1 (invalid)'},
+  {hl:['d3'],msg:'Check condition: -1 < 1 → true, repeat body',x:-1,cd:'✓ true',it:1},
+  {hl:['d2'],msg:'scanf: read input → x = 0',x:0,cd:'—',it:2,out:'got: 0 (invalid)'},
+  {hl:['d3'],msg:'Check condition: 0 < 1 → true, repeat body',x:0,cd:'✓ true',it:2},
+  {hl:['d2'],msg:'scanf: read input → x = 2',x:2,cd:'—',it:3,out:'got: 2 (valid!)'},
+  {hl:['d3'],msg:'Check condition: 2 < 1 → false. Loop ends. Valid input accepted!',x:2,cd:'✗ false',it:3},
+];
+let di=0,dp=null,dout=[];
+function dStep(){
+  if(di>=dSteps.length)return;
+  const s=dSteps[di];
+  hl(s.hl,dp);dp=s.hl;
+  document.getElementById('d-msg').textContent=s.msg;
+  document.getElementById('d-x').textContent=s.x;
+  document.getElementById('d-cd').textContent=s.cd;
+  document.getElementById('d-it').textContent=s.it;
+  document.getElementById('d-cnt').textContent='step '+(di+1)+' / '+dSteps.length;
+  document.getElementById('d-bar').style.width=((di+1)/dSteps.length*100)+'%';
+  if(s.out!==undefined){dout.push(s.out);document.getElementById('d-out').textContent=dout.join(' | ');}
+  di++;
+}
+function dReset(){
+  di=0;dout=[];hl(null,dp);dp=null;
+  document.getElementById('d-msg').textContent='Press Next step to begin.';
+  document.getElementById('d-x').textContent='—';
+  document.getElementById('d-cd').textContent='—';
+  document.getElementById('d-it').textContent='0';
+  document.getElementById('d-cnt').textContent='step 0 / '+dSteps.length;
+  document.getElementById('d-bar').style.width='0%';
+  document.getElementById('d-out').textContent='';
+}
+</script>
