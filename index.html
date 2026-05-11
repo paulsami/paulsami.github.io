@@ -2,611 +2,670 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sorting Algorithm Visualizer</title>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My GitHub Page</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --bg: #0d0f14;
-      --surface: #161920;
-      --surface2: #1e2230;
-      --border: rgba(255,255,255,0.07);
-      --border2: rgba(255,255,255,0.13);
-      --text: #e8eaf0;
-      --text-muted: #6b7280;
-      --text-dim: #9ca3af;
-      --blue: #3b82f6;
-      --blue-dim: #1d4ed8;
-      --orange: #f59e0b;
-      --coral: #ef4444;
-      --pink: #ec4899;
-      --green: #10b981;
-      --accent: #6366f1;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'DM Sans', sans-serif;
+      --sidebar: #111318;
+      --sidebar-border: #1e2130;
+      --accent: #5b6ef5;
+      --accent-glow: rgba(91,110,245,0.18);
+      --accent2: #f0c040;
+      --text: #e8eaf2;
+      --muted: #6b7080;
+      --card: #161921;
+      --card-border: #232737;
+      --sidebar-w: 260px;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
     }
+
+    html { scroll-behavior: smooth; }
 
     body {
+      font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      padding: 2rem 1rem;
-    }
-
-    /* Subtle grid background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Header */
-    .header {
-      margin-bottom: 2rem;
       display: flex;
-      align-items: baseline;
-      gap: 1rem;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    .header h1 {
-      font-family: var(--mono);
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--sidebar);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 0;
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .brand {
+      padding: 0 1.5rem 2rem;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+    .brand-icon {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
       font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
       font-weight: 700;
+      font-size: 1rem;
       color: var(--text);
       letter-spacing: -0.02em;
     }
-    .header-tag {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--accent);
-      background: rgba(99,102,241,0.12);
-      border: 1px solid rgba(99,102,241,0.25);
-      border-radius: 4px;
-      padding: 2px 8px;
-      letter-spacing: 0.05em;
+    .brand-handle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
     }
 
-    /* Algo selector */
-    .algo-tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 1.25rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 5px;
-    }
-    .algo-tab {
+    .nav {
       flex: 1;
-      padding: 8px 0;
-      font-family: var(--mono);
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      background: transparent;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.02em;
+      padding: 1.5rem 0;
     }
-    .algo-tab:hover { color: var(--text-dim); background: var(--surface2); }
-    .algo-tab.active { color: var(--text); background: var(--surface2); box-shadow: inset 0 0 0 1px var(--border2); }
+    .nav-section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 1.5rem;
+      margin-bottom: 0.5rem;
+      margin-top: 1rem;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1.5rem;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: var(--transition);
+      font-size: 0.875rem;
+      color: var(--muted);
+      font-weight: 400;
+      position: relative;
+    }
+    .nav-item:hover {
+      color: var(--text);
+      background: rgba(91,110,245,0.06);
+    }
+    .nav-item.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      background: var(--accent-glow);
+      font-weight: 500;
+    }
+    .nav-item .icon {
+      width: 18px; height: 18px;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+    .nav-item.active .icon { opacity: 1; }
 
-    /* Bar area */
-    .bar-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.25rem 1.25rem 0;
-      margin-bottom: 1rem;
+    .sidebar-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--sidebar-border);
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .sidebar-footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── MAIN ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      min-height: 100vh;
+      padding: 5rem 4rem;
+      display: none;
+      animation: fadeSlide 0.4s ease forwards;
+    }
+    .section.active { display: block; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── HERO / HOME ── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100vh;
       position: relative;
       overflow: hidden;
     }
-    .bar-area {
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      height: 200px;
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(91,110,245,0.12) 0%, transparent 70%);
+      pointer-events: none;
     }
-    .bar {
-      flex: 1;
-      border-radius: 3px 3px 0 0;
-      transition: height 0.16s cubic-bezier(0.4,0,0.2,1), background 0.16s;
-      min-width: 5px;
-    }
-    .bar.default  { background: #1d4ed8; }
-    .bar.comparing{ background: var(--orange); box-shadow: 0 0 8px rgba(245,158,11,0.4); }
-    .bar.swapping { background: var(--coral); box-shadow: 0 0 8px rgba(239,68,68,0.4); }
-    .bar.pivot    { background: var(--pink); box-shadow: 0 0 8px rgba(236,72,153,0.4); }
-    .bar.sorted   { background: var(--green); }
-
-    /* Status bar */
-    .status-row {
-      display: flex;
+    .hero-tag {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 0 4px;
-      border-top: 1px solid var(--border);
-      margin-top: 8px;
+      gap: 0.4rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(91,110,245,0.25);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border-radius: 100px;
+      width: fit-content;
+      margin-bottom: 1.5rem;
     }
-    .status-msg {
-      font-family: var(--mono);
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      min-height: 18px;
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
     }
-
-    /* Legend */
-    .legend {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      padding-bottom: 10px;
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
     }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      color: var(--text-muted);
-    }
-    .legend-dot {
-      width: 8px; height: 8px; border-radius: 2px;
-    }
-
-    /* Controls row */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-    .ctrl-btn {
-      font-family: var(--mono);
-      font-size: 0.72rem;
+    .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
       font-weight: 500;
-      padding: 7px 16px;
-      border-radius: 7px;
-      border: 1px solid var(--border2);
-      background: var(--surface);
-      color: var(--text-dim);
       cursor: pointer;
-      transition: all 0.15s;
-      letter-spacing: 0.02em;
+      border: none;
+      transition: var(--transition);
+      text-decoration: none;
     }
-    .ctrl-btn:hover { background: var(--surface2); color: var(--text); border-color: rgba(255,255,255,0.2); }
-    .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-    .ctrl-btn.primary {
+    .btn-primary {
       background: var(--accent);
-      border-color: var(--accent);
       color: #fff;
+      box-shadow: 0 0 20px var(--accent-glow);
     }
-    .ctrl-btn.primary:hover { background: #4f46e5; }
+    .btn-primary:hover { background: #6b7ef5; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 
-    .speed-wrap {
+    /* ── SECTION HEADER ── */
+    .section-header { margin-bottom: 3rem; }
+    .section-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+    .section-header p { color: var(--muted); font-size: 0.95rem; }
+    .section-divider {
+      width: 40px; height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-top: 0.75rem;
+    }
+
+    /* ── CARDS ── */
+    .card-grid { display: grid; gap: 1.25rem; }
+    .card-grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: var(--transition);
+    }
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(91,110,245,0.1);
+    }
+    .card-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .card p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .card-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      background: var(--accent-glow);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+    }
+
+    /* ── ABOUT / SKILLS ── */
+    .skill-bar { margin-bottom: 1.25rem; }
+    .skill-label {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--text-muted);
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
     }
-    input[type=range] {
-      width: 80px;
-      accent-color: var(--accent);
+    .skill-track {
+      height: 6px;
+      background: var(--card-border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #8f9ff7);
+      border-radius: 3px;
+      width: 0;
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
     }
 
-    /* Stats */
-    .stats {
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+    .about-bio p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    .stat-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 1rem;
+      gap: 1rem;
+      margin-top: 1.5rem;
     }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
     }
-    .stat-label {
-      font-family: var(--mono);
-      font-size: 0.62rem;
-      color: var(--text-muted);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+    .stat-box .num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--accent);
     }
-    .stat-val {
-      font-family: var(--mono);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1;
-    }
+    .stat-box .label { font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem; }
 
-    /* Code block */
-    .code-section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-    .code-header {
+    /* ── CONTACT ── */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .contact-link {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface2);
+      gap: 1rem;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: var(--transition);
     }
-    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .code-filename {
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      margin-left: 4px;
+    .contact-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateX(4px);
     }
-    .code-body {
-      padding: 16px 18px;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      line-height: 1.7;
-      color: #a5b4fc;
-      white-space: pre;
-      overflow-x: auto;
+    .contact-link .cl-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent-glow);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
     }
-    .kw { color: #f472b6; }
-    .fn { color: #34d399; }
-    .cm { color: #4b5563; font-style: italic; }
-    .num { color: #fb923c; }
+    .contact-link .cl-info { flex: 1; }
+    .contact-link .cl-label { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.15rem; }
+    .contact-link .cl-value { font-size: 0.9rem; font-weight: 500; }
 
-    /* Complexity */
-    .complexity {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      padding: 12px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
+    /* ── MOBILE HAMBURGER ── */
+    .hamburger {
+      display: none;
+      position: fixed;
+      top: 1rem; left: 1rem;
+      z-index: 200;
+      background: var(--sidebar);
+      border: 1px solid var(--sidebar-border);
       border-radius: 8px;
-      font-family: var(--mono);
-      font-size: 0.68rem;
-      color: var(--text-muted);
+      padding: 0.5rem;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 4px;
     }
-    .complexity b { color: var(--text-dim); font-weight: 500; }
+    .hamburger span { display: block; width: 20px; height: 2px; background: var(--text); border-radius: 1px; }
+    .sidebar-overlay { display: none; }
 
-    @media (max-width: 540px) {
-      .stats { grid-template-columns: repeat(3,1fr); }
-      .controls { gap: 7px; }
-      .ctrl-btn { padding: 7px 10px; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .section { padding: 5rem 1.5rem 3rem; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; }
+      .hamburger { display: flex; }
+      .sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+      .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1>sorting.c</h1>
-    <span class="header-tag">VISUALIZER</span>
+
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- Hamburger -->
+<button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+  <span></span><span></span><span></span>
+</button>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-icon">GP</div>
+    <div class="brand-name">GitHub Page</div>
+    <div class="brand-handle">@yourusername</div>
   </div>
 
-  <div class="algo-tabs">
-    <button class="algo-tab active" id="btn-bubble" onclick="setAlgo('bubble')">bubble_sort()</button>
-    <button class="algo-tab" id="btn-merge"  onclick="setAlgo('merge')">merge_sort()</button>
-    <button class="algo-tab" id="btn-quick"  onclick="setAlgo('quick')">quick_sort()</button>
-    <button class="algo-tab" id="btn-selection" onclick="setAlgo('selection')">selection_sort()</button>
-  </div>
+  <nav class="nav">
+    <div class="nav-section-label">Main</div>
 
-  <div class="bar-section">
-    <div class="bar-area" id="bar-area"></div>
-    <div class="status-row">
-      <div class="legend">
-        <span class="legend-item"><span class="legend-dot" style="background:#1d4ed8"></span>unsorted</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>comparing</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>swapping</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#ec4899"></span>pivot / min</span>
-        <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>sorted</span>
+    <div class="nav-item active" data-target="home">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v10h4v-6h6v6h4V10"/>
+      </svg>
+      Home
+    </div>
+
+    <div class="nav-item" data-target="about">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+      </svg>
+      About Me
+    </div>
+
+    <div class="nav-item" data-target="projects">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h7"/>
+      </svg>
+      Projects
+    </div>
+
+    <div class="nav-item" data-target="skills">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
+      </svg>
+      Skills
+    </div>
+
+    <div class="nav-section-label">Learning Hub</div>
+
+    <a class="nav-item" href="c_master.html" style="text-decoration:none;">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+      </svg>
+      C Language Hub
+      <span style="margin-left:auto;font-size:0.6rem;padding:2px 6px;border-radius:100px;background:rgba(16,185,129,0.18);color:#34d399;font-weight:600;letter-spacing:0.06em;">NEW</span>
+    </a>
+
+    <div class="nav-section-label">Connect</div>
+
+    <div class="nav-item" data-target="contact">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      </svg>
+      Contact
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    Hosted on <a href="https://pages.github.com" target="_blank">GitHub Pages</a><br>
+    <span style="margin-top:0.3rem;display:block;">© 2026 Your Name</span>
+  </div>
+</aside>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main">
+
+  <!-- HOME -->
+  <section class="section hero active" id="home">
+    <div class="hero-tag">
+      <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#5b6ef5"/></svg>
+      Available for Educate Budding Developers
+    </div>
+    <h1>Hi, I'm <span>Samiran Paul</span><br>Developer & Architect,Educator</h1>
+    
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="navigate('projects')">View Projects</button>
+      <button class="btn btn-outline" onclick="navigate('contact')">Get in Touch</button>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <h2>About Me</h2>
+      <p>A little about who I am and what I do.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-bio">
+        <p>I'm a passionate Educator based in Kolkata, India. I love building things for the web — from interactive UIs to scalable backend systems.</p>
+        <p>When I'm not coding, you'll find me exploring open-source projects, writing technical articles, or experimenting with new technologies.</p>
+        <p>I believe great software is built at the intersection of engineering rigor and design sensibility.</p>
+        <p>
+  I am an experienced Technical Architect with expertise in enterprise technology solutions, cloud architecture, AI-driven systems, and large-scale digital transformation initiatives. Currently associated with IBM, I have a strong background in designing scalable, business-focused technology solutions and mentoring technical teams. I am passionate about emerging technologies including AI, Agentic AI, cloud platforms, and enterprise modernization, with a consistent focus on innovation, architecture excellence, and continuous learning.
+</p>
+        <div class="stat-row">
+          <div class="stat-box"><div class="num">25+</div><div class="label">Years Exp.</div></div>
+          <div class="stat-box"><div class="num">20+</div><div class="label">Projects</div></div>
+          <div class="stat-box"><div class="num">15+</div><div class="label">Happy Clients</div></div>
+        </div>
       </div>
-      <div class="status-msg" id="status">press play or step to begin</div>
+      <div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">Core Skills</p>
+        <div class="skill-bar">
+          <div class="skill-label"><span>Architecture</span><span>90%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-width="90"></div></div>
+        </div>
+        <div class="skill-bar">
+          <div class="skill-label"><span>Java</span><span>85%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-width="85"></div></div>
+        </div>
+        <div class="skill-bar">
+          <div class="skill-label"><span>Microservice Architecture</span><span>80%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-width="80"></div></div>
+        </div>
+        <div class="skill-bar">
+          <div class="skill-label"><span>Cloud Computing</span><span>88%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-width="88"></div></div>
+        </div>
+        <div class="skill-bar">
+          <div class="skill-label"><span>Agentic AI</span><span>50%</span></div>
+          <div class="skill-track"><div class="skill-fill" data-width="50"></div></div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="controls">
-    <button class="ctrl-btn primary" id="btn-play"  onclick="playPause()">▶ play</button>
-    <button class="ctrl-btn" id="btn-step"  onclick="stepOnce()">step ›</button>
-    <button class="ctrl-btn" id="btn-reset" onclick="resetVis()">↺ reset</button>
-    <button class="ctrl-btn" onclick="shuffle()">⇌ shuffle</button>
-    <div class="speed-wrap">
-      speed
-      <input type="range" min="1" max="5" value="3" id="speed-slider" oninput="document.getElementById('speed-label').textContent=this.value">
-      <span id="speed-label">3</span>
+  <!-- PROJECTS -->
+  <section class="section" id="projects">
+    <div class="section-header">
+      <h2>Projects</h2>
+      <p>A selection of things I've built.</p>
+      <div class="section-divider"></div>
     </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat-card"><div class="stat-label">Comparisons</div><div class="stat-val" id="stat-cmp">0</div></div>
-    <div class="stat-card"><div class="stat-label">Swaps / writes</div><div class="stat-val" id="stat-swp">0</div></div>
-    <div class="stat-card"><div class="stat-label">Step</div><div class="stat-val" id="stat-step">0/0</div></div>
-  </div>
-
-  <div class="code-section">
-    <div class="code-header">
-      <span class="code-dot" style="background:#ef4444"></span>
-      <span class="code-dot" style="background:#f59e0b"></span>
-      <span class="code-dot" style="background:#10b981"></span>
-      <span class="code-filename" id="code-filename">bubble_sort.c</span>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <div class="card-icon">🚀</div>
+        <h3>Project Alpha</h3>
+        <p>A full-stack web application built with React and Node.js. Features real-time data sync and a clean, responsive UI.</p>
+        <span class="card-tag">React · Node.js</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎨</div>
+        <h3>Design System</h3>
+        <p>A reusable component library with consistent design tokens, accessibility support, and Storybook documentation.</p>
+        <span class="card-tag">TypeScript · CSS</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🤖</div>
+        <h3>ML Dashboard</h3>
+        <p>Interactive dashboard for visualizing machine learning model performance, metrics, and training history.</p>
+        <span class="card-tag">Python · D3.js</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">📦</div>
+        <h3>CLI Toolkit</h3>
+        <p>A developer productivity toolkit delivered as a CLI. Automates repetitive tasks and project scaffolding.</p>
+        <span class="card-tag">Node.js · Shell</span>
+      </div>
+      <div class="card" onclick="window.location.href='c_master.html'" style="cursor:pointer;border-color:rgba(91,110,245,0.35);">
+        <div class="card-icon">⚙️</div>
+        <h3>C Language Hub</h3>
+        <p>Interactive step-by-step guides for learning C — loops, break/continue, nested loops, and more with live execution tracing.</p>
+        <span class="card-tag" style="background:rgba(91,110,245,0.12);color:#a0aaea;border-color:rgba(91,110,245,0.25)">C · Interactive · Education</span>
+      </div>
     </div>
-    <div class="code-body" id="code-block"></div>
-  </div>
+  </section>
 
-  <div class="complexity" id="complexity-area"></div>
-</div>
+  <!-- SKILLS -->
+  <section class="section" id="skills">
+    <div class="section-header">
+      <h2>Skills & Tools</h2>
+      <p>Technologies I work with every day.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="card-grid card-grid-3">
+      <div class="card"><div class="card-icon">⚡</div><h3>Programming</h3><p>C, Java, Python</p></div>
+      <div class="card"><div class="card-icon">🔧</div><h3>Backend</h3><p>Node.js, Express, Python, FastAPI, REST APIs, GraphQL</p></div>
+      <div class="card"><div class="card-icon">☁️</div><h3>Cloud & DevOps</h3><p>AWS, GitHub Actions, Docker, Vercel, Netlify, CI/CD</p></div>
+      <div class="card"><div class="card-icon">🎨</div><h3>Architecture & Design</h3><p></p></div>
+      <div class="card"><div class="card-icon">🤖</div><h3>AI & ML</h3><p>TensorFlow, PyTorch, scikit-learn, Hugging Face, Agentic AI</p></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="section-header">
+      <h2>Get In Touch</h2>
+      <p>I'm open to opportunities, collaborations, and conversations.</p>
+      <div class="section-divider"></div>
+    </div>
+    <div class="contact-grid">
+     
+      <a class="contact-link" href="https://github.com/paulsami" target="https://github.com/paulsami">
+        <div class="cl-icon">🐙</div>
+        <div class="cl-info">
+          <div class="cl-label">GitHub</div>
+          <div class="cl-value">@paulsami</div>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a class="contact-link" href="https://www.linkedin.com/in/samiran-paul-9bb9a215/" target="https://www.linkedin.com/in/samiran-paul-9bb9a215/">
+        <div class="cl-icon">💼</div>
+        <div class="cl-info">
+          <div class="cl-label">LinkedIn</div>
+          <div class="cl-value">/in/samiran-paul/</div>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+      <a class="contact-link" href="https://twitter.com/yourusername" target="_blank">
+        <div class="cl-icon">🐦</div>
+        <div class="cl-info">
+          <div class="cl-label">Twitter / X</div>
+          <div class="cl-value">@yourusername</div>
+        </div>
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+</main>
 
 <script>
-const N = 20;
-let arr = [], steps = [], stepIdx = 0, playing = false, timer = null, algo = 'bubble';
-
-const rawCodes = {
-  bubble: `<span class="kw">void</span> <span class="fn">bubble_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> n) {
-  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n - <span class="num">1</span>; i++) {
-    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j < n - i - <span class="num">1</span>; j++) {
-      <span class="kw">if</span> (a[j] > a[j+<span class="num">1</span>]) {    <span class="cm">// compare adjacent</span>
-        <span class="kw">int</span> tmp = a[j];
-        a[j]   = a[j+<span class="num">1</span>];       <span class="cm">// swap</span>
-        a[j+<span class="num">1</span>] = tmp;
-      }
-    }
+  function navigate(target) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(target)?.classList.add('active');
+    document.querySelector(`[data-target="${target}"]`)?.classList.add('active');
+    if (target === 'about') animateSkills();
+    closeSidebar();
   }
-}`,
-  merge: `<span class="kw">void</span> <span class="fn">merge</span>(<span class="kw">int</span> a[], <span class="kw">int</span> l, <span class="kw">int</span> m, <span class="kw">int</span> r) {
-  <span class="kw">int</span> n1=m-l+<span class="num">1</span>, n2=r-m;
-  <span class="kw">int</span> L[n1], R[n2];
-  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i<n1;i++) L[i]=a[l+i];
-  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">0</span>;j<n2;j++) R[j]=a[m+<span class="num">1</span>+j];
-  <span class="kw">int</span> i=<span class="num">0</span>,j=<span class="num">0</span>,k=l;
-  <span class="kw">while</span>(i<n1 && j<n2)
-    a[k++]=(L[i]<=R[j])?L[i++]:R[j++]; <span class="cm">// compare & write</span>
-  <span class="kw">while</span>(i<n1) a[k++]=L[i++];
-  <span class="kw">while</span>(j<n2) a[k++]=R[j++];
-}
-<span class="kw">void</span> <span class="fn">merge_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> l, <span class="kw">int</span> r) {
-  <span class="kw">if</span>(l<r){ <span class="kw">int</span> m=(l+r)/<span class="num">2</span>;
-    <span class="fn">merge_sort</span>(a,l,m);
-    <span class="fn">merge_sort</span>(a,m+<span class="num">1</span>,r);
-    <span class="fn">merge</span>(a,l,m,r);
-  }
-}`,
-  quick: `<span class="kw">int</span> <span class="fn">partition</span>(<span class="kw">int</span> a[], <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
-  <span class="kw">int</span> pivot = a[hi]; <span class="cm">// choose pivot</span>
-  <span class="kw">int</span> i = lo - <span class="num">1</span>;
-  <span class="kw">for</span> (<span class="kw">int</span> j = lo; j < hi; j++) {
-    <span class="kw">if</span> (a[j] <= pivot) { <span class="cm">// compare with pivot</span>
-      i++;
-      <span class="kw">int</span> tmp=a[i]; a[i]=a[j]; a[j]=tmp;
-    }
-  }
-  <span class="kw">int</span> tmp=a[i+<span class="num">1</span>]; a[i+<span class="num">1</span>]=a[hi]; a[hi]=tmp;
-  <span class="kw">return</span> i + <span class="num">1</span>;
-}
-<span class="kw">void</span> <span class="fn">quick_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> lo, <span class="kw">int</span> hi) {
-  <span class="kw">if</span> (lo < hi) {
-    <span class="kw">int</span> p = <span class="fn">partition</span>(a, lo, hi);
-    <span class="fn">quick_sort</span>(a, lo, p - <span class="num">1</span>);
-    <span class="fn">quick_sort</span>(a, p + <span class="num">1</span>, hi);
-  }
-}`,
-  selection: `<span class="kw">void</span> <span class="fn">selection_sort</span>(<span class="kw">int</span> a[], <span class="kw">int</span> n) {
-  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < n - <span class="num">1</span>; i++) {
-    <span class="kw">int</span> min_idx = i;        <span class="cm">// assume current is min</span>
-    <span class="kw">for</span> (<span class="kw">int</span> j = i + <span class="num">1</span>; j < n; j++) {
-      <span class="kw">if</span> (a[j] < a[min_idx]) { <span class="cm">// found new min</span>
-        min_idx = j;
-      }
-    }
-    <span class="kw">if</span> (min_idx != i) {     <span class="cm">// swap min into place</span>
-      <span class="kw">int</span> tmp   = a[i];
-      a[i]       = a[min_idx];
-      a[min_idx] = tmp;
-    }
-  }
-}`
-};
 
-const filenames = { bubble: 'bubble_sort.c', merge: 'merge_sort.c', quick: 'quick_sort.c', selection: 'selection_sort.c' };
-
-const complexity = {
-  bubble:    'Best: <b>O(n)</b> &nbsp;·&nbsp; Average: <b>O(n²)</b> &nbsp;·&nbsp; Worst: <b>O(n²)</b> &nbsp;·&nbsp; Space: <b>O(1)</b> &nbsp;·&nbsp; Stable: <b>Yes</b>',
-  merge:     'Best: <b>O(n log n)</b> &nbsp;·&nbsp; Average: <b>O(n log n)</b> &nbsp;·&nbsp; Worst: <b>O(n log n)</b> &nbsp;·&nbsp; Space: <b>O(n)</b> &nbsp;·&nbsp; Stable: <b>Yes</b>',
-  quick:     'Best: <b>O(n log n)</b> &nbsp;·&nbsp; Average: <b>O(n log n)</b> &nbsp;·&nbsp; Worst: <b>O(n²)</b> &nbsp;·&nbsp; Space: <b>O(log n)</b> &nbsp;·&nbsp; Stable: <b>No</b>',
-  selection: 'Best: <b>O(n²)</b> &nbsp;·&nbsp; Average: <b>O(n²)</b> &nbsp;·&nbsp; Worst: <b>O(n²)</b> &nbsp;·&nbsp; Space: <b>O(1)</b> &nbsp;·&nbsp; Stable: <b>No</b>'
-};
-
-function randArr(n){ return Array.from({length:n},()=>Math.floor(Math.random()*85)+12); }
-
-function* bubbleSteps(a){
-  let n=a.length,cmps=0,swps=0;
-  for(let i=0;i<n-1;i++){
-    for(let j=0;j<n-i-1;j++){
-      cmps++;
-      yield {arr:[...a],comparing:[j,j+1],swapping:[],sorted:[...Array(i).keys()].map(k=>n-1-k),pivot:[],cmps,swps,msg:`comparing a[${j}]=${a[j]} and a[${j+1}]=${a[j+1]}`};
-      if(a[j]>a[j+1]){swps++;[a[j],a[j+1]]=[a[j+1],a[j]];
-        yield {arr:[...a],comparing:[],swapping:[j,j+1],sorted:[...Array(i).keys()].map(k=>n-1-k),pivot:[],cmps,swps,msg:`swapped → a[${j}]=${a[j]}, a[${j+1}]=${a[j+1]}`};
-      }
-    }
-  }
-  yield {arr:[...a],comparing:[],swapping:[],sorted:[...Array(n).keys()],pivot:[],cmps,swps,msg:'sorted!'};
-}
-
-function* mergeSteps(a){
-  let cmps=0,swps=0;
-  function* ms(arr,l,r,orig){
-    if(l>=r)return;
-    let m=Math.floor((l+r)/2);
-    yield* ms(arr,l,m,orig);
-    yield* ms(arr,m+1,r,orig);
-    let L=arr.slice(l,m+1),R=arr.slice(m+1,r+1),i=0,j=0,k=l;
-    while(i<L.length&&j<R.length){
-      cmps++;
-      yield {arr:[...orig],comparing:[l+i,m+1+j],swapping:[],sorted:[],pivot:[],cmps,swps,msg:`merging: comparing ${L[i]} and ${R[j]}`};
-      orig[k++]=(L[i]<=R[j])?L[i++]:R[j++];swps++;
-      yield {arr:[...orig],comparing:[],swapping:[k-1],sorted:[],pivot:[],cmps,swps,msg:`wrote ${orig[k-1]} → position ${k-1}`};
-    }
-    while(i<L.length){orig[k++]=L[i++];swps++;yield {arr:[...orig],comparing:[],swapping:[k-1],sorted:[],pivot:[],cmps,swps,msg:`wrote ${orig[k-1]} → position ${k-1}`};}
-    while(j<R.length){orig[k++]=R[j++];swps++;yield {arr:[...orig],comparing:[],swapping:[k-1],sorted:[],pivot:[],cmps,swps,msg:`wrote ${orig[k-1]} → position ${k-1}`};}
-  }
-  let copy=[...a];yield* ms(copy,0,copy.length-1,copy);
-  yield {arr:[...copy],comparing:[],swapping:[],sorted:[...Array(copy.length).keys()],pivot:[],cmps,swps,msg:'sorted!'};
-}
-
-function* quickSteps(a){
-  let cmps=0,swps=0;
-  function* qs(arr,lo,hi){
-    if(lo>=hi)return;
-    let pivot=arr[hi],i=lo-1;
-    yield {arr:[...arr],comparing:[],swapping:[],sorted:[],pivot:[hi],cmps,swps,msg:`pivot = ${pivot} (index ${hi})`};
-    for(let j=lo;j<hi;j++){
-      cmps++;
-      yield {arr:[...arr],comparing:[j,hi],swapping:[],sorted:[],pivot:[hi],cmps,swps,msg:`comparing a[${j}]=${arr[j]} with pivot ${pivot}`};
-      if(arr[j]<=pivot){i++;[arr[i],arr[j]]=[arr[j],arr[i]];swps++;
-        yield {arr:[...arr],comparing:[],swapping:[i,j],sorted:[],pivot:[hi],cmps,swps,msg:`swapped a[${i}] and a[${j}]`};
-      }
-    }
-    [arr[i+1],arr[hi]]=[arr[hi],arr[i+1]];swps++;
-    yield {arr:[...arr],comparing:[],swapping:[i+1,hi],sorted:[i+1],pivot:[],cmps,swps,msg:`pivot placed at index ${i+1}`};
-    yield* qs(arr,lo,i);yield* qs(arr,i+2,hi);
-  }
-  let copy=[...a];yield* qs(copy,0,copy.length-1);
-  yield {arr:[...copy],comparing:[],swapping:[],sorted:[...Array(copy.length).keys()],pivot:[],cmps,swps,msg:'sorted!'};
-}
-
-function* selectionSteps(a){
-  let n=a.length,cmps=0,swps=0;
-  let sorted=[];
-  for(let i=0;i<n-1;i++){
-    let minIdx=i;
-    yield {arr:[...a],comparing:[],swapping:[],sorted:[...sorted],pivot:[minIdx],cmps,swps,msg:`pass ${i+1}: current min = a[${minIdx}]=${a[minIdx]}`};
-    for(let j=i+1;j<n;j++){
-      cmps++;
-      yield {arr:[...a],comparing:[j],swapping:[],sorted:[...sorted],pivot:[minIdx],cmps,swps,msg:`comparing a[${j}]=${a[j]} with min a[${minIdx}]=${a[minIdx]}`};
-      if(a[j]<a[minIdx]){
-        minIdx=j;
-        yield {arr:[...a],comparing:[],swapping:[],sorted:[...sorted],pivot:[minIdx],cmps,swps,msg:`new min found: a[${minIdx}]=${a[minIdx]}`};
-      }
-    }
-    if(minIdx!==i){swps++;[a[i],a[minIdx]]=[a[minIdx],a[i]];
-      yield {arr:[...a],comparing:[],swapping:[i,minIdx],sorted:[...sorted],pivot:[],cmps,swps,msg:`swapped a[${i}] and a[${minIdx}]`};
-    }
-    sorted.push(i);
-    yield {arr:[...a],comparing:[],swapping:[],sorted:[...sorted],pivot:[],cmps,swps,msg:`a[${i}]=${a[i]} is in place`};
-  }
-  sorted.push(n-1);
-  yield {arr:[...a],comparing:[],swapping:[],sorted:[...Array(n).keys()],pivot:[],cmps,swps,msg:'sorted!'};
-}
-
-function buildSteps(){
-  let gen=algo==='bubble'?bubbleSteps([...arr]):algo==='merge'?mergeSteps([...arr]):algo==='quick'?quickSteps([...arr]):selectionSteps([...arr]);
-  steps=[...gen];
-}
-
-function renderStep(s){
-  const area=document.getElementById('bar-area');
-  const maxVal=Math.max(...s.arr);
-  area.innerHTML='';
-  s.arr.forEach((v,i)=>{
-    let cl='bar ';
-    if(s.sorted&&s.sorted.includes(i)) cl+='sorted';
-    else if(s.swapping.includes(i)) cl+='swapping';
-    else if(s.comparing.includes(i)) cl+='comparing';
-    else if(s.pivot&&s.pivot.includes(i)) cl+='pivot';
-    else cl+='default';
-    const bar=document.createElement('div');
-    bar.className=cl;
-    bar.style.height=Math.max(4,Math.round((v/maxVal)*180))+'px';
-    bar.title=v;
-    area.appendChild(bar);
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => navigate(item.dataset.target));
   });
-  document.getElementById('status').textContent=s.msg||'';
-  document.getElementById('stat-cmp').textContent=s.cmps;
-  document.getElementById('stat-swp').textContent=s.swps;
-  document.getElementById('stat-step').textContent=(stepIdx+1)+'/'+steps.length;
-}
 
-function getDelay(){return [700,380,180,70,15][parseInt(document.getElementById('speed-slider').value)-1];}
-
-function shuffle(){
-  stop();arr=randArr(N);buildSteps();stepIdx=0;
-  renderStep(steps[0]);
-  document.getElementById('stat-cmp').textContent='0';
-  document.getElementById('stat-swp').textContent='0';
-  document.getElementById('stat-step').textContent='0/'+steps.length;
-  document.getElementById('status').textContent='press play or step to begin';
-  document.getElementById('btn-play').textContent='▶ play';
-}
-
-function setAlgo(a){
-  algo=a;
-  ['bubble','merge','quick','selection'].forEach(x=>document.getElementById('btn-'+x).classList.toggle('active',x===a));
-  document.getElementById('code-block').innerHTML=rawCodes[a];
-  document.getElementById('code-filename').textContent=filenames[a];
-  document.getElementById('complexity-area').innerHTML=complexity[a];
-  shuffle();
-}
-
-function stepOnce(){
-  if(stepIdx<steps.length){renderStep(steps[stepIdx]);stepIdx++;}
-  if(stepIdx>=steps.length){stop();document.getElementById('btn-play').textContent='✓ done';}
-}
-
-function playPause(){
-  if(playing){stop();return;}
-  if(stepIdx>=steps.length)resetVis();
-  playing=true;
-  document.getElementById('btn-play').textContent='⏸ pause';
-  document.getElementById('btn-step').disabled=true;
-  function tick(){
-    if(!playing||stepIdx>=steps.length){stop();if(stepIdx>=steps.length)document.getElementById('btn-play').textContent='✓ done';return;}
-    renderStep(steps[stepIdx]);stepIdx++;timer=setTimeout(tick,getDelay());
+  function animateSkills() {
+    document.querySelectorAll('.skill-fill').forEach(fill => {
+      fill.style.width = fill.dataset.width + '%';
+    });
   }
-  tick();
-}
 
-function stop(){
-  playing=false;clearTimeout(timer);
-  document.getElementById('btn-play').textContent='▶ play';
-  document.getElementById('btn-step').disabled=false;
-}
-
-function resetVis(){
-  stop();stepIdx=0;
-  if(steps.length)renderStep(steps[0]);
-  document.getElementById('stat-cmp').textContent='0';
-  document.getElementById('stat-swp').textContent='0';
-  document.getElementById('stat-step').textContent='0/'+steps.length;
-  document.getElementById('btn-play').textContent='▶ play';
-  document.getElementById('status').textContent='press play or step to begin';
-}
-
-setAlgo('bubble');
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
 </script>
 </body>
 </html>
