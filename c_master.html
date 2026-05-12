@@ -717,7 +717,12 @@
     currentTopic = filename;
 
     try {
-      const res = await fetch(filename);
+      // Get the current page's directory and construct the full URL to the file
+      const currentPageURL = new URL(window.location.href);
+      const baseURL = currentPageURL.protocol + '//' + currentPageURL.host + currentPageURL.pathname.substring(0, currentPageURL.pathname.lastIndexOf('/') + 1);
+      const fileURL = baseURL + filename;
+      
+      const res = await fetch(fileURL);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const html = await res.text();
       zone.innerHTML = html;
