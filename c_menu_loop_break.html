@@ -1,0 +1,359 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}.brk{color:#ef4444;font-weight:600}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}
+.cl.hi-brk{background:rgba(239,68,68,.2)}
+.cl.hi-run{background:rgba(16,185,129,.18)}
+.cl.hi-case{background:rgba(245,158,11,.18)}
+
+/* simulator */
+.sim{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.sim-hd{padding:10px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.sim-screen{background:#0d0f14;padding:14px 16px;font-family:var(--font-mono);font-size:.72rem;line-height:1.9;min-height:160px;color:#e2e8f0}
+.sim-prompt{color:#6ee7b7}
+.sim-input{color:#fbbf24}
+.sim-output{color:#a5b4fc}
+.sim-error{color:#f87171}
+.sim-bye{color:#34d399;font-weight:600}
+.sim-btns{padding:10px 14px;border-top:0.5px solid var(--color-border-tertiary);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.choice-btn{font-family:var(--font-mono);font-size:.7rem;padding:7px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.choice-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.choice-btn.c1{border-color:#6366f1;color:#6366f1}.choice-btn.c1:hover{background:rgba(99,102,241,.1)}
+.choice-btn.c2{border-color:#10b981;color:#10b981}.choice-btn.c2:hover{background:rgba(16,185,129,.1)}
+.choice-btn.c3{border-color:#f59e0b;color:#f59e0b}.choice-btn.c3:hover{background:rgba(245,158,11,.1)}
+.choice-btn.c4{border-color:#ef4444;color:#ef4444}.choice-btn.c4:hover{background:rgba(239,68,68,.1)}
+.choice-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* stepper */
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);color:var(--color-text-secondary);border-left:3px solid var(--color-border-secondary)}
+.smsg.m-loop{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.smsg.m-run{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.m-brk{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.m-case{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.vrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 12px;min-width:64px}
+.vlbl{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:1.05rem;font-weight:500;color:var(--color-text-primary)}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.5rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.tabs{display:flex;gap:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem}
+.tab{flex:1;padding:8px 4px;font-family:var(--font-mono);font-size:.68rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+<div class="tabs">
+  <button class="tab active" onclick="showTab('play',this)">▶ Live demo</button>
+  <button class="tab" onclick="showTab('step',this)">Step-by-step</button>
+  <button class="tab" onclick="showTab('switch',this)">switch version</button>
+</div>
+
+<!-- LIVE DEMO -->
+<div class="pane on" id="pane-play">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> menu_loop.c</div>
+      <pre><span class="cl" id="p0"><span class="kw">int</span> choice;</span>
+<span class="cl" id="p1"><span class="kw">for</span> (;;) {             <span class="cm">// infinite loop</span></span>
+<span class="cl" id="p2">  <span class="fn">printf</span>(<span class="str">"\\n=== MENU ===\\n"</span>);</span>
+<span class="cl" id="p3">  <span class="fn">printf</span>(<span class="str">"1. Greet\\n"</span>);</span>
+<span class="cl" id="p4">  <span class="fn">printf</span>(<span class="str">"2. Count\\n"</span>);</span>
+<span class="cl" id="p5">  <span class="fn">printf</span>(<span class="str">"3. Joke\\n"</span>);</span>
+<span class="cl" id="p6">  <span class="fn">printf</span>(<span class="str">"4. Quit\\n"</span>);</span>
+<span class="cl" id="p7">  <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;choice);</span>
+<span class="cl" id="p8">  <span class="kw">if</span> (choice == <span class="num">4</span>) <span class="brk">break</span>;</span>
+<span class="cl" id="p9">  <span class="kw">if</span> (choice == <span class="num">1</span>)</span>
+<span class="cl" id="p10">    <span class="fn">printf</span>(<span class="str">"Hello, World!\\n"</span>);</span>
+<span class="cl" id="p11">  <span class="kw">else if</span> (choice == <span class="num">2</span>)</span>
+<span class="cl" id="p12">    <span class="fn">printf</span>(<span class="str">"1 2 3 4 5\\n"</span>);</span>
+<span class="cl" id="p13">  <span class="kw">else if</span> (choice == <span class="num">3</span>)</span>
+<span class="cl" id="p14">    <span class="fn">printf</span>(<span class="str">"Why do C programmers..\\n"</span>);</span>
+<span class="cl" id="p15">  <span class="kw">else</span></span>
+<span class="cl" id="p16">    <span class="fn">printf</span>(<span class="str">"Invalid choice!\\n"</span>);</span>
+<span class="cl" id="p17">}                      <span class="cm">// loop back</span></span>
+<span class="cl" id="p18"><span class="fn">printf</span>(<span class="str">"Goodbye!\\n"</span>);</span></pre>
+    </div>
+
+    <div>
+      <div class="sim">
+        <div class="sim-hd">
+          <span>terminal output</span>
+          <button class="btn" onclick="clearSim()">⌫ Clear</button>
+        </div>
+        <div class="sim-screen" id="sim-out">
+          <span class="sim-prompt">$ ./menu_loop</span><br>
+          <span class="sim-output">Press a button below to interact ↓</span>
+        </div>
+        <div class="sim-btns">
+          <span style="font-family:var(--font-mono);font-size:.62rem;color:var(--color-text-secondary)">Enter choice:</span>
+          <button class="choice-btn c1" id="btn1" onclick="choose(1)">1 Greet</button>
+          <button class="choice-btn c2" id="btn2" onclick="choose(2)">2 Count</button>
+          <button class="choice-btn c3" id="btn3" onclick="choose(3)">3 Joke</button>
+          <button class="choice-btn c4" id="btn4" onclick="choose(4)">4 Quit</button>
+          <button class="choice-btn" id="btn5" onclick="choose(5)">5 Bad input</button>
+        </div>
+      </div>
+      <div class="vrow">
+        <div class="vbox"><div class="vlbl">choice</div><div class="vval" id="live-ch">—</div></div>
+        <div class="vbox"><div class="vlbl">iterations</div><div class="vval" id="live-it">0</div></div>
+        <div class="vbox"><div class="vlbl">status</div><div class="vval" id="live-st">idle</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="note">This is a fully live simulation — click the buttons to send input just like a real user would type it. Notice how the loop keeps running after every choice until you press <strong>4 Quit</strong>, which triggers <code>break</code>.</div>
+  <div class="badges">
+    <span class="badge b-v">for(;;) loops forever</span>
+    <span class="badge b-r">break exits on choice 4</span>
+    <span class="badge b-g">invalid input handled gracefully</span>
+    <span class="badge b-a">code after loop runs on exit</span>
+  </div>
+</div>
+
+<!-- STEP BY STEP -->
+<div class="pane" id="pane-step">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> menu_loop.c — step trace (choices: 1 → 5 → 4)</div>
+    <pre><span class="cl" id="s0"><span class="kw">for</span> (;;) {</span>
+<span class="cl" id="s1">  <span class="fn">printf</span>(<span class="str">"=== MENU ===\\n..."</span>);</span>
+<span class="cl" id="s2">  <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;choice);</span>
+<span class="cl" id="s3">  <span class="kw">if</span> (choice == <span class="num">4</span>) <span class="brk">break</span>; <span class="cm">// exit?</span></span>
+<span class="cl" id="s4">  <span class="kw">if</span>      (choice==<span class="num">1</span>) <span class="fn">printf</span>(<span class="str">"Hello, World!\\n"</span>);</span>
+<span class="cl" id="s5">  <span class="kw">else if</span> (choice==<span class="num">2</span>) <span class="fn">printf</span>(<span class="str">"1 2 3 4 5\\n"</span>);</span>
+<span class="cl" id="s6">  <span class="kw">else if</span> (choice==<span class="num">3</span>) <span class="fn">printf</span>(<span class="str">"Why do...\\n"</span>);</span>
+<span class="cl" id="s7">  <span class="kw">else</span>               <span class="fn">printf</span>(<span class="str">"Invalid!\\n"</span>);</span>
+<span class="cl" id="s8">}                  <span class="cm">// back to top</span></span>
+<span class="cl" id="s9"><span class="fn">printf</span>(<span class="str">"Goodbye!\\n"</span>);</span></pre>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step-by-step execution (input sequence: 1, 5, 4)</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="doStep()">Next step ›</button>
+      <button class="btn" onclick="doReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="st-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="st-bar"></div></div>
+    <div class="smsg" id="st-msg">Press Next step to begin. Trace: user enters 1, then 5, then 4 (quit).</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">choice</div><div class="vval" id="st-ch">—</div></div>
+      <div class="vbox"><div class="vlbl">== 4?</div><div class="vval" id="st-eq">—</div></div>
+      <div class="vbox"><div class="vlbl">iteration</div><div class="vval" id="st-it">0</div></div>
+      <div class="vbox"><div class="vlbl">action</div><div class="vval" id="st-ac" style="font-size:.75rem">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:40px;color:var(--color-text-primary);line-height:1.8" id="st-out"></div>
+  </div>
+  <div class="note">Notice the loop body executes fully for choices 1 and 5. On choice 4, the <code>if (choice == 4) break</code> line fires and jumps directly to <code>printf("Goodbye!")</code> — no other lines in the loop body run.</div>
+</div>
+
+<!-- SWITCH VERSION -->
+<div class="pane" id="pane-switch">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> menu_switch.c — cleaner with switch</div>
+    <pre><span class="kw">int</span> choice;
+<span class="kw">for</span> (;;) {
+  <span class="fn">printf</span>(<span class="str">"\\n=== MENU ===\\n"</span>);
+  <span class="fn">printf</span>(<span class="str">"1. Greet  2. Count\\n"</span>);
+  <span class="fn">printf</span>(<span class="str">"3. Joke   4. Quit\\n"</span>);
+  <span class="fn">scanf</span>(<span class="str">"%d"</span>, &amp;choice);
+
+  <span class="kw">switch</span> (choice) {
+    <span class="kw">case</span> <span class="num">1</span>:
+      <span class="fn">printf</span>(<span class="str">"Hello, World!\\n"</span>);
+      <span class="kw">break</span>;                <span class="cm">// break exits switch</span>
+    <span class="kw">case</span> <span class="num">2</span>:
+      <span class="fn">printf</span>(<span class="str">"1 2 3 4 5\\n"</span>);
+      <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="num">3</span>:
+      <span class="fn">printf</span>(<span class="str">"Why do C programmers\\n"</span>);
+      <span class="fn">printf</span>(<span class="str">"mix up Halloween\\n"</span>);
+      <span class="fn">printf</span>(<span class="str">"and Christmas?\\n"</span>);
+      <span class="fn">printf</span>(<span class="str">"Oct 31 == Dec 25!\\n"</span>);
+      <span class="kw">break</span>;
+    <span class="kw">case</span> <span class="num">4</span>:
+      <span class="fn">printf</span>(<span class="str">"Goodbye!\\n"</span>);
+      <span class="kw">goto</span> done;            <span class="cm">// or use a flag</span>
+    <span class="kw">default</span>:
+      <span class="fn">printf</span>(<span class="str">"Invalid choice!\\n"</span>);
+  }
+}
+done:;
+
+<span class="cm">/* Alternative: use a flag variable */</span>
+<span class="kw">int</span> running = <span class="num">1</span>;
+<span class="kw">while</span> (running) {
+  <span class="cm">/* ... same menu ... */</span>
+  <span class="kw">if</span> (choice == <span class="num">4</span>) running = <span class="num">0</span>; <span class="cm">// no break needed</span>
+}</pre>
+  </div>
+  <div class="note">Three patterns for exiting a menu loop:<br><br>
+  <strong>1. if + break</strong> — simplest, fine for small menus.<br>
+  <strong>2. switch + goto done</strong> — <code>break</code> inside <code>switch</code> only exits the switch, not the loop, so <code>goto</code> or a flag is needed.<br>
+  <strong>3. Flag variable</strong> — <code>while (running)</code> with <code>running = 0</code> to exit. Avoids <code>goto</code> entirely and is very readable.</div>
+  <div class="badges">
+    <span class="badge b-v">if + break — simplest</span>
+    <span class="badge b-a">switch — needs goto or flag</span>
+    <span class="badge b-g">flag variable — most readable</span>
+  </div>
+</div>
+</div>
+
+<script>
+// Tab switching
+function showTab(id, el) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');
+  el.classList.add('active');
+}
+
+// --- LIVE DEMO ---
+let liveIter = 0, liveGone = false;
+const out = () => document.getElementById('sim-out');
+const addLine = (txt, cls) => {
+  const span = document.createElement('span');
+  span.className = cls || '';
+  span.textContent = txt;
+  out().appendChild(document.createElement('br'));
+  out().appendChild(span);
+  out().scrollTop = out().scrollHeight;
+};
+
+function showMenu() {
+  addLine('', '');
+  addLine('=== MENU ===', 'sim-output');
+  addLine('1. Greet   2. Count   3. Joke   4. Quit', 'sim-output');
+}
+
+function choose(n) {
+  if (liveGone) return;
+  liveIter++;
+  document.getElementById('live-ch').textContent = n;
+  document.getElementById('live-it').textContent = liveIter;
+  addLine('> ' + n, 'sim-input');
+  const responses = {
+    1: () => { addLine('Hello, World!', 'sim-output'); },
+    2: () => { addLine('1  2  3  4  5', 'sim-output'); },
+    3: () => {
+      addLine('Why do C programmers mix up Halloween and Christmas?', 'sim-output');
+      addLine("Because Oct 31 == Dec 25!  ( 31 base 8 = 25 base 10 )", 'sim-output');
+    },
+    4: () => {
+      addLine('[ break triggered — exiting loop ]', 'sim-error');
+      addLine('Goodbye!', 'sim-bye');
+      liveGone = true;
+      ['btn1','btn2','btn3','btn4','btn5'].forEach(id => document.getElementById(id).disabled = true);
+      document.getElementById('live-st').textContent = 'exited';
+    }
+  };
+  if (n === 5) {
+    addLine('Invalid choice! Try 1–4.', 'sim-error');
+    document.getElementById('live-st').textContent = 'invalid';
+  } else {
+    responses[n]();
+    if (n !== 4) {
+      document.getElementById('live-st').textContent = 'looping';
+      showMenu();
+    }
+  }
+  if (!liveGone && n !== 4) {
+    const bar = document.createElement('span');
+    bar.className = 'sim-prompt';
+    bar.textContent = 'Enter choice: ';
+    out().appendChild(document.createElement('br'));
+    out().appendChild(bar);
+  }
+}
+
+function clearSim() {
+  liveIter = 0; liveGone = false;
+  ['btn1','btn2','btn3','btn4','btn5'].forEach(id => document.getElementById(id).disabled = false);
+  document.getElementById('live-ch').textContent = '—';
+  document.getElementById('live-it').textContent = '0';
+  document.getElementById('live-st').textContent = 'idle';
+  out().innerHTML = '<span class="sim-prompt">$ ./menu_loop</span><br><span class="sim-output">Press a button below to interact ↓</span>';
+  showMenu();
+  const bar = document.createElement('span');
+  bar.className = 'sim-prompt';
+  bar.textContent = 'Enter choice: ';
+  out().appendChild(document.createElement('br'));
+  out().appendChild(bar);
+}
+
+// init live
+window.addEventListener('load', () => { showMenu(); const bar = document.createElement('span'); bar.className='sim-prompt'; bar.textContent='Enter choice: '; out().appendChild(document.createElement('br')); out().appendChild(bar); });
+
+// --- STEP BY STEP ---
+const STEPS = [
+  {l:'s0',cls:'hi',mc:'m-loop',msg:'for(;;) — loop body begins, iteration 1',ch:'—',eq:'—',it:1,ac:'loop start'},
+  {l:'s1',cls:'hi-run',mc:'m-run',msg:'Display menu to user',ch:'—',eq:'—',it:1,ac:'show menu',out:'=== MENU ===\n1.Greet 2.Count 3.Joke 4.Quit'},
+  {l:'s2',cls:'hi-run',mc:'m-run',msg:'scanf → user enters 1',ch:1,eq:'—',it:1,ac:'read input'},
+  {l:'s3',cls:'hi',mc:'m-loop',msg:'choice == 4? → 1 == 4 → false, no break',ch:1,eq:'✗ false',it:1,ac:'check exit'},
+  {l:'s4',cls:'hi-case',mc:'m-case',msg:'choice == 1 → true! Execute: printf("Hello, World!")',ch:1,eq:'✗ false',it:1,ac:'run case 1',out:'Hello, World!'},
+  {l:'s8',cls:'hi',mc:'m-loop',msg:'Bottom of loop body — jump back to top (iteration 2)',ch:1,eq:'—',it:2,ac:'loop back'},
+  {l:'s1',cls:'hi-run',mc:'m-run',msg:'Display menu again (iteration 2)',ch:'—',eq:'—',it:2,ac:'show menu'},
+  {l:'s2',cls:'hi-run',mc:'m-run',msg:'scanf → user enters 5 (invalid)',ch:5,eq:'—',it:2,ac:'read input'},
+  {l:'s3',cls:'hi',mc:'m-loop',msg:'choice == 4? → 5 == 4 → false, no break',ch:5,eq:'✗ false',it:2,ac:'check exit'},
+  {l:'s7',cls:'hi-case',mc:'m-case',msg:'None of 1/2/3/4 → else → printf("Invalid!")',ch:5,eq:'✗ false',it:2,ac:'else branch',out:'Invalid choice!'},
+  {l:'s8',cls:'hi',mc:'m-loop',msg:'Bottom of loop — jump back to top (iteration 3)',ch:5,eq:'—',it:3,ac:'loop back'},
+  {l:'s1',cls:'hi-run',mc:'m-run',msg:'Display menu again (iteration 3)',ch:'—',eq:'—',it:3,ac:'show menu'},
+  {l:'s2',cls:'hi-run',mc:'m-run',msg:'scanf → user enters 4 (Quit)',ch:4,eq:'—',it:3,ac:'read input'},
+  {l:'s3',cls:'hi-brk',mc:'m-brk',msg:'choice == 4? → 4 == 4 → TRUE! break — exit loop now!',ch:4,eq:'✓ TRUE!',it:3,ac:'BREAK!'},
+  {l:'s9',cls:'hi-run',mc:'m-run',msg:'Code after loop: printf("Goodbye!") — runs cleanly',ch:4,eq:'✓ TRUE!',it:3,ac:'after loop',out:'Goodbye!'},
+];
+let stIdx = 0, stPrev = null, stOut = [];
+
+function doStep() {
+  if (stIdx >= STEPS.length) return;
+  const s = STEPS[stIdx];
+  if (stPrev) { const e=document.getElementById(stPrev); if(e) e.className='cl'; }
+  const e=document.getElementById(s.l); if(e) e.className='cl '+s.cls;
+  stPrev = s.l;
+  const msg = document.getElementById('st-msg');
+  msg.className = 'smsg '+s.mc;
+  msg.textContent = s.msg;
+  document.getElementById('st-ch').textContent = s.ch;
+  document.getElementById('st-eq').textContent = s.eq;
+  document.getElementById('st-it').textContent = s.it;
+  document.getElementById('st-ac').textContent = s.ac;
+  if (s.out) { stOut.push(s.out); document.getElementById('st-out').textContent = stOut.join('\n'); }
+  stIdx++;
+  document.getElementById('st-cnt').textContent = 'step '+stIdx+' / '+STEPS.length;
+  document.getElementById('st-bar').style.width = (stIdx/STEPS.length*100)+'%';
+}
+
+function doReset() {
+  if (stPrev) { const e=document.getElementById(stPrev); if(e) e.className='cl'; }
+  stIdx=0; stPrev=null; stOut=[];
+  document.getElementById('st-msg').className='smsg';
+  document.getElementById('st-msg').textContent='Press Next step to begin. Trace: user enters 1, then 5, then 4 (quit).';
+  ['st-ch','st-eq','st-ac'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('st-it').textContent='0';
+  document.getElementById('st-cnt').textContent='step 0';
+  document.getElementById('st-bar').style.width='0%';
+  document.getElementById('st-out').textContent='';
+}
+</script>
