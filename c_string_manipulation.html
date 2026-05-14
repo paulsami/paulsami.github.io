@@ -1,0 +1,625 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:70px;padding:8px 4px;font-family:var(--font-mono);font-size:.63rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}.ch{color:#fbbf24}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+
+/* char cells */
+.mem-wrap{overflow-x:auto;margin-bottom:1rem}
+.mem-row{display:flex;gap:0;min-width:max-content}
+.mem-cell{display:flex;flex-direction:column;align-items:center;min-width:46px}
+.mem-box{width:42px;height:48px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.8rem;font-weight:700;color:var(--color-text-primary);transition:all .2s;border-right-width:0;gap:1px}
+.mem-cell:last-child .mem-box{border-right-width:1px}
+.mem-box .asc{font-size:.52rem;font-weight:400;color:var(--color-text-secondary)}
+.mem-box.act{background:#eef2ff;color:#3730a3;border-color:#6366f1}
+.mem-box.nul{background:#fef2f2;color:#ef4444;border-color:#fca5a5}
+.mem-box.done{background:rgba(16,185,129,.1);color:#065f46;border-color:#10b981}
+.mem-box.swap{background:rgba(245,158,11,.15);color:#92400e;border-color:#f59e0b}
+.mem-box.hi2{background:rgba(99,102,241,.15);color:#4338ca;border-color:#6366f1}
+.mem-box.grey{background:var(--color-background-primary);color:var(--color-text-secondary)}
+.mem-idx{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);margin-top:3px}
+
+/* stepper */
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);color:var(--color-text-secondary);border-left:3px solid var(--color-border-secondary);line-height:1.5}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:58px}
+.vlbl{font-family:var(--font-mono);font-size:.56rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:.95rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8;white-space:pre-wrap}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+
+/* lab */
+.lab{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.lab-input{width:100%;font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;margin-bottom:10px}
+.lab-input:focus{border-color:#6366f1}
+.op-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.op-btn{font-family:var(--font-mono);font-size:.65rem;padding:8px 4px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s;text-align:center}
+.op-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:#6366f1}
+.lab-out{font-family:var(--font-mono);font-size:.72rem;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);min-height:40px;color:var(--color-text-primary);line-height:1.9;white-space:pre-wrap}
+.lab-code{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.68rem;color:#a78bfa;line-height:1.7;margin-top:8px;white-space:pre-wrap}
+@media(max-width:520px){.two{grid-template-columns:1fr}.op-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<div class="root">
+<div class="tabs">
+  <button class="tab active" onclick="T('reverse',this)">reverse</button>
+  <button class="tab" onclick="T('palindrome',this)">palindrome</button>
+  <button class="tab" onclick="T('words',this)">word count</button>
+  <button class="tab" onclick="T('replace',this)">find & replace</button>
+  <button class="tab" onclick="T('lab',this)">string lab</button>
+</div>
+
+<!-- REVERSE -->
+<div class="pane on" id="pane-reverse">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> reverse.c</div>
+      <pre><span class="cl" id="rv0"><span class="kw">void</span> <span class="fn">reverse</span>(<span class="kw">char</span> s[]) {</span>
+<span class="cl" id="rv1">  <span class="kw">int</span> l=<span class="num">0</span>, r=<span class="fn">strlen</span>(s)-<span class="num">1</span>;</span>
+<span class="cl" id="rv2">  <span class="kw">while</span> (l &lt; r) {</span>
+<span class="cl" id="rv3">    <span class="kw">char</span> tmp = s[l];</span>
+<span class="cl" id="rv4">    s[l] = s[r];</span>
+<span class="cl" id="rv5">    s[r] = tmp;</span>
+<span class="cl" id="rv6">    l++; r--;</span>
+<span class="cl" id="rv7">  }</span>
+<span class="cl" id="rv8">}</span>
+<span class="cl" id="rv9"><span class="cm">// "MANGO" → "OGNAM"</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">two-pointer swap — watch l and r converge</div>
+      <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-secondary);margin-bottom:6px">
+        <span style="color:#6366f1">■</span> left pointer &nbsp;
+        <span style="color:#10b981">■</span> right pointer &nbsp;
+        <span style="color:#f59e0b">■</span> swapping &nbsp;
+        <span style="color:#10b981;opacity:.5">■</span> done
+      </div>
+      <div class="mem-wrap"><div class="mem-row" id="rv-mem"></div></div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="rvStep()">Next step ›</button>
+      <button class="btn" onclick="rvReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="rv-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="rv-bar"></div></div>
+    <div class="smsg" id="rv-msg">Press Next step to reverse "MANGO" using two pointers.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">l (left)</div><div class="vval" id="rv-l">0</div></div>
+      <div class="vbox"><div class="vlbl">r (right)</div><div class="vval" id="rv-r">4</div></div>
+      <div class="vbox"><div class="vlbl">s[l]</div><div class="vval" id="rv-sl">—</div></div>
+      <div class="vbox"><div class="vlbl">s[r]</div><div class="vval" id="rv-sr">—</div></div>
+      <div class="vbox"><div class="vlbl">l &lt; r?</div><div class="vval" id="rv-cond">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="rv-out"></div>
+  </div>
+  <div class="note">The two-pointer technique: start one pointer at the front (<code>l=0</code>) and one at the back (<code>r=len-1</code>). Swap characters at <code>l</code> and <code>r</code>, then move them toward each other. Stop when they meet in the middle. Only N/2 swaps needed — O(n) time, O(1) space.</div>
+  <div class="badges"><span class="badge b-v">two-pointer technique</span><span class="badge b-g">O(n) time, O(1) space</span><span class="badge b-a">N/2 swaps total</span></div>
+</div>
+
+<!-- PALINDROME -->
+<div class="pane" id="pane-palindrome">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> palindrome.c</div>
+      <pre><span class="cl" id="pl0"><span class="kw">int</span> <span class="fn">isPalindrome</span>(<span class="kw">char</span> s[]) {</span>
+<span class="cl" id="pl1">  <span class="kw">int</span> l=<span class="num">0</span>, r=<span class="fn">strlen</span>(s)-<span class="num">1</span>;</span>
+<span class="cl" id="pl2">  <span class="kw">while</span> (l &lt; r) {</span>
+<span class="cl" id="pl3">    <span class="kw">if</span> (s[l] != s[r])</span>
+<span class="cl" id="pl4">      <span class="kw">return</span> <span class="num">0</span>; <span class="cm">// not palindrome</span></span>
+<span class="cl" id="pl5">    l++; r--;</span>
+<span class="cl" id="pl6">  }</span>
+<span class="cl" id="pl7">  <span class="kw">return</span> <span class="num">1</span>;   <span class="cm">// is palindrome</span></span>
+<span class="cl" id="pl8">}</span>
+<span class="cl" id="pl9"><span class="cm">// "RADAR" → 1 (yes!)</span></span>
+<span class="cl" id="pl10"><span class="cm">// "HELLO" → 0 (no)</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">checking "RADAR" — compare from both ends</div>
+      <div style="font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-secondary);margin-bottom:6px">
+        <span style="color:#6366f1">■</span> left &nbsp;<span style="color:#10b981">■</span> right &nbsp;<span style="color:#10b981;opacity:.6">■</span> matched
+      </div>
+      <div class="mem-wrap"><div class="mem-row" id="pl-mem"></div></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+    <button class="btn pr" onclick="plLoad('RADAR')">Test "RADAR" ✓</button>
+    <button class="btn" onclick="plLoad('HELLO')">Test "HELLO" ✗</button>
+    <button class="btn" onclick="plLoad('LEVEL')">Test "LEVEL" ✓</button>
+    <button class="btn" onclick="plLoad('MADAM')">Test "MADAM" ✓</button>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="plStep()">Next step ›</button>
+      <button class="btn" onclick="plReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="pl-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="pl-bar"></div></div>
+    <div class="smsg" id="pl-msg">Choose a word above, then press Next step.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">l</div><div class="vval" id="pl-l">—</div></div>
+      <div class="vbox"><div class="vlbl">r</div><div class="vval" id="pl-r">—</div></div>
+      <div class="vbox"><div class="vlbl">s[l]</div><div class="vval" id="pl-sl">—</div></div>
+      <div class="vbox"><div class="vlbl">s[r]</div><div class="vval" id="pl-sr">—</div></div>
+      <div class="vbox"><div class="vlbl">match?</div><div class="vval" id="pl-m">—</div></div>
+    </div>
+    <div class="slbl">result</div>
+    <div class="out" id="pl-out"></div>
+  </div>
+  <div class="note">Same two-pointer idea as reverse, but instead of swapping, we <em>compare</em>. If any pair doesn't match, return 0 immediately — no need to check the rest. If all pairs match, it's a palindrome.</div>
+  <div class="badges"><span class="badge b-v">compare, don't swap</span><span class="badge b-g">early exit on mismatch</span><span class="badge b-a">O(n/2) comparisons</span></div>
+</div>
+
+<!-- WORD COUNT -->
+<div class="pane" id="pane-words">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> word_count.c</div>
+    <pre><span class="cl" id="wc0"><span class="kw">int</span> <span class="fn">wordCount</span>(<span class="kw">char</span> s[]) {</span>
+<span class="cl" id="wc1">  <span class="kw">int</span> count=<span class="num">0</span>, inWord=<span class="num">0</span>;</span>
+<span class="cl" id="wc2">  <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>; s[i]!=<span class="ch">'\0'</span>; i++) {</span>
+<span class="cl" id="wc3">    <span class="kw">if</span> (s[i]==' ' || s[i]=='\t') {</span>
+<span class="cl" id="wc4">      inWord = <span class="num">0</span>;  <span class="cm">// leaving word</span></span>
+<span class="cl" id="wc5">    } <span class="kw">else if</span> (!inWord) {</span>
+<span class="cl" id="wc6">      count++;     <span class="cm">// entering new word</span></span>
+<span class="cl" id="wc7">      inWord = <span class="num">1</span>;</span>
+<span class="cl" id="wc8">    }</span>
+<span class="cl" id="wc9">  }</span>
+<span class="cl" id="wc10">  <span class="kw">return</span> count;</span>
+<span class="cl" id="wc11">}</span>
+<span class="cl" id="wc12"><span class="cm">// "I love C" → 3 words</span></span></pre>
+  </div>
+  <div class="slbl">scanning "I love C" — tracking word boundaries</div>
+  <div class="mem-wrap"><div class="mem-row" id="wc-mem"></div></div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="wcStep()">Next step ›</button>
+      <button class="btn" onclick="wcReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="wc-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="wc-bar"></div></div>
+    <div class="smsg" id="wc-msg">Press Next step to count words in "I love C".</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">i</div><div class="vval" id="wc-i">—</div></div>
+      <div class="vbox"><div class="vlbl">s[i]</div><div class="vval" id="wc-c">—</div></div>
+      <div class="vbox"><div class="vlbl">inWord</div><div class="vval" id="wc-iw">0</div></div>
+      <div class="vbox"><div class="vlbl">count</div><div class="vval" id="wc-ct">0</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="wc-out"></div>
+  </div>
+  <div class="note">The <code>inWord</code> flag tracks whether we are inside a word or in whitespace. We only increment <code>count</code> at the <em>start</em> of each new word (transition from space → letter). This correctly handles multiple consecutive spaces.</div>
+  <div class="badges"><span class="badge b-v">flag-based state machine</span><span class="badge b-g">handles multiple spaces</span><span class="badge b-a">O(n) single pass</span></div>
+</div>
+
+<!-- FIND & REPLACE -->
+<div class="pane" id="pane-replace">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> find_replace.c</div>
+    <pre><span class="cl" id="fr0"><span class="cm">// Replace all occurrences of a char</span></span>
+<span class="cl" id="fr1"><span class="kw">void</span> <span class="fn">replaceChar</span>(<span class="kw">char</span> s[], <span class="kw">char</span> old, <span class="kw">char</span> new) {</span>
+<span class="cl" id="fr2">  <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>; s[i]!=<span class="ch">'\0'</span>; i++) {</span>
+<span class="cl" id="fr3">    <span class="kw">if</span> (s[i] == old)</span>
+<span class="cl" id="fr4">      s[i] = new;  <span class="cm">// replace in place</span></span>
+<span class="cl" id="fr5">  }</span>
+<span class="cl" id="fr6">}</span>
+<span class="cl" id="fr7"><span class="cm">// Replace 'l' with 'r' in "hello world"</span></span>
+<span class="cl" id="fr8"><span class="cm">// → "herro worrd"</span></span>
+<span class="cl" id="fr9"></span>
+<span class="cl" id="fr10"><span class="cm">// Find position of first char</span></span>
+<span class="cl" id="fr11"><span class="kw">int</span> <span class="fn">findChar</span>(<span class="kw">char</span> s[], <span class="kw">char</span> c) {</span>
+<span class="cl" id="fr12">  <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">0</span>; s[i]!=<span class="ch">'\0'</span>; i++)</span>
+<span class="cl" id="fr13">    <span class="kw">if</span> (s[i]==c) <span class="kw">return</span> i; <span class="cm">// found!</span></span>
+<span class="cl" id="fr14">  <span class="kw">return</span> -<span class="num">1</span>;  <span class="cm">// not found</span></span>
+<span class="cl" id="fr15">}</span></pre>
+  </div>
+  <div class="slbl">replacing 'l' → 'r' in "hello world"</div>
+  <div class="mem-wrap"><div class="mem-row" id="fr-mem"></div></div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="frStep()">Next step ›</button>
+      <button class="btn" onclick="frReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="fr-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="fr-bar"></div></div>
+    <div class="smsg" id="fr-msg">Press Next step to replace all 'l' with 'r' in "hello world".</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">i</div><div class="vval" id="fr-i">—</div></div>
+      <div class="vbox"><div class="vlbl">s[i]</div><div class="vval" id="fr-c">—</div></div>
+      <div class="vbox"><div class="vlbl">== 'l'?</div><div class="vval" id="fr-m">—</div></div>
+      <div class="vbox"><div class="vlbl">replacements</div><div class="vval" id="fr-n">0</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="fr-out"></div>
+  </div>
+  <div class="note">Single-pass scan: for every character, check if it matches the target. If yes, overwrite it in place. Since we're replacing one char with one char, no memory shifting is needed — the string stays the same length.</div>
+  <div class="badges"><span class="badge b-v">in-place replacement</span><span class="badge b-g">O(n) single pass</span><span class="badge b-a">no size change</span></div>
+</div>
+
+<!-- STRING LAB -->
+<div class="pane" id="pane-lab">
+  <div class="lab">
+    <div class="slbl">string manipulation lab — type any string and apply operations</div>
+    <input class="lab-input" id="lab-str" type="text" value="Hello World" maxlength="30" placeholder="Type a string..." oninput="labRefresh()">
+    <div class="op-grid">
+      <button class="op-btn" onclick="labRun('reverse')">reverse</button>
+      <button class="op-btn" onclick="labRun('upper')">to uppercase</button>
+      <button class="op-btn" onclick="labRun('lower')">to lowercase</button>
+      <button class="op-btn" onclick="labRun('palindrome')">palindrome?</button>
+      <button class="op-btn" onclick="labRun('words')">word count</button>
+      <button class="op-btn" onclick="labRun('chars')">char count</button>
+      <button class="op-btn" onclick="labRun('vowels')">count vowels</button>
+      <button class="op-btn" onclick="labRun('consonants')">consonants</button>
+      <button class="op-btn" onclick="labRun('digits')">digits</button>
+      <button class="op-btn" onclick="labRun('spaces')">spaces</button>
+      <button class="op-btn" onclick="labRun('title')">title case</button>
+      <button class="op-btn" onclick="labRun('removesp')">remove spaces</button>
+      <button class="op-btn" onclick="labRun('repeatchar')">most freq char</button>
+      <button class="op-btn" onclick="labRun('toggle')">toggle case</button>
+      <button class="op-btn" onclick="labRun('ascii')">char → ASCII</button>
+    </div>
+    <div class="slbl">result</div>
+    <div class="lab-out" id="lab-out">Click any operation above to see the result and equivalent C code.</div>
+    <div class="lab-code" id="lab-code"></div>
+    <div style="margin-top:10px">
+      <div class="slbl">memory view</div>
+      <div class="mem-wrap"><div class="mem-row" id="lab-mem"></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on'); el.classList.add('active');
+}
+
+function renderMem(id, chars, states){
+  // states: array of 'act','done','swap','hi2','nul','grey','' per cell
+  const w=document.getElementById(id); w.innerHTML='';
+  chars.forEach((c,i)=>{
+    const cell=document.createElement('div'); cell.className='mem-cell';
+    const box=document.createElement('div');
+    const st=states?states[i]:'';
+    const isNull=(c==='\0');
+    box.className='mem-box'+(isNull?' nul':st?' '+st:'');
+    const top=document.createElement('span'); top.textContent=isNull?'\\0':c;
+    const bot=document.createElement('span'); bot.className='asc';
+    bot.textContent=isNull?'(0)':(c===' '?'(32)':'('+c.charCodeAt(0)+')');
+    box.appendChild(top); box.appendChild(bot);
+    const idx=document.createElement('div'); idx.className='mem-idx'; idx.textContent='['+i+']';
+    cell.appendChild(box); cell.appendChild(idx); w.appendChild(cell);
+  });
+}
+
+function strToChars(s){ return [...s,'\0']; }
+
+// ─── REVERSE ───
+const rvWord='MANGO';
+let rvArr=[...'MANGO','\0'], rvL=0, rvR=4, rvIdx=0, rvPrev=null, rvDone=[];
+
+function rvStates(){
+  const st=Array(rvArr.length).fill('');
+  rvDone.forEach(i=>{ if(i<rvArr.length-1) st[i]='done'; });
+  if(rvIdx>0&&rvL<=rvR){ if(rvL<rvArr.length-1)st[rvL]='act'; if(rvR<rvArr.length-1)st[rvR]='hi2'; }
+  st[rvArr.length-1]='nul';
+  return st;
+}
+
+const rvStepData=[
+  {l:'rv2',cls:'hi',mc:'mv',msg:'while(l < r): l=0, r=4 → 0 < 4 → true, start swapping',l_:0,r_:4,sl:'M',sr:'O',cond:'✓ true'},
+  {l:'rv3',cls:'hi-a',mc:'ma',msg:"tmp = s[0] = 'M'. Save it before overwriting.",l_:0,r_:4,sl:'M',sr:'O',cond:'✓ true'},
+  {l:'rv4',cls:'hi-g',mc:'mg',msg:"s[0] = s[4] = 'O'. Left cell gets 'O'.",l_:0,r_:4,sl:'O',sr:'O',cond:'✓ true',write:{i:0,v:'O'}},
+  {l:'rv5',cls:'hi-g',mc:'mg',msg:"s[4] = tmp = 'M'. Right cell gets 'M'.",l_:0,r_:4,sl:'O',sr:'M',cond:'✓ true',write:{i:4,v:'M'},swapDone:[0,4]},
+  {l:'rv6',cls:'hi',mc:'mv',msg:'l++ → l=1, r-- → r=3. Move pointers inward.',l_:1,r_:3,sl:'A',sr:'G',cond:'—'},
+  {l:'rv2',cls:'hi',mc:'mv',msg:'while(l < r): l=1, r=3 → 1 < 3 → true',l_:1,r_:3,sl:'A',sr:'G',cond:'✓ true'},
+  {l:'rv4',cls:'hi-g',mc:'mg',msg:"Swap s[1]='A' and s[3]='G'",l_:1,r_:3,sl:'G',sr:'A',cond:'✓ true',write:{i:1,v:'G'},write2:{i:3,v:'A'},swapDone:[0,1,3,4]},
+  {l:'rv6',cls:'hi',mc:'mv',msg:'l++ → l=2, r-- → r=2. Move inward.',l_:2,r_:2,sl:'N',sr:'N',cond:'—'},
+  {l:'rv2',cls:'hi-r',mc:'mr',msg:'while(l < r): l=2, r=2 → 2 < 2 → FALSE. Stop! Middle char stays.',l_:2,r_:2,sl:'N',sr:'N',cond:'✗ false'},
+  {l:'rv9',cls:'hi-g',mc:'mg',msg:'Reverse complete! "MANGO" → "OGNAM"',l_:2,r_:2,sl:'N',sr:'N',cond:'done',out:'Result: "OGNAM"'},
+];
+
+function rvStep(){
+  if(rvIdx>=rvStepData.length)return;
+  if(rvPrev){const e=document.getElementById(rvPrev);if(e)e.className='cl';}
+  const s=rvStepData[rvIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  rvPrev=s.l;
+  if(s.write)rvArr[s.write.i]=s.write.v;
+  if(s.write2)rvArr[s.write2.i]=s.write2.v;
+  if(s.swapDone)rvDone=[...s.swapDone];
+  rvL=s.l_; rvR=s.r_;
+  const st=Array(rvArr.length).fill('');
+  rvDone.forEach(i=>{if(i<rvArr.length-1)st[i]='done';});
+  if(s.cond!=='done'&&s.cond!=='✗ false'){if(s.l_<rvArr.length-1)st[s.l_]='act';if(s.r_<rvArr.length-1&&s.r_!==s.l_)st[s.r_]='hi2';}
+  if(s.cond==='done')rvArr.slice(0,-1).forEach((_,i)=>{st[i]='done';});
+  st[rvArr.length-1]='nul';
+  renderMem('rv-mem',rvArr,st);
+  const msg=document.getElementById('rv-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('rv-l').textContent=s.l_;
+  document.getElementById('rv-r').textContent=s.r_;
+  document.getElementById('rv-sl').textContent="'"+s.sl+"'";
+  document.getElementById('rv-sr').textContent="'"+s.sr+"'";
+  document.getElementById('rv-cond').textContent=s.cond;
+  if(s.out)document.getElementById('rv-out').textContent=s.out;
+  rvIdx++;
+  document.getElementById('rv-cnt').textContent='step '+rvIdx+' / '+rvStepData.length;
+  document.getElementById('rv-bar').style.width=(rvIdx/rvStepData.length*100)+'%';
+}
+function rvReset(){
+  rvArr=[...'MANGO','\0'];rvL=0;rvR=4;rvIdx=0;rvDone=[];
+  if(rvPrev){const e=document.getElementById(rvPrev);if(e)e.className='cl';}rvPrev=null;
+  renderMem('rv-mem',rvArr,Array(6).fill(''));
+  document.getElementById('rv-msg').className='smsg';document.getElementById('rv-msg').textContent='Press Next step to reverse "MANGO" using two pointers.';
+  ['rv-l','rv-r','rv-sl','rv-sr','rv-cond'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('rv-out').textContent='';
+  document.getElementById('rv-cnt').textContent='step 0';document.getElementById('rv-bar').style.width='0%';
+}
+renderMem('rv-mem',[...'MANGO','\0'],Array(6).fill(''));
+
+// ─── PALINDROME ───
+let plWord='RADAR',plArr=[],plSteps=[],plIdx=0,plPrev=null;
+function buildPlSteps(word){
+  const a=[...word,'\0'];
+  const steps=[];
+  let l=0,r=word.length-1,matched=[];
+  steps.push({arr:[...a],l,r,sl:word[l],sr:word[r],m:'—',mc:'mv',msg:'Init: l=0, r='+(word.length-1)+'. Start comparing from both ends.',matched:[]});
+  while(l<r){
+    const match=word[l]===word[r];
+    steps.push({arr:[...a],l,r,sl:word[l],sr:word[r],m:match?'✓ YES':'✗ NO',mc:match?'mg':'mr',
+      msg:match?"s["+l+"]='"+word[l]+"' == s["+r+"]='"+word[r]+"' → match! move inward."
+               :"s["+l+"]='"+word[l]+"' != s["+r+"]='"+word[r]+"' → MISMATCH! Not a palindrome.",
+      matched:match?[...matched,l,r]:matched,notMatch:!match?[l,r]:null});
+    if(!match){steps.push({arr:[...a],l,r,done:true,result:0,matched,mc:'mr',msg:'"'+word+'" is NOT a palindrome. Returning 0.'});return steps;}
+    matched=[...matched,l,r];
+    l++;r--;
+  }
+  steps.push({arr:[...a],l,r,done:true,result:1,matched:matched.concat(l===r?[l]:[]),mc:'mg',msg:'"'+word+'" IS a palindrome! All pairs matched. Returning 1.'});
+  return steps;
+}
+function plLoad(word){
+  plWord=word;plArr=[...word,'\0'];plSteps=buildPlSteps(word);plIdx=0;
+  if(plPrev){const e=document.getElementById(plPrev);if(e)e.className='cl';}plPrev=null;
+  renderMem('pl-mem',plArr,Array(plArr.length).fill(''));
+  document.getElementById('pl-msg').className='smsg mv';document.getElementById('pl-msg').textContent='Loaded "'+word+'". Press Next step to check.';
+  ['pl-l','pl-r','pl-sl','pl-sr','pl-m'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('pl-out').textContent='';
+  document.getElementById('pl-cnt').textContent='step 0 / '+plSteps.length;document.getElementById('pl-bar').style.width='0%';
+}
+function plStep(){
+  if(plIdx>=plSteps.length)return;
+  const s=plSteps[plIdx];
+  const st=Array(plArr.length).fill('');
+  st[plArr.length-1]='nul';
+  if(s.done){
+    s.matched.forEach(i=>{if(i<plArr.length-1)st[i]=s.result?'done':'';});
+    if(s.result===0&&s.notMatch)s.notMatch.forEach(i=>{if(i<plArr.length-1)st[i]='swap';});
+  } else {
+    s.matched.forEach(i=>{if(i<plArr.length-1)st[i]='done';});
+    if(s.l!==undefined&&s.l<plArr.length-1)st[s.l]='act';
+    if(s.r!==undefined&&s.r<plArr.length-1&&s.r!==s.l)st[s.r]='hi2';
+  }
+  renderMem('pl-mem',plArr,st);
+  const msg=document.getElementById('pl-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  if(!s.done){
+    document.getElementById('pl-l').textContent=s.l;
+    document.getElementById('pl-r').textContent=s.r;
+    document.getElementById('pl-sl').textContent="'"+s.sl+"'";
+    document.getElementById('pl-sr').textContent="'"+s.sr+"'";
+    document.getElementById('pl-m').textContent=s.m;
+  } else {
+    document.getElementById('pl-out').textContent=s.result?'"'+plWord+'" ✓ IS a palindrome → return 1':'"'+plWord+'" ✗ NOT a palindrome → return 0';
+  }
+  plIdx++;
+  document.getElementById('pl-cnt').textContent='step '+plIdx+' / '+plSteps.length;
+  document.getElementById('pl-bar').style.width=(plIdx/plSteps.length*100)+'%';
+}
+function plReset(){plLoad(plWord);}
+plLoad('RADAR');
+
+// ─── WORD COUNT ───
+const wcStr='I love C';
+const wcChars=[...'I love C','\0'];
+let wcIdx=0,wcPrev=null;
+const wcSteps=(function(){
+  const s=[];
+  const str='I love C';
+  let inW=0,ct=0;
+  s.push({l:'wc1',cls:'hi',mc:'mv',msg:'Init: count=0, inWord=0',i:'—',c:'—',iw:0,ct:0,active:-1});
+  for(let i=0;i<=str.length;i++){
+    const ch=i<str.length?str[i]:'\0';
+    const isSpace=ch===' '||ch==='\t';
+    const isNull=ch==='\0';
+    if(isNull){s.push({l:'wc2',cls:'hi-r',mc:'mr',msg:"s["+i+"]='\\0' → loop ends",i,c:"'\\0'",iw:inW,ct,active:i});break;}
+    s.push({l:'wc2',cls:'hi',mc:'mv',msg:"i="+i+": s["+i+"]='"+(ch===' '?'space':ch)+"'",i,c:"'"+(ch===' '?' ':ch)+"'",iw:inW,ct,active:i});
+    if(isSpace){
+      inW=0;
+      s.push({l:'wc4',cls:'hi-a',mc:'ma',msg:"Space! inWord = 0 (leaving word)",i,c:"' '",iw:0,ct,active:i});
+    } else if(!inW){
+      ct++;inW=1;
+      s.push({l:'wc6',cls:'hi-g',mc:'mg',msg:"New word! count++ → count="+ct+", inWord=1",i,c:"'"+ch+"'",iw:1,ct,active:i});
+    } else {
+      s.push({l:'wc5',cls:'hi',mc:'mv',msg:"Letter '"+ch+"', already inWord. No count change.",i,c:"'"+ch+"'",iw:1,ct,active:i});
+    }
+  }
+  s.push({l:'wc10',cls:'hi-g',mc:'mg',msg:'return count = '+ct+' words found!',i:'—',c:'—',iw:inW,ct,active:-1,out:'Word count: '+ct});
+  return s;
+})();
+
+function wcStep(){
+  if(wcIdx>=wcSteps.length)return;
+  if(wcPrev){const e=document.getElementById(wcPrev);if(e)e.className='cl';}
+  const s=wcSteps[wcIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  wcPrev=s.l;
+  const st=Array(wcChars.length).fill('');
+  if(s.active>=0&&s.active<wcChars.length-1)st[s.active]='act';
+  st[wcChars.length-1]='nul';
+  renderMem('wc-mem',wcChars,st);
+  const msg=document.getElementById('wc-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('wc-i').textContent=s.i;
+  document.getElementById('wc-c').textContent=s.c;
+  document.getElementById('wc-iw').textContent=s.iw;
+  document.getElementById('wc-ct').textContent=s.ct;
+  if(s.out)document.getElementById('wc-out').textContent=s.out;
+  wcIdx++;
+  document.getElementById('wc-cnt').textContent='step '+wcIdx+' / '+wcSteps.length;
+  document.getElementById('wc-bar').style.width=(wcIdx/wcSteps.length*100)+'%';
+}
+function wcReset(){
+  wcIdx=0;if(wcPrev){const e=document.getElementById(wcPrev);if(e)e.className='cl';}wcPrev=null;
+  renderMem('wc-mem',wcChars,Array(wcChars.length).fill(''));
+  document.getElementById('wc-msg').className='smsg';document.getElementById('wc-msg').textContent='Press Next step to count words in "I love C".';
+  ['wc-i','wc-c'].forEach(id=>document.getElementById(id).textContent='—');
+  ['wc-iw','wc-ct'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('wc-out').textContent='';
+  document.getElementById('wc-cnt').textContent='step 0';document.getElementById('wc-bar').style.width='0%';
+}
+renderMem('wc-mem',wcChars,Array(wcChars.length).fill(''));
+
+// ─── FIND & REPLACE ───
+const frStr='hello world';
+let frArr=[...'hello world','\0'],frIdx=0,frPrev=null,frReps=0;
+const frSteps=(function(){
+  const str='hello world',target='l',rep='r';
+  const steps=[];let reps=0;
+  const arr=[...str];
+  steps.push({l:'fr2',cls:'hi',mc:'mv',msg:"Loop start: scanning for '"+target+"' in \""+str+"\"",i:'—',c:'—',m:'—',reps:0,arr:[...arr]});
+  for(let i=0;i<str.length;i++){
+    const ch=str[i];
+    const isTarget=ch===target;
+    steps.push({l:'fr3',cls:'hi',mc:'mv',msg:"i="+i+": s["+i+"]='"+ch+"' — is it '"+target+"'?",i,c:"'"+ch+"'",m:isTarget?'✓ YES':'✗ no',reps,arr:[...arr],active:i});
+    if(isTarget){
+      arr[i]=rep;reps++;
+      steps.push({l:'fr4',cls:'hi-g',mc:'mg',msg:"Match! s["+i+"] = '"+rep+"'. Replaced '"+target+"' → '"+rep+"'. Total: "+reps,i,c:"'"+rep+"'",m:'replaced!',reps,arr:[...arr],active:i,written:i});
+    }
+  }
+  steps.push({l:'fr7',cls:'hi-g',mc:'mg',msg:'Done! Replaced '+reps+' occurrence(s). Result: "'+arr.join('')+'"',i:'—',c:'—',m:'—',reps,arr:[...arr],active:-1,out:'Result: "'+arr.join('"')+'"\nReplaced '+reps+' occurrence(s) of \''+target+"' → '"+rep+"'"});
+  return steps;
+})();
+
+function frStep(){
+  if(frIdx>=frSteps.length)return;
+  if(frPrev){const e=document.getElementById(frPrev);if(e)e.className='cl';}
+  const s=frSteps[frIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  frPrev=s.l;
+  frArr=[...s.arr,'\0'];
+  const st=Array(frArr.length).fill('done');
+  if(s.active>=0)st[s.active]=s.written!==undefined?'swap':'act';
+  st[frArr.length-1]='nul';
+  renderMem('fr-mem',frArr,st);
+  const msg=document.getElementById('fr-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('fr-i').textContent=s.i;
+  document.getElementById('fr-c').textContent=s.c;
+  document.getElementById('fr-m').textContent=s.m;
+  document.getElementById('fr-n').textContent=s.reps;
+  if(s.out)document.getElementById('fr-out').textContent=s.out;
+  frIdx++;
+  document.getElementById('fr-cnt').textContent='step '+frIdx+' / '+frSteps.length;
+  document.getElementById('fr-bar').style.width=(frIdx/frSteps.length*100)+'%';
+}
+function frReset(){
+  frIdx=0;frArr=[...'hello world','\0'];
+  if(frPrev){const e=document.getElementById(frPrev);if(e)e.className='cl';}frPrev=null;
+  renderMem('fr-mem',frArr,Array(frArr.length).fill(''));
+  document.getElementById('fr-msg').className='smsg';document.getElementById('fr-msg').textContent='Press Next step to replace all \'l\' with \'r\' in "hello world".';
+  ['fr-i','fr-c','fr-m'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('fr-n').textContent='0';
+  document.getElementById('fr-out').textContent='';
+  document.getElementById('fr-cnt').textContent='step 0';document.getElementById('fr-bar').style.width='0%';
+}
+renderMem('fr-mem',[...'hello world','\0'],Array(12).fill(''));
+
+// ─── STRING LAB ───
+const codeMap={
+  reverse:`void reverse(char s[]) {\n  int l=0, r=strlen(s)-1;\n  while (l < r) {\n    char tmp=s[l]; s[l]=s[r]; s[r]=tmp;\n    l++; r--;\n  }\n}`,
+  upper:`for (int i=0; s[i]; i++)\n  if (s[i]>='a' && s[i]<='z')\n    s[i] -= 32;`,
+  lower:`for (int i=0; s[i]; i++)\n  if (s[i]>='A' && s[i]<='Z')\n    s[i] += 32;`,
+  palindrome:`int isPalindrome(char s[]) {\n  int l=0, r=strlen(s)-1;\n  while (l<r) if (s[l++]!=s[r--]) return 0;\n  return 1;\n}`,
+  words:`int wordCount(char s[]) {\n  int c=0, inW=0;\n  for (int i=0; s[i]; i++) {\n    if (s[i]==' ') inW=0;\n    else if (!inW) { c++; inW=1; }\n  } return c;\n}`,
+  chars:`int len = strlen(s); // does not count '\\0'`,
+  vowels:`int v=0;\nfor(int i=0;s[i];i++)\n  if(strchr("aeiouAEIOU",s[i])) v++;`,
+  consonants:`int c=0;\nfor(int i=0;s[i];i++)\n  if(isalpha(s[i])&&!strchr("aeiouAEIOU",s[i])) c++;`,
+  digits:`int d=0;\nfor(int i=0;s[i];i++)\n  if(s[i]>='0'&&s[i]<='9') d++;`,
+  spaces:`int sp=0;\nfor(int i=0;s[i];i++) if(s[i]==' ') sp++;`,
+  title:`int newWord=1;\nfor(int i=0;s[i];i++) {\n  if(s[i]==' '){newWord=1;}\n  else if(newWord){s[i]=toupper(s[i]);newWord=0;}\n  else s[i]=tolower(s[i]);\n}`,
+  removesp:`int j=0;\nfor(int i=0;s[i];i++)\n  if(s[i]!=' ') s[j++]=s[i];\ns[j]='\\0';`,
+  repeatchar:`int freq[128]={0};\nfor(int i=0;s[i];i++) freq[(int)s[i]]++;\n// find max in freq[]`,
+  toggle:`for(int i=0;s[i];i++)\n  s[i]=isupper(s[i])?tolower(s[i]):toupper(s[i]);`,
+  ascii:`for(int i=0;s[i];i++)\n  printf("'%c' = %d\\n", s[i], (int)s[i]);`,
+};
+
+function labRun(op){
+  const s=document.getElementById('lab-str').value||'';
+  const out=document.getElementById('lab-out');
+  const code=document.getElementById('lab-code');
+  code.textContent=codeMap[op]||'';
+  let res='';
+  switch(op){
+    case 'reverse': res='Reversed:\n"'+[...s].reverse().join('')+'"'; break;
+    case 'upper': res='Uppercase:\n"'+s.toUpperCase()+'"'; break;
+    case 'lower': res='Lowercase:\n"'+s.toLowerCase()+'"'; break;
+    case 'palindrome':{
+      const clean=s.replace(/\s/g,'').toUpperCase();
+      const rev=[...clean].reverse().join('');
+      res=clean===rev?'"'+s+'" ✓ IS a palindrome → isPalindrome() returns 1':'"'+s+'" ✗ is NOT a palindrome → isPalindrome() returns 0';
+      break;}
+    case 'words':{const w=s.trim().split(/\s+/).filter(x=>x).length;res='Word count: '+w; break;}
+    case 'chars': res='strlen("'+s+'") = '+s.length+'\n('+s.length+' chars, not counting \'\\0\')'; break;
+    case 'vowels':{const v=(s.match(/[aeiouAEIOU]/g)||[]).length;res='Vowels: '+v+'\n'+([...s].filter(c=>/[aeiouAEIOU]/.test(c)).join(' ')||'(none)'); break;}
+    case 'consonants':{const c=(s.match(/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/g)||[]).length;res='Consonants: '+c; break;}
+    case 'digits':{const d=(s.match(/\d/g)||[]).length;res='Digits: '+d+'\n'+((s.match(/\d/g)||[]).join(' ')||'(none)'); break;}
+    case 'spaces':{const sp=(s.match(/ /g)||[]).length;res='Spaces: '+sp; break;}
+    case 'title': res='Title case:\n"'+s.replace(/\w\S*/g,t=>t.charAt(0).toUpperCase()+t.slice(1).toLowerCase())+'"'; break;
+    case 'removesp': res='Spaces removed:\n"'+s.replace(/ /g,'')+'"'; break;
+    case 'repeatchar':{
+      const freq={};[...s].forEach(c=>{if(c!==' ')freq[c]=(freq[c]||0)+1;});
+      const max=Math.max(...Object.values(freq));
+      const chars=Object.entries(freq).filter(([,v])=>v===max).map(([k])=>"'"+k+"'");
+      res='Most frequent char: '+chars.join(', ')+' (appears '+max+'x)'; break;}
+    case 'toggle': res='Toggled case:\n"'+[...s].map(c=>c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()).join('')+'"'; break;
+    case 'ascii': res=[...s].slice(0,10).map(c=>"'"+c+"' = "+c.charCodeAt(0)).join('\n')+(s.length>10?'\n... (showing first 10)':''); break;
+  }
+  out.textContent=res;
+  labRefresh();
+}
+
+function labRefresh(){
+  const s=document.getElementById('lab-str').value||'';
+  renderMem('lab-mem',[...s,'\0'],Array(s.length+1).fill(''));
+}
+labRefresh();
+</script>

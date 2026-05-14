@@ -1,0 +1,523 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;font-family:var(--font-mono);font-size:.65rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+
+/* memory visualizer */
+.mem-wrap{overflow-x:auto;margin-bottom:1rem}
+.mem-row{display:flex;gap:0;min-width:max-content}
+.mem-cell{display:flex;flex-direction:column;align-items:center;min-width:52px}
+.mem-box{width:48px;height:48px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.8rem;font-weight:600;color:var(--color-text-primary);transition:all .2s;border-right-width:0}
+.mem-cell:last-child .mem-box{border-right-width:1px}
+.mem-box.active{background:#eef2ff;color:#3730a3;border-color:#6366f1;z-index:1}
+.mem-box.written{background:rgba(16,185,129,.12);color:#065f46;border-color:#10b981}
+.mem-box.empty{color:var(--color-text-secondary);font-weight:400}
+.mem-idx{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);margin-top:4px}
+.mem-addr{font-family:var(--font-mono);font-size:.55rem;color:var(--color-border-secondary);margin-top:2px}
+
+/* stepper */
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);color:var(--color-text-secondary);border-left:3px solid var(--color-border-secondary)}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 12px;min-width:64px}
+.vlbl{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:1.05rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.warn{border-left:2.5px solid #ef4444;background:rgba(239,68,68,.04);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+/* 2D grid */
+.grid2d{display:inline-grid;gap:0;border:1px solid var(--color-border-secondary);border-radius:4px;overflow:hidden;margin-bottom:1rem}
+.g2d-cell{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.75rem;font-weight:600;border-right:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-primary);transition:all .2s}
+.g2d-cell.gh{background:var(--color-background-primary);color:var(--color-text-secondary);font-size:.62rem;font-weight:400}
+.g2d-cell.active{background:#eef2ff;color:#3730a3}
+.g2d-cell.done{background:rgba(16,185,129,.1);color:#065f46}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+<div class="tabs">
+  <button class="tab active" onclick="T('decl',this)">declaration</button>
+  <button class="tab" onclick="T('access',this)">access & modify</button>
+  <button class="tab" onclick="T('loop',this)">loop through</button>
+  <button class="tab" onclick="T('2d',this)">2D arrays</button>
+  <button class="tab" onclick="T('pitfalls',this)">pitfalls</button>
+</div>
+
+<!-- DECLARATION -->
+<div class="pane on" id="pane-decl">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> array_declare.c</div>
+    <pre><span class="cl" id="d0"><span class="cm">// 1. Declare with fixed size (uninitialized)</span></span>
+<span class="cl" id="d1"><span class="kw">int</span> scores[<span class="num">5</span>];              <span class="cm">// holds 5 ints</span></span>
+<span class="cl" id="d2"></span>
+<span class="cl" id="d3"><span class="cm">// 2. Declare and initialize</span></span>
+<span class="cl" id="d4"><span class="kw">int</span> nums[<span class="num">5</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};</span>
+<span class="cl" id="d5"></span>
+<span class="cl" id="d6"><span class="cm">// 3. Let compiler count the size</span></span>
+<span class="cl" id="d7"><span class="kw">int</span> days[] = {<span class="num">31</span>,<span class="num">28</span>,<span class="num">31</span>,<span class="num">30</span>,<span class="num">31</span>,<span class="num">30</span>,<span class="num">31</span>,<span class="num">31</span>,<span class="num">30</span>,<span class="num">31</span>,<span class="num">30</span>,<span class="num">31</span>};</span>
+<span class="cl" id="d8"></span>
+<span class="cl" id="d9"><span class="cm">// 4. Partial init — rest filled with 0</span></span>
+<span class="cl" id="d10"><span class="kw">int</span> zero[<span class="num">5</span>] = {<span class="num">0</span>};          <span class="cm">// {0,0,0,0,0}</span></span>
+<span class="cl" id="d11"></span>
+<span class="cl" id="d12"><span class="cm">// 5. Get size at runtime</span></span>
+<span class="cl" id="d13"><span class="kw">int</span> n = <span class="kw">sizeof</span>(nums) / <span class="kw">sizeof</span>(nums[<span class="num">0</span>]); <span class="cm">// = 5</span></span></pre>
+  </div>
+  <div class="slbl">memory layout — int nums[5] = {10, 20, 30, 40, 50}</div>
+  <div class="mem-wrap">
+    <div class="mem-row" id="decl-mem"></div>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step through initialization</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="dclStep()">Next step ›</button>
+      <button class="btn" onclick="dclReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="dcl-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="dcl-bar"></div></div>
+    <div class="smsg" id="dcl-msg">Press Next step to see how the array is stored in memory.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">index</div><div class="vval" id="dcl-i">—</div></div>
+      <div class="vbox"><div class="vlbl">value</div><div class="vval" id="dcl-v">—</div></div>
+      <div class="vbox"><div class="vlbl">address</div><div class="vval" id="dcl-a" style="font-size:.75rem">—</div></div>
+      <div class="vbox"><div class="vlbl">sizeof</div><div class="vval" id="dcl-s">—</div></div>
+    </div>
+  </div>
+  <div class="note">Arrays in C are stored in <strong>contiguous memory</strong> — each element sits right next to the previous one. For <code>int</code>, each element takes 4 bytes, so <code>nums[5]</code> uses 20 bytes total. Index always starts at <strong>0</strong>.</div>
+  <div class="badges">
+    <span class="badge b-v">index starts at 0</span>
+    <span class="badge b-g">contiguous memory</span>
+    <span class="badge b-a">size fixed at compile time</span>
+    <span class="badge b-r">uninitialized = garbage values</span>
+  </div>
+</div>
+
+<!-- ACCESS & MODIFY -->
+<div class="pane" id="pane-access">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> access.c</div>
+      <pre><span class="cl" id="a0"><span class="kw">int</span> a[<span class="num">5</span>] = {<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>,<span class="num">50</span>};</span>
+<span class="cl" id="a1"></span>
+<span class="cl" id="a2"><span class="cm">// Read</span></span>
+<span class="cl" id="a3"><span class="kw">int</span> x = a[<span class="num">2</span>];   <span class="cm">// x = 30</span></span>
+<span class="cl" id="a4"><span class="kw">int</span> y = a[<span class="num">0</span>];   <span class="cm">// y = 10</span></span>
+<span class="cl" id="a5"></span>
+<span class="cl" id="a6"><span class="cm">// Write</span></span>
+<span class="cl" id="a7">a[<span class="num">1</span>] = <span class="num">99</span>;      <span class="cm">// change 20 → 99</span></span>
+<span class="cl" id="a8">a[<span class="num">4</span>] = a[<span class="num">0</span>] + <span class="num">5</span>; <span class="cm">// a[4] = 15</span></span>
+<span class="cl" id="a9"></span>
+<span class="cl" id="a10"><span class="cm">// First and last</span></span>
+<span class="cl" id="a11"><span class="kw">int</span> first = a[<span class="num">0</span>];</span>
+<span class="cl" id="a12"><span class="kw">int</span> n = <span class="num">5</span>;</span>
+<span class="cl" id="a13"><span class="kw">int</span> last  = a[n-<span class="num">1</span>]; <span class="cm">// a[4]</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">live array state</div>
+      <div class="mem-wrap"><div class="mem-row" id="acc-mem"></div></div>
+      <div class="stepper" style="margin-bottom:0">
+        <div class="sctl">
+          <button class="btn pr" onclick="accStep()">Next step ›</button>
+          <button class="btn" onclick="accReset()">↺ Reset</button>
+          <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="acc-cnt">step 0</span>
+        </div>
+        <div class="pbar"><div class="pfill" id="acc-bar"></div></div>
+        <div class="smsg" id="acc-msg">Press Next step to begin.</div>
+        <div class="vrow">
+          <div class="vbox"><div class="vlbl">reading</div><div class="vval" id="acc-r">—</div></div>
+          <div class="vbox"><div class="vlbl">value</div><div class="vval" id="acc-v">—</div></div>
+        </div>
+        <div class="slbl">output</div>
+        <div class="out" id="acc-out"></div>
+      </div>
+    </div>
+  </div>
+  <div class="note">Use <code>array[index]</code> to read or write any element in O(1) time — direct memory access. The last valid index is always <code>size - 1</code>.</div>
+  <div class="badges"><span class="badge b-v">read: int x = a[i]</span><span class="badge b-g">write: a[i] = value</span><span class="badge b-a">O(1) access time</span></div>
+</div>
+
+<!-- LOOP THROUGH -->
+<div class="pane" id="pane-loop">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> array_loop.c</div>
+    <pre><span class="cl" id="l0"><span class="kw">int</span> a[<span class="num">6</span>] = {<span class="num">4</span>, <span class="num">7</span>, <span class="num">2</span>, <span class="num">9</span>, <span class="num">1</span>, <span class="num">5</span>};</span>
+<span class="cl" id="l1"><span class="kw">int</span> n = <span class="kw">sizeof</span>(a) / <span class="kw">sizeof</span>(a[<span class="num">0</span>]); <span class="cm">// = 6</span></span>
+<span class="cl" id="l2"><span class="kw">int</span> sum = <span class="num">0</span>, max = a[<span class="num">0</span>];</span>
+<span class="cl" id="l3"></span>
+<span class="cl" id="l4"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; n; i++) {</span>
+<span class="cl" id="l5">    sum += a[i];           <span class="cm">// accumulate sum</span></span>
+<span class="cl" id="l6">    <span class="kw">if</span> (a[i] &gt; max) max = a[i]; <span class="cm">// track max</span></span>
+<span class="cl" id="l7">}</span>
+<span class="cl" id="l8"><span class="fn">printf</span>(<span class="str">"Sum=%d Max=%d Avg=%.1f\n"</span>,</span>
+<span class="cl" id="l9">        sum, max, (float)sum/n);</span></pre>
+  </div>
+  <div class="slbl">array visualization</div>
+  <div class="mem-wrap"><div class="mem-row" id="loop-mem"></div></div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="loopStep()">Next step ›</button>
+      <button class="btn" onclick="loopReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="lp-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="lp-bar"></div></div>
+    <div class="smsg" id="lp-msg">Press Next step to begin.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">i</div><div class="vval" id="lp-i">—</div></div>
+      <div class="vbox"><div class="vlbl">a[i]</div><div class="vval" id="lp-ai">—</div></div>
+      <div class="vbox"><div class="vlbl">sum</div><div class="vval" id="lp-sum">0</div></div>
+      <div class="vbox"><div class="vlbl">max</div><div class="vval" id="lp-max">4</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="lp-out"></div>
+  </div>
+  <div class="note">The standard pattern is <code>for (int i = 0; i &lt; n; i++)</code>. Always compute <code>n = sizeof(a)/sizeof(a[0])</code> to avoid hardcoding the size — if you later change the array, <code>n</code> updates automatically.</div>
+  <div class="badges"><span class="badge b-v">i goes 0 to n-1</span><span class="badge b-g">sizeof trick for size</span><span class="badge b-a">O(n) traversal</span></div>
+</div>
+
+<!-- 2D ARRAYS -->
+<div class="pane" id="pane-2d">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> array_2d.c</div>
+    <pre><span class="cl" id="t0"><span class="cm">// 3 rows × 4 cols</span></span>
+<span class="cl" id="t1"><span class="kw">int</span> m[<span class="num">3</span>][<span class="num">4</span>] = {</span>
+<span class="cl" id="t2">    {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>},   <span class="cm">// row 0</span></span>
+<span class="cl" id="t3">    {<span class="num">5</span>, <span class="num">6</span>, <span class="num">7</span>, <span class="num">8</span>},   <span class="cm">// row 1</span></span>
+<span class="cl" id="t4">    {<span class="num">9</span>,<span class="num">10</span>,<span class="num">11</span>,<span class="num">12</span>}    <span class="cm">// row 2</span></span>
+<span class="cl" id="t5">};</span>
+<span class="cl" id="t6"></span>
+<span class="cl" id="t7"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) {     <span class="cm">// rows</span></span>
+<span class="cl" id="t8">    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt; <span class="num">4</span>; j++) {  <span class="cm">// cols</span></span>
+<span class="cl" id="t9">        <span class="fn">printf</span>(<span class="str">"%3d"</span>, m[i][j]);</span>
+<span class="cl" id="t10">    }</span>
+<span class="cl" id="t11">    <span class="fn">printf</span>(<span class="str">"\n"</span>);</span>
+<span class="cl" id="t12">}</span></pre>
+  </div>
+  <div class="slbl">2D array grid — m[row][col]</div>
+  <div class="grid2d" id="grid2d" style="grid-template-columns:repeat(5,44px)"></div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="tdStep()">Next step ›</button>
+      <button class="btn" onclick="tdReset()">↺ Reset</button>
+      <button class="btn" onclick="tdAll()">Run all ▶▶</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="td-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="td-bar"></div></div>
+    <div class="smsg" id="td-msg">Press Next step to walk through each element.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">row (i)</div><div class="vval" id="td-i">—</div></div>
+      <div class="vbox"><div class="vlbl">col (j)</div><div class="vval" id="td-j">—</div></div>
+      <div class="vbox"><div class="vlbl">m[i][j]</div><div class="vval" id="td-v">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="td-out"></div>
+  </div>
+  <div class="note">A 2D array is really a 1D array of arrays. <code>m[i][j]</code> means row <code>i</code>, column <code>j</code>. In memory it's stored row-by-row (row-major order): <code>m[0][0], m[0][1], ..., m[0][3], m[1][0], ...</code></div>
+  <div class="badges"><span class="badge b-v">m[row][col]</span><span class="badge b-g">row-major memory order</span><span class="badge b-a">nested loops to traverse</span></div>
+</div>
+
+<!-- PITFALLS -->
+<div class="pane" id="pane-pitfalls">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> pitfalls.c — common C array mistakes</div>
+    <pre><span class="cl" id="pit0"><span class="kw">int</span> a[<span class="num">5</span>] = {<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>,<span class="num">50</span>};</span>
+<span class="cl" id="pit1"></span>
+<span class="cl" id="pit2"><span class="cm">// ❌ BUG 1: Off-by-one — reads garbage/crashes</span></span>
+<span class="cl" id="pit3"><span class="kw">int</span> x = a[<span class="num">5</span>]; <span class="cm">// valid indices: 0-4 only!</span></span>
+<span class="cl" id="pit4"></span>
+<span class="cl" id="pit5"><span class="cm">// ❌ BUG 2: Wrong loop bound</span></span>
+<span class="cl" id="pit6"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt;= <span class="num">5</span>; i++) <span class="cm">// should be i < 5</span></span>
+<span class="cl" id="pit7">    <span class="fn">printf</span>(<span class="str">"%d"</span>, a[i]); <span class="cm">// a[5] is out of bounds</span></span>
+<span class="cl" id="pit8"></span>
+<span class="cl" id="pit9"><span class="cm">// ❌ BUG 3: sizeof on pointer (in function)</span></span>
+<span class="cl" id="pit10"><span class="kw">void</span> <span class="fn">bad</span>(<span class="kw">int</span> arr[]) {</span>
+<span class="cl" id="pit11">    <span class="kw">int</span> n = <span class="kw">sizeof</span>(arr)/<span class="kw">sizeof</span>(arr[<span class="num">0</span>]); <span class="cm">// WRONG!</span></span>
+<span class="cl" id="pit12">}   <span class="cm">// arr decays to pointer → sizeof = 8</span></span>
+<span class="cl" id="pit13"></span>
+<span class="cl" id="pit14"><span class="cm">// ✅ FIX: pass size explicitly</span></span>
+<span class="cl" id="pit15"><span class="kw">void</span> <span class="fn">good</span>(<span class="kw">int</span> arr[], <span class="kw">int</span> n) { <span class="cm">/* use n */</span> }</span></pre>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step through each pitfall</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="pitStep()">Next pitfall ›</button>
+      <button class="btn" onclick="pitReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="pit-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="pit-bar" style="background:#ef4444"></div></div>
+    <div class="smsg" id="pit-msg">Press Next pitfall to learn about each common mistake.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">bug #</div><div class="vval" id="pit-n">—</div></div>
+      <div class="vbox"><div class="vlbl">what happens</div><div class="vval" id="pit-w" style="font-size:.7rem">—</div></div>
+      <div class="vbox"><div class="vlbl">fix</div><div class="vval" id="pit-f" style="font-size:.7rem">—</div></div>
+    </div>
+  </div>
+  <div class="warn">C does <strong>not</strong> check array bounds at runtime — accessing out-of-bounds memory causes undefined behavior: crashes, corrupted data, or silent wrong answers. Always double-check your indices!</div>
+  <div class="badges"><span class="badge b-r">no bounds checking</span><span class="badge b-r">off-by-one is common</span><span class="badge b-r">sizeof fails in functions</span><span class="badge b-g">pass size as parameter</span></div>
+</div>
+</div>
+
+<script>
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');
+  el.classList.add('active');
+}
+
+// ---- MEMORY RENDERER ----
+function renderMem(containerId, vals, activeIdx, writtenIdx) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  vals.forEach((v, i) => {
+    const cell = document.createElement('div'); cell.className='mem-cell';
+    const box = document.createElement('div');
+    box.className = 'mem-box' + (v==='?' ? ' empty':'') + (i===activeIdx ? ' active':i<(writtenIdx??-1)||writtenIdx===99 ? ' written':'');
+    box.textContent = v;
+    const idx = document.createElement('div'); idx.className='mem-idx'; idx.textContent='['+i+']';
+    const addr = document.createElement('div'); addr.className='mem-addr'; addr.textContent='0x'+(100+i*4).toString(16).toUpperCase();
+    cell.appendChild(box); cell.appendChild(idx); cell.appendChild(addr);
+    wrap.appendChild(cell);
+  });
+}
+
+// ---- DECLARATION STEPPER ----
+const dclVals = ['?','?','?','?','?'];
+let dclIdx=0, dclPrevL=null;
+const dclData = [{v:10,l:'d4'},{v:20,l:'d4'},{v:30,l:'d4'},{v:40,l:'d4'},{v:50,l:'d4'},
+  {v:'size',l:'d13',msg:'sizeof(nums)/sizeof(nums[0]) = 20/4 = 5'}];
+function dclStep(){
+  if(dclIdx>=6)return;
+  if(dclPrevL){const e=document.getElementById(dclPrevL);if(e)e.className='cl';}
+  const s=dclData[dclIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl hi-g';
+  dclPrevL=s.l;
+  if(dclIdx<5){
+    dclVals[dclIdx]=s.v;
+    renderMem('decl-mem',dclVals,dclIdx,dclIdx);
+    document.getElementById('dcl-msg').className='smsg mg';
+    document.getElementById('dcl-msg').textContent='nums['+dclIdx+'] = '+s.v+' stored at address 0x'+(100+dclIdx*4).toString(16).toUpperCase();
+    document.getElementById('dcl-i').textContent=dclIdx;
+    document.getElementById('dcl-v').textContent=s.v;
+    document.getElementById('dcl-a').textContent='0x'+(100+dclIdx*4).toString(16).toUpperCase();
+    document.getElementById('dcl-s').textContent='—';
+  } else {
+    renderMem('decl-mem',dclVals,-1,99);
+    document.getElementById('dcl-msg').className='smsg mv';
+    document.getElementById('dcl-msg').textContent='sizeof(nums)=20 bytes, sizeof(nums[0])=4 bytes → n = 20/4 = 5';
+    document.getElementById('dcl-i').textContent='all';
+    document.getElementById('dcl-v').textContent='done';
+    document.getElementById('dcl-a').textContent='0x64-77';
+    document.getElementById('dcl-s').textContent='5';
+  }
+  dclIdx++;
+  document.getElementById('dcl-cnt').textContent='step '+dclIdx+' / 6';
+  document.getElementById('dcl-bar').style.width=(dclIdx/6*100)+'%';
+}
+function dclReset(){
+  dclIdx=0;dclVals.fill('?');if(dclPrevL){const e=document.getElementById(dclPrevL);if(e)e.className='cl';}dclPrevL=null;
+  renderMem('decl-mem',dclVals,-1,-1);
+  document.getElementById('dcl-msg').className='smsg';document.getElementById('dcl-msg').textContent='Press Next step to see how the array is stored in memory.';
+  ['dcl-i','dcl-v','dcl-a','dcl-s'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('dcl-cnt').textContent='step 0';document.getElementById('dcl-bar').style.width='0%';
+}
+renderMem('decl-mem',['?','?','?','?','?'],-1,-1);
+
+// ---- ACCESS STEPPER ----
+let accArr=[10,20,30,40,50], accIdx=0, accPrevL=null, accOut=[];
+const accSteps=[
+  {l:'a3',cls:'hi',mc:'mv',msg:'Read a[2] → value is 30. x = 30',r:'a[2]',v:30,active:2,out:'x = 30'},
+  {l:'a4',cls:'hi',mc:'mv',msg:'Read a[0] → value is 10. y = 10',r:'a[0]',v:10,active:0,out:'y = 10'},
+  {l:'a7',cls:'hi-g',mc:'mg',msg:'Write: a[1] = 99 (overwrite 20)',r:'a[1]',v:99,active:1,write:{i:1,v:99}},
+  {l:'a8',cls:'hi-g',mc:'mg',msg:'Write: a[4] = a[0]+5 = 10+5 = 15',r:'a[4]',v:15,active:4,write:{i:4,v:15}},
+  {l:'a11',cls:'hi',mc:'mv',msg:'Read a[0] → first = 10',r:'a[0]',v:10,active:0,out:'first = 10'},
+  {l:'a13',cls:'hi',mc:'mv',msg:'Read a[n-1] = a[4] → last = 15',r:'a[4]',v:15,active:4,out:'last = 15'},
+];
+function accStep(){
+  if(accIdx>=accSteps.length)return;
+  if(accPrevL){const e=document.getElementById(accPrevL);if(e)e.className='cl';}
+  const s=accSteps[accIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  accPrevL=s.l;
+  if(s.write)accArr[s.write.i]=s.write.v;
+  renderMem('acc-mem',accArr,s.active,99);
+  const msg=document.getElementById('acc-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('acc-r').textContent=s.r;
+  document.getElementById('acc-v').textContent=s.v;
+  if(s.out){accOut.push(s.out);document.getElementById('acc-out').textContent=accOut.join('  ');}
+  accIdx++;
+  document.getElementById('acc-cnt').textContent='step '+accIdx+' / '+accSteps.length;
+  document.getElementById('acc-bar').style.width=(accIdx/accSteps.length*100)+'%';
+}
+function accReset(){
+  accArr=[10,20,30,40,50];accIdx=0;accOut=[];
+  if(accPrevL){const e=document.getElementById(accPrevL);if(e)e.className='cl';}accPrevL=null;
+  renderMem('acc-mem',accArr,-1,99);
+  const msg=document.getElementById('acc-msg');msg.className='smsg';msg.textContent='Press Next step to begin.';
+  ['acc-r','acc-v'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('acc-out').textContent='';
+  document.getElementById('acc-cnt').textContent='step 0';document.getElementById('acc-bar').style.width='0%';
+}
+renderMem('acc-mem',[10,20,30,40,50],-1,99);
+
+// ---- LOOP STEPPER ----
+const lpArr=[4,7,2,9,1,5];
+let lpIdx=0,lpSum=0,lpMax=4,lpPrevL=null,lpOut=[];
+function buildLpSteps(){
+  const s=[];
+  s.push({l:'l2',cls:'hi',mc:'mv',msg:'Init: sum = 0, max = a[0] = 4',i:'—',ai:'—',sum:0,max:4});
+  for(let i=0;i<6;i++){
+    s.push({l:'l4',cls:'hi',mc:'mv',msg:'Outer loop: i = '+i+', check i < 6 → true',i,ai:lpArr[i],sum:null,max:null,active:i});
+    s.push({l:'l5',cls:'hi-g',mc:'mg',msg:'sum += a['+i+'] → sum = '+(lpArr.slice(0,i+1).reduce((a,b)=>a+b,0)),i,ai:lpArr[i],sum:lpArr.slice(0,i+1).reduce((a,b)=>a+b,0),max:null,active:i});
+    const curMax=Math.max(...lpArr.slice(0,i+1));
+    if(lpArr[i]>Math.max(...(i>0?lpArr.slice(0,i):[lpArr[0]]))){
+      s.push({l:'l6',cls:'hi-a',mc:'ma',msg:'a['+i+']='+lpArr[i]+' > max → new max = '+lpArr[i],i,ai:lpArr[i],sum:null,max:curMax,active:i});
+    }else{
+      s.push({l:'l6',cls:'hi',mc:'mv',msg:'a['+i+']='+lpArr[i]+' ≤ max, no update',i,ai:lpArr[i],sum:null,max:curMax,active:i});
+    }
+  }
+  s.push({l:'l7',cls:'hi',mc:'mv',msg:'Loop ends: i = 6, check 6 < 6 → false',i:6,ai:'—',sum:null,max:null});
+  s.push({l:'l8',cls:'hi-g',mc:'mg',msg:'printf: Sum=28  Max=9  Avg=4.7',i:'—',ai:'—',sum:28,max:9,out:'Sum=28  Max=9  Avg=4.7'});
+  return s;
+}
+const lpSteps=buildLpSteps();
+let lpSumV=0,lpMaxV=4,lpI='—',lpAI='—';
+function loopStep(){
+  if(lpIdx>=lpSteps.length)return;
+  if(lpPrevL){const e=document.getElementById(lpPrevL);if(e)e.className='cl';}
+  const s=lpSteps[lpIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  lpPrevL=s.l;
+  if(s.sum!==null)lpSumV=s.sum;
+  if(s.max!==null)lpMaxV=s.max;
+  lpI=s.i;lpAI=s.ai;
+  renderMem('loop-mem',lpArr,s.active??-1,99);
+  const msg=document.getElementById('lp-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('lp-i').textContent=lpI;
+  document.getElementById('lp-ai').textContent=lpAI;
+  document.getElementById('lp-sum').textContent=lpSumV;
+  document.getElementById('lp-max').textContent=lpMaxV;
+  if(s.out){lpOut.push(s.out);document.getElementById('lp-out').textContent=lpOut.join('\n');}
+  lpIdx++;
+  document.getElementById('lp-cnt').textContent='step '+lpIdx+' / '+lpSteps.length;
+  document.getElementById('lp-bar').style.width=(lpIdx/lpSteps.length*100)+'%';
+}
+function loopReset(){
+  lpIdx=0;lpSumV=0;lpMaxV=4;lpI='—';lpAI='—';lpOut=[];
+  if(lpPrevL){const e=document.getElementById(lpPrevL);if(e)e.className='cl';}lpPrevL=null;
+  renderMem('loop-mem',lpArr,-1,99);
+  const msg=document.getElementById('lp-msg');msg.className='smsg';msg.textContent='Press Next step to begin.';
+  ['lp-i','lp-ai'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('lp-sum').textContent='0';document.getElementById('lp-max').textContent='4';
+  document.getElementById('lp-out').textContent='';
+  document.getElementById('lp-cnt').textContent='step 0';document.getElementById('lp-bar').style.width='0%';
+}
+renderMem('loop-mem',[4,7,2,9,1,5],-1,99);
+
+// ---- 2D STEPPER ----
+const m2d=[[1,2,3,4],[5,6,7,8],[9,10,11,12]];
+let tdIdx=0,tdPrevL=null,tdDone=[],tdOut=[],tdTimer=null;
+function build2DGrid(activeI,activeJ){
+  const g=document.getElementById('grid2d');g.innerHTML='';
+  const header=['',1,2,3,4];
+  header.forEach(h=>{const c=document.createElement('div');c.className='g2d-cell gh';c.textContent=h;g.appendChild(c);});
+  for(let i=0;i<3;i++){
+    const h=document.createElement('div');h.className='g2d-cell gh';h.textContent='row '+i;g.appendChild(h);
+    for(let j=0;j<4;j++){
+      const c=document.createElement('div');
+      const isDone=tdDone.some(d=>d[0]===i&&d[1]===j);
+      const isActive=i===activeI&&j===activeJ;
+      c.className='g2d-cell'+(isActive?' active':isDone?' done':'');
+      c.textContent=isDone||isActive?m2d[i][j]:'';
+      c.id='g2d-'+i+'-'+j;
+      g.appendChild(c);
+    }
+  }
+}
+function tdStep(){
+  if(tdIdx>=12)return;
+  const i=Math.floor(tdIdx/4),j=tdIdx%4,v=m2d[i][j];
+  if(tdPrevL){const e=document.getElementById(tdPrevL);if(e)e.className='cl';}
+  const l=j===0?'t7':'t8';const e=document.getElementById(j===0?'t8':'t9');if(e)e.className='cl hi-g';
+  tdPrevL=j===0?'t8':'t9';
+  tdDone.push([i,j]);build2DGrid(i,j);
+  const msg=document.getElementById('td-msg');msg.className='smsg mg';
+  msg.textContent='m['+i+']['+j+'] = '+v+' → printf("%3d", '+v+')';
+  document.getElementById('td-i').textContent=i;
+  document.getElementById('td-j').textContent=j;
+  document.getElementById('td-v').textContent=v;
+  if(j===3){tdOut.push('  '+m2d[i].join('  '));document.getElementById('td-out').textContent=tdOut.join('\n');}
+  tdIdx++;
+  document.getElementById('td-cnt').textContent='step '+tdIdx+' / 12';
+  document.getElementById('td-bar').style.width=(tdIdx/12*100)+'%';
+  if(tdIdx===12){const msg2=document.getElementById('td-msg');msg2.textContent='All 12 elements printed! Table complete.';build2DGrid(-1,-1);}
+}
+function tdReset(){
+  tdIdx=0;tdDone=[];tdOut=[];if(tdTimer)clearInterval(tdTimer);
+  if(tdPrevL){const e=document.getElementById(tdPrevL);if(e)e.className='cl';}tdPrevL=null;
+  build2DGrid(-1,-1);
+  const msg=document.getElementById('td-msg');msg.className='smsg';msg.textContent='Press Next step to walk through each element.';
+  ['td-i','td-j','td-v'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('td-out').textContent='';
+  document.getElementById('td-cnt').textContent='step 0';document.getElementById('td-bar').style.width='0%';
+}
+function tdAll(){if(tdTimer)clearInterval(tdTimer);tdTimer=setInterval(()=>{if(tdIdx>=12){clearInterval(tdTimer);return;}tdStep();},120);}
+build2DGrid(-1,-1);
+
+// ---- PITFALLS STEPPER ----
+const pitSteps=[
+  {l:'pit3',cls:'hi-r',mc:'mr',msg:'Bug 1: a[5] — array has indices 0–4 only. a[5] reads random memory!',n:1,w:'undefined behavior',f:'use a[0]..a[4]'},
+  {l:'pit6',cls:'hi-r',mc:'mr',msg:'Bug 2: i <= 5 means i goes 0,1,2,3,4,5 — a[5] is out of bounds again!',n:2,w:'off-by-one OOB',f:'use i < 5'},
+  {l:'pit11',cls:'hi-r',mc:'mr',msg:'Bug 3: Inside a function, array parameter decays to a pointer. sizeof(arr) = 8 (pointer size), not 20!',n:3,w:'sizeof pointer=8',f:'pass n as param'},
+  {l:'pit15',cls:'hi-g',mc:'mg',msg:'Fix: void good(int arr[], int n) — always pass the length as a separate parameter',n:'✓',w:'pass size explicitly',f:'correct!'},
+];
+let pitIdx=0,pitPrevL=null;
+function pitStep(){
+  if(pitIdx>=pitSteps.length)return;
+  if(pitPrevL){const e=document.getElementById(pitPrevL);if(e)e.className='cl';}
+  const s=pitSteps[pitIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  pitPrevL=s.l;
+  const msg=document.getElementById('pit-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('pit-n').textContent=s.n;
+  document.getElementById('pit-w').textContent=s.w;
+  document.getElementById('pit-f').textContent=s.f;
+  pitIdx++;
+  document.getElementById('pit-cnt').textContent='pitfall '+pitIdx+' / '+pitSteps.length;
+  document.getElementById('pit-bar').style.width=(pitIdx/pitSteps.length*100)+'%';
+}
+function pitReset(){
+  pitIdx=0;if(pitPrevL){const e=document.getElementById(pitPrevL);if(e)e.className='cl';}pitPrevL=null;
+  const msg=document.getElementById('pit-msg');msg.className='smsg';msg.textContent='Press Next pitfall to learn about each common mistake.';
+  ['pit-n','pit-w','pit-f'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('pit-cnt').textContent='step 0';document.getElementById('pit-bar').style.width='0%';
+}
+</script>

@@ -1,0 +1,339 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px}
+.hdr-title{font-family:var(--font-mono);font-size:.8rem;font-weight:700;color:var(--color-text-primary)}
+.score-bar{display:flex;gap:12px;align-items:center}
+.score-box{font-family:var(--font-mono);font-size:.72rem;padding:5px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary)}
+.score-val{font-weight:700;color:var(--color-text-primary)}
+.progress-track{height:4px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.25rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:2px;transition:width .3s}
+
+/* question card */
+.q-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.q-hd{padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.q-num{font-family:var(--font-mono);font-size:.65rem;font-weight:700;color:#fff;background:#6366f1;border-radius:var(--border-radius-md);padding:2px 8px}
+.q-tag{font-family:var(--font-mono);font-size:.62rem;padding:2px 8px;border-radius:var(--border-radius-md);border:0.5px solid}
+.tag-v{color:#6366f1;border-color:#c4b5fd;background:#f5f3ff}
+.tag-g{color:#059669;border-color:#6ee7b7;background:#d1fae5}
+.tag-a{color:#d97706;border-color:#fcd34d;background:#fffbeb}
+.tag-r{color:#dc2626;border-color:#fca5a5;background:#fef2f2}
+.q-body{padding:14px 16px}
+.q-text{font-size:.82rem;color:var(--color-text-primary);line-height:1.6;margin-bottom:12px}
+pre.q-code{font-family:var(--font-mono);font-size:.71rem;line-height:1.8;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow-x:auto;white-space:pre;margin-bottom:12px}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}
+
+/* MCQ options */
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{font-family:var(--font-mono);font-size:.74rem;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;transition:all .15s;text-align:left;line-height:1.5}
+.opt:hover:not(:disabled){background:var(--color-background-secondary);border-color:#6366f1}
+.opt.correct{background:#d1fae5;border-color:#10b981;color:#065f46;cursor:default}
+.opt.wrong{background:#fef2f2;border-color:#ef4444;color:#991b1b;cursor:default}
+.opt.reveal{background:#eef2ff;border-color:#6366f1;color:#3730a3;cursor:default}
+.opt:disabled{cursor:default}
+
+/* fill in blank */
+.fill-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.fill-input{font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;flex:1;min-width:100px;max-width:220px}
+.fill-input:focus{border-color:#6366f1}
+.fill-input.ok{border-color:#10b981;background:#d1fae5;color:#065f46}
+.fill-input.bad{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+
+/* buttons */
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.btn.gr{background:#10b981;border-color:#10b981;color:#fff}.btn.gr:hover{background:#059669}
+
+/* feedback */
+.feedback{border-radius:var(--border-radius-md);padding:10px 14px;font-size:.76rem;line-height:1.6;margin-top:8px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:#d1fae5;border:0.5px solid #10b981;color:#065f46}
+.feedback.bad{background:#fef2f2;border:0.5px solid #ef4444;color:#991b1b}
+.feedback.info{background:#eef2ff;border:0.5px solid #6366f1;color:#3730a3}
+
+/* result panel */
+.result{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px;text-align:center;display:none}
+.result.show{display:block}
+.result-score{font-family:var(--font-mono);font-size:2.5rem;font-weight:700;color:var(--color-text-primary);margin-bottom:6px}
+.result-label{font-family:var(--font-mono);font-size:.8rem;color:var(--color-text-secondary);margin-bottom:16px}
+.result-msg{font-size:.82rem;color:var(--color-text-primary);margin-bottom:16px;line-height:1.6}
+.badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+.badge{font-family:var(--font-mono);font-size:.65rem;padding:4px 10px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.nav-row{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:10px}
+</style>
+
+<div class="root">
+  <div class="hdr">
+    <div class="hdr-title">Unit 6 · Functions — Practice Problems</div>
+    <div class="score-bar">
+      <div class="score-box">✓ <span class="score-val" id="sc-correct">0</span></div>
+      <div class="score-box">✗ <span class="score-val" id="sc-wrong">0</span></div>
+      <div class="score-box">Q <span class="score-val" id="sc-curr">1</span> / 10</div>
+    </div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+
+  <div id="quiz-area"></div>
+
+  <div class="result" id="result-panel">
+    <div class="result-score" id="res-score">0/10</div>
+    <div class="result-label">Unit 6 Functions Quiz Complete!</div>
+    <div class="result-msg" id="res-msg"></div>
+    <div class="badge-row" id="res-badges"></div>
+    <button class="btn pr" onclick="restart()">↺ Try Again</button>
+  </div>
+</div>
+
+<script>
+const Qs = [
+  {
+    type:'mcq', topic:'anatomy', tag:'tag-v', tagLabel:'anatomy',
+    q:'What is the correct syntax to declare a function that takes two integers and returns their sum?',
+    code:`<span class="cm">// Which one is correct?</span>`,
+    opts:['sum(int a, int b) { return a+b; }',
+          '<span class="kw">int</span> <span class="fn">sum</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a+b; }',
+          '<span class="kw">void</span> <span class="fn">sum</span>(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a+b; }',
+          '<span class="kw">int</span> <span class="fn">sum</span>(<span class="kw">int</span> a, b) { <span class="kw">return</span> a+b; }'],
+    answer:1,
+    explain:'The return type <code>int</code> comes first, then function name, then each parameter with its own type. <code>void</code> means no return value, so option C is wrong. Option D is missing the type for <code>b</code>.'
+  },
+  {
+    type:'output', topic:'call by value', tag:'tag-a', tagLabel:'call by value',
+    q:'What does this program print?',
+    code:`<span class="kw">void</span> <span class="fn">change</span>(<span class="kw">int</span> x) { x = <span class="num">100</span>; }
+<span class="kw">int</span> <span class="fn">main</span>() {
+  <span class="kw">int</span> n = <span class="num">10</span>;
+  <span class="fn">change</span>(n);
+  <span class="fn">printf</span>(<span class="str">"%d"</span>, n);
+}`,
+    opts:['100','10','0','Compile error'],
+    answer:1,
+    explain:'<code>change(n)</code> passes a <strong>copy</strong> of n. Inside the function, only the local copy <code>x</code> is changed to 100. The original <code>n</code> in main() is untouched — still 10.'
+  },
+  {
+    type:'output', topic:'call by reference', tag:'tag-r', tagLabel:'call by ref',
+    q:'What does this program print?',
+    code:`<span class="kw">void</span> <span class="fn">triple</span>(<span class="kw">int</span> *x) { *x = *x * <span class="num">3</span>; }
+<span class="kw">int</span> <span class="fn">main</span>() {
+  <span class="kw">int</span> n = <span class="num">4</span>;
+  <span class="fn">triple</span>(&n);
+  <span class="fn">printf</span>(<span class="str">"%d"</span>, n);
+}`,
+    opts:['4','3','12','Compile error'],
+    answer:2,
+    explain:'<code>&n</code> passes the <strong>address</strong> of n. Inside <code>triple()</code>, <code>*x</code> dereferences the pointer to reach the original n. So n = 4 × 3 = 12. The original IS modified.'
+  },
+  {
+    type:'mcq', topic:'arrays', tag:'tag-g', tagLabel:'arrays to fn',
+    q:'What is printed after calling the function?',
+    code:`<span class="kw">void</span> <span class="fn">addOne</span>(<span class="kw">int</span> arr[], <span class="kw">int</span> n) {
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>; i&lt;n; i++) arr[i]++;
+}
+<span class="kw">int</span> <span class="fn">main</span>() {
+  <span class="kw">int</span> a[] = {<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>};
+  <span class="fn">addOne</span>(a, <span class="num">3</span>);
+  <span class="fn">printf</span>(<span class="str">"%d %d %d"</span>, a[<span class="num">0</span>],a[<span class="num">1</span>],a[<span class="num">2</span>]);
+}`,
+    opts:['1 2 3','2 3 4','0 1 2','Compile error'],
+    answer:1,
+    explain:'Arrays always pass by reference (pointer to first element). <code>arr[i]++</code> modifies the <strong>original</strong> array. Each element is incremented: {1,2,3} → {2,3,4}.'
+  },
+  {
+    type:'fill', topic:'anatomy', tag:'tag-v', tagLabel:'anatomy',
+    q:'Fill in the blank: A function that returns nothing uses the keyword <code>______</code> as its return type.',
+    blanks:[{id:'f1', answer:'void', hint:'4-letter keyword'}],
+    explain:'<code>void</code> means the function performs actions but does not send a value back to the caller. Example: <code>void greet() { printf("Hi"); }</code>'
+  },
+  {
+    type:'output', topic:'call by value', tag:'tag-a', tagLabel:'call by value',
+    q:'What does this print? Think carefully about scope.',
+    code:`<span class="kw">int</span> <span class="fn">square</span>(<span class="kw">int</span> n) {
+  n = n * n;
+  <span class="kw">return</span> n;
+}
+<span class="kw">int</span> <span class="fn">main</span>() {
+  <span class="kw">int</span> x = <span class="num">5</span>;
+  <span class="kw">int</span> result = <span class="fn">square</span>(x);
+  <span class="fn">printf</span>(<span class="str">"%d %d"</span>, x, result);
+}`,
+    opts:['25 25','5 25','5 5','25 5'],
+    answer:1,
+    explain:'<code>x</code> is passed by value — the local copy <code>n</code> gets squared to 25. <code>x</code> stays 5 in main(). The return value 25 is stored in <code>result</code>. So output is <code>5 25</code>.'
+  },
+  {
+    type:'mcq', topic:'library', tag:'tag-v', tagLabel:'library fn',
+    q:'Which header file must you include to use <code>strlen()</code> and <code>strcpy()</code>?',
+    opts:['#include &lt;stdio.h&gt;','#include &lt;math.h&gt;','#include &lt;string.h&gt;','#include &lt;ctype.h&gt;'],
+    answer:2,
+    explain:'String manipulation functions like <code>strlen</code>, <code>strcpy</code>, <code>strcat</code>, and <code>strcmp</code> all live in <code>&lt;string.h&gt;</code>.'
+  },
+  {
+    type:'output', topic:'call by reference', tag:'tag-r', tagLabel:'call by ref',
+    q:'What does this print?',
+    code:`<span class="kw">void</span> <span class="fn">swap</span>(<span class="kw">int</span> *a, <span class="kw">int</span> *b) {
+  <span class="kw">int</span> tmp = *a;
+  *a = *b;
+  *b = tmp;
+}
+<span class="kw">int</span> <span class="fn">main</span>() {
+  <span class="kw">int</span> x=<span class="num">3</span>, y=<span class="num">7</span>;
+  <span class="fn">swap</span>(&x, &y);
+  <span class="fn">printf</span>(<span class="str">"%d %d"</span>, x, y);
+}`,
+    opts:['3 7','7 3','3 3','7 7'],
+    answer:1,
+    explain:'The classic swap using pointers. <code>swap(&x, &y)</code> passes addresses. Inside, <code>*a</code> and <code>*b</code> reach the originals. After swap: x=7, y=3. Output: <code>7 3</code>.'
+  },
+  {
+    type:'fill', topic:'arrays', tag:'tag-g', tagLabel:'arrays to fn',
+    q:'To get the number of elements in array <code>int a[5]</code> inside main(), you write:<br><code>int n = sizeof(a) / sizeof(a[______]);</code>',
+    blanks:[{id:'f2', answer:'0', hint:'first index'}],
+    explain:'<code>sizeof(a)</code> gives total bytes (20 for 5 ints × 4 bytes each). <code>sizeof(a[0])</code> gives bytes per element (4). 20/4 = 5. Always use index <code>0</code>.'
+  },
+  {
+    type:'mcq', topic:'mixed', tag:'tag-a', tagLabel:'tricky',
+    q:'Why must you pass the array size <code>n</code> as a separate parameter to a function?',
+    opts:[
+      'Because arrays are always passed by value in C',
+      'Because sizeof(arr) inside the function returns the pointer size, not the array size',
+      'Because C arrays cannot be iterated in functions',
+      'Because sizeof always returns 0 for arrays'
+    ],
+    answer:1,
+    explain:'When an array is passed to a function, it <strong>decays to a pointer</strong>. So <code>sizeof(arr)</code> inside the function returns the size of a pointer (typically 8 bytes on 64-bit), not the array. Always pass <code>n</code> explicitly.'
+  }
+];
+
+let curr=0, correct=0, wrong=0, answered=[];
+
+function render(){
+  const q=Qs[curr];
+  document.getElementById('sc-curr').textContent=curr+1;
+  document.getElementById('prog').style.width=((curr)/Qs.length*100)+'%';
+  const html=`
+  <div class="q-card">
+    <div class="q-hd">
+      <span class="q-num">Q${curr+1}</span>
+      <span class="q-tag ${q.tag}">${q.tagLabel}</span>
+    </div>
+    <div class="q-body">
+      <div class="q-text">${q.q}</div>
+      ${q.code?`<pre class="q-code">${q.code}</pre>`:''}
+      ${q.type==='fill'?renderFill(q):renderOpts(q)}
+      <div class="nav-row">
+        ${q.type==='fill'?`<button class="btn pr" onclick="checkFill(${curr})">Check ›</button>`:'<span></span>'}
+        <button class="btn" onclick="skipQ()">Skip →</button>
+      </div>
+      <div class="feedback" id="fb-${curr}"></div>
+    </div>
+  </div>`;
+  document.getElementById('quiz-area').innerHTML=html;
+}
+
+function renderOpts(q){
+  return `<div class="opts">${q.opts.map((o,i)=>`<button class="opt" id="opt-${curr}-${i}" onclick="pickOpt(${curr},${i})">${o}</button>`).join('')}</div>`;
+}
+
+function renderFill(q){
+  return `<div class="fill-row">${q.blanks.map(b=>`<input class="fill-input" id="${b.id}" placeholder="${b.hint}" onkeydown="if(event.key==='Enter')checkFill(${curr})">`).join('')}</div>`;
+}
+
+function pickOpt(qIdx,chosen){
+  if(answered[qIdx]!==undefined)return;
+  const q=Qs[qIdx];
+  answered[qIdx]=chosen;
+  const isRight=(chosen===q.answer);
+  if(isRight)correct++;else wrong++;
+  updateScore();
+  q.opts.forEach((_,i)=>{
+    const btn=document.getElementById('opt-'+qIdx+'-'+i);
+    if(!btn)return;
+    btn.disabled=true;
+    if(i===q.answer)btn.className='opt correct';
+    else if(i===chosen&&!isRight)btn.className='opt wrong';
+  });
+  showFeedback(qIdx,isRight,q.explain);
+  setTimeout(()=>advance(),2200);
+}
+
+function checkFill(qIdx){
+  if(answered[qIdx]!==undefined)return;
+  const q=Qs[qIdx];
+  let allRight=true;
+  q.blanks.forEach(b=>{
+    const inp=document.getElementById(b.id);
+    if(!inp)return;
+    const val=inp.value.trim().toLowerCase();
+    const ans=b.answer.toLowerCase();
+    if(val===ans){inp.className='fill-input ok';}
+    else{inp.className='fill-input bad';allRight=false;}
+    inp.disabled=true;
+  });
+  answered[qIdx]=allRight?'correct':'wrong';
+  if(allRight)correct++;else wrong++;
+  updateScore();
+  showFeedback(qIdx,allRight,q.explain);
+  setTimeout(()=>advance(),2400);
+}
+
+function showFeedback(qIdx,ok,explain){
+  const fb=document.getElementById('fb-'+qIdx);
+  if(!fb)return;
+  fb.className='feedback show '+(ok?'ok':'bad');
+  fb.innerHTML=(ok?'✓ Correct! ':'✗ Not quite. ')+explain;
+}
+
+function skipQ(){
+  answered[curr]=answered[curr]??'skipped';
+  advance();
+}
+
+function advance(){
+  curr++;
+  if(curr>=Qs.length){showResult();return;}
+  render();
+}
+
+function updateScore(){
+  document.getElementById('sc-correct').textContent=correct;
+  document.getElementById('sc-wrong').textContent=wrong;
+}
+
+function showResult(){
+  document.getElementById('quiz-area').innerHTML='';
+  document.getElementById('prog').style.width='100%';
+  const panel=document.getElementById('result-panel');
+  panel.className='result show';
+  const pct=Math.round(correct/Qs.length*100);
+  document.getElementById('res-score').textContent=correct+'/'+Qs.length;
+  const msgs=[
+    [90,'🎉 Excellent! You have a strong grasp of C functions. You\'re exam ready!'],
+    [70,'👍 Good work! Review call by value vs reference and you\'ll be solid.'],
+    [50,'📚 Getting there! Focus on the difference between pass-by-value and pass-by-reference.'],
+    [0,'💡 Keep practicing! Re-read the anatomy and call-by-value/reference tabs, then try again.']
+  ];
+  const msg=msgs.find(([t])=>pct>=t)[1];
+  document.getElementById('res-msg').textContent=msg;
+  const weakTopics=[...new Set(Qs.filter((_,i)=>answered[i]!=='correct'&&answered[i]!==Qs[i].answer&&answered[i]!==true).map(q=>q.tagLabel))];
+  const badges=document.getElementById('res-badges');
+  badges.innerHTML=`<span class="badge b-g">✓ ${correct} correct</span><span class="badge b-r">✗ ${wrong} wrong</span>`
+    +(weakTopics.length?weakTopics.map(t=>`<span class="badge b-v">Review: ${t}</span>`).join(''):'<span class="badge b-g">All topics covered!</span>');
+}
+
+function restart(){
+  curr=0;correct=0;wrong=0;answered=[];
+  document.getElementById('result-panel').className='result';
+  document.getElementById('sc-correct').textContent='0';
+  document.getElementById('sc-wrong').textContent='0';
+  document.getElementById('sc-curr').textContent='1';
+  document.getElementById('prog').style.width='0%';
+  render();
+}
+
+render();
+</script>

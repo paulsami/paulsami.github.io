@@ -1,0 +1,513 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;font-family:var(--font-mono);font-size:.63rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+
+/* memory diagram */
+.mem-diagram{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.mem-block{border-radius:var(--border-radius-md);border:1.5px solid;padding:10px 14px;min-width:130px;transition:all .2s}
+.mem-block.var{border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.06)}
+.mem-block.ptr{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.mem-block.active{box-shadow:0 0 0 2px currentColor}
+.mem-label{font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.mem-name{font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--color-text-primary);margin-bottom:2px}
+.mem-val{font-family:var(--font-mono);font-size:.75rem;color:var(--color-text-primary)}
+.mem-addr{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);margin-top:3px}
+.arrow{display:flex;align-items:center;color:var(--color-text-secondary);font-size:1.2rem;padding-top:10px}
+
+/* stepper */
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);border-left:3px solid var(--color-border-secondary);line-height:1.5;color:var(--color-text-secondary)}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:64px}
+.vlbl{font-family:var(--font-mono);font-size:.56rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:.95rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8;white-space:pre-wrap}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.warn{border-left:2.5px solid #ef4444;background:rgba(239,68,68,.03);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+
+/* pointer animation canvas area */
+.ptr-visual{position:relative;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;margin-bottom:1rem;min-height:120px}
+.pv-var{position:absolute;border-radius:8px;border:2px solid;padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;transition:all .3s}
+.pv-var.v-int{border-color:#6366f1;background:rgba(99,102,241,.08);color:#4338ca}
+.pv-var.v-ptr{border-color:#10b981;background:rgba(16,185,129,.08);color:#065f46}
+.pv-var.v-hl{box-shadow:0 0 0 2.5px #f59e0b}
+.pv-label{font-size:.58rem;color:var(--color-text-secondary);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.pv-name{font-weight:700;font-size:.8rem}
+.pv-val{font-size:.7rem;margin-top:2px}
+.pv-addr{font-size:.55rem;color:var(--color-text-secondary);margin-top:2px}
+svg.ptr-arrow{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* cheatsheet table */
+.cheat-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.71rem;margin-bottom:1rem}
+.cheat-table th{background:var(--color-background-secondary);color:var(--color-text-secondary);font-weight:500;padding:8px 12px;border:0.5px solid var(--color-border-tertiary);text-align:left;font-size:.65rem;text-transform:uppercase;letter-spacing:.04em}
+.cheat-table td{padding:8px 12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);background:var(--color-background-primary);line-height:1.6}
+.cheat-table tr:hover td{background:var(--color-background-secondary)}
+td code{color:#a78bfa;background:rgba(99,102,241,.08);padding:1px 5px;border-radius:3px;font-size:.68rem}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+<div class="tabs">
+  <button class="tab active" onclick="T('what',this)">what is a pointer?</button>
+  <button class="tab" onclick="T('ops',this)">& and * operators</button>
+  <button class="tab" onclick="T('arith',this)">pointer arithmetic</button>
+  <button class="tab" onclick="T('null',this)">null & pitfalls</button>
+  <button class="tab" onclick="T('cheat',this)">cheatsheet</button>
+</div>
+
+<!-- WHAT IS A POINTER -->
+<div class="pane on" id="pane-what">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> pointer_intro.c</div>
+      <pre><span class="cl" id="w0"><span class="kw">int</span> n = <span class="num">42</span>;        <span class="cm">// normal variable</span></span>
+<span class="cl" id="w1"><span class="kw">int</span> *p = &amp;n;       <span class="cm">// p stores address of n</span></span>
+<span class="cl" id="w2"></span>
+<span class="cl" id="w3"><span class="fn">printf</span>(<span class="str">"n   = %d\n"</span>, n);   <span class="cm">// value: 42</span></span>
+<span class="cl" id="w4"><span class="fn">printf</span>(<span class="str">"&amp;n  = %p\n"</span>, &amp;n);  <span class="cm">// address of n</span></span>
+<span class="cl" id="w5"><span class="fn">printf</span>(<span class="str">"p   = %p\n"</span>, p);   <span class="cm">// p holds address of n</span></span>
+<span class="cl" id="w6"><span class="fn">printf</span>(<span class="str">"*p  = %d\n"</span>, *p);  <span class="cm">// dereference: 42</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">memory model — pointer points to variable</div>
+      <div class="ptr-visual" style="height:140px" id="what-vis">
+        <div class="pv-var v-int" style="left:20px;top:30px" id="wv-n">
+          <div class="pv-label">variable</div>
+          <div class="pv-name">n</div>
+          <div class="pv-val" id="wv-nval">42</div>
+          <div class="pv-addr">@ 0x100</div>
+        </div>
+        <div class="pv-var v-ptr" style="left:180px;top:30px;opacity:.3" id="wv-p">
+          <div class="pv-label">pointer</div>
+          <div class="pv-name">p</div>
+          <div class="pv-val" id="wv-pval">?</div>
+          <div class="pv-addr">@ 0x108</div>
+        </div>
+        <svg class="ptr-arrow" id="what-svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"/></marker></defs><path id="what-arrow" d="" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ah)" opacity="0"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="wStep()">Next step ›</button>
+      <button class="btn" onclick="wReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="w-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="w-bar"></div></div>
+    <div class="smsg" id="w-msg">Press Next step to see how a pointer is created and used.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">n</div><div class="vval" id="w-n">42</div></div>
+      <div class="vbox"><div class="vlbl">p (stores)</div><div class="vval" id="w-p">?</div></div>
+      <div class="vbox"><div class="vlbl">*p (reads)</div><div class="vval" id="w-deref">?</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="w-out"></div>
+  </div>
+  <div class="note">A <strong>pointer</strong> is a variable that stores the <em>memory address</em> of another variable. Think of memory as a row of numbered boxes — a pointer stores the box number. <code>int *p</code> declares a pointer to an int. <code>&n</code> gets the address of n. <code>*p</code> reads the value at that address.</div>
+  <div class="badges">
+    <span class="badge b-v">pointer stores an address</span>
+    <span class="badge b-g">&amp;n → address of n</span>
+    <span class="badge b-a">*p → value AT the address</span>
+    <span class="badge b-r">int *p → pointer to int</span>
+  </div>
+</div>
+
+<!-- & AND * OPERATORS -->
+<div class="pane" id="pane-ops">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> operators.c</div>
+      <pre><span class="cl" id="op0"><span class="kw">int</span> x = <span class="num">10</span>;</span>
+<span class="cl" id="op1"><span class="kw">int</span> *ptr = &amp;x;    <span class="cm">// &amp; = address-of</span></span>
+<span class="cl" id="op2"></span>
+<span class="cl" id="op3"><span class="cm">// Read via pointer</span></span>
+<span class="cl" id="op4"><span class="kw">int</span> val = *ptr;   <span class="cm">// * = dereference → 10</span></span>
+<span class="cl" id="op5"></span>
+<span class="cl" id="op6"><span class="cm">// Write via pointer</span></span>
+<span class="cl" id="op7">*ptr = <span class="num">99</span>;        <span class="cm">// changes x to 99!</span></span>
+<span class="cl" id="op8"></span>
+<span class="cl" id="op9"><span class="fn">printf</span>(<span class="str">"x=%d val=%d\n"</span>, x, val);</span>
+<span class="cl" id="op10"><span class="cm">// prints: x=99 val=10</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">live memory — watch x change through *ptr</div>
+      <div class="ptr-visual" style="height:140px">
+        <div class="pv-var v-int" style="left:20px;top:30px">
+          <div class="pv-label">variable</div>
+          <div class="pv-name">x</div>
+          <div class="pv-val" id="op-xval">10</div>
+          <div class="pv-addr">@ 0x200</div>
+        </div>
+        <div class="pv-var v-ptr" style="left:180px;top:30px" id="op-ptr-box">
+          <div class="pv-label">pointer</div>
+          <div class="pv-name">ptr</div>
+          <div class="pv-val" id="op-pval">0x200</div>
+          <div class="pv-addr">@ 0x208</div>
+        </div>
+        <svg class="ptr-arrow"><defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"/></marker></defs><path d="M 178 55 C 150 55 100 55 82 55" fill="none" stroke="#10b981" stroke-width="1.5" marker-end="url(#ah2)"/></svg>
+      </div>
+      <div class="vrow">
+        <div class="vbox"><div class="vlbl">x</div><div class="vval" id="op-x">10</div></div>
+        <div class="vbox"><div class="vlbl">*ptr</div><div class="vval" id="op-deref">10</div></div>
+        <div class="vbox"><div class="vlbl">val</div><div class="vval" id="op-val">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="opStep()">Next step ›</button>
+      <button class="btn" onclick="opReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="op-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="op-bar"></div></div>
+    <div class="smsg" id="op-msg">Press Next step to explore & and * operators.</div>
+    <div class="slbl">output</div>
+    <div class="out" id="op-out"></div>
+  </div>
+  <div class="note">
+    <strong>&amp; (address-of):</strong> gives the memory address of a variable. Used when creating a pointer.<br><br>
+    <strong>* (dereference):</strong> follows the pointer to access the value at that address. Can read OR write through it.<br><br>
+    Remember: <code>int *p</code> in a declaration means "p is a pointer to int". <code>*p</code> in an expression means "value at p".
+  </div>
+  <div class="badges">
+    <span class="badge b-v">&amp; → get the address</span>
+    <span class="badge b-g">* → follow the address</span>
+    <span class="badge b-a">*ptr = 99 → modify original</span>
+    <span class="badge b-r">* in declaration ≠ * in expression</span>
+  </div>
+</div>
+
+<!-- POINTER ARITHMETIC -->
+<div class="pane" id="pane-arith">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> pointer_arithmetic.c</div>
+    <pre><span class="cl" id="ar0"><span class="kw">int</span> arr[] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};</span>
+<span class="cl" id="ar1"><span class="kw">int</span> *p = arr;     <span class="cm">// p points to arr[0]</span></span>
+<span class="cl" id="ar2"></span>
+<span class="cl" id="ar3"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);     <span class="cm">// 10 — arr[0]</span></span>
+<span class="cl" id="ar4">p++;               <span class="cm">// move to next int (+4 bytes)</span></span>
+<span class="cl" id="ar5"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);     <span class="cm">// 20 — arr[1]</span></span>
+<span class="cl" id="ar6">p += <span class="num">2</span>;            <span class="cm">// jump ahead 2 ints</span></span>
+<span class="cl" id="ar7"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);     <span class="cm">// 40 — arr[3]</span></span>
+<span class="cl" id="ar8">p--;               <span class="cm">// step back one int</span></span>
+<span class="cl" id="ar9"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);     <span class="cm">// 30 — arr[2]</span></span></pre>
+  </div>
+  <div class="slbl">array in memory — p walks through it</div>
+  <div style="overflow-x:auto;margin-bottom:1rem">
+    <div style="display:flex;gap:0;min-width:max-content" id="arith-mem"></div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="arStep()">Next step ›</button>
+      <button class="btn" onclick="arReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="ar-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="ar-bar"></div></div>
+    <div class="smsg" id="ar-msg">Press Next step to see pointer arithmetic on an array.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">p points to</div><div class="vval" id="ar-pt">arr[0]</div></div>
+      <div class="vbox"><div class="vlbl">*p value</div><div class="vval" id="ar-val">10</div></div>
+      <div class="vbox"><div class="vlbl">address</div><div class="vval" id="ar-addr" style="font-size:.75rem">0x100</div></div>
+      <div class="vbox"><div class="vlbl">move</div><div class="vval" id="ar-mv">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="ar-out"></div>
+  </div>
+  <div class="note">When you do <code>p++</code> on an <code>int*</code>, p jumps <strong>4 bytes</strong> (size of int) — not 1 byte. C scales pointer arithmetic by the size of the pointed type automatically. This is why pointers and arrays are so closely linked: <code>arr[i]</code> is exactly the same as <code>*(arr + i)</code>.</div>
+  <div class="badges">
+    <span class="badge b-v">p++ moves by sizeof(int)=4</span>
+    <span class="badge b-g">arr[i] == *(arr+i)</span>
+    <span class="badge b-a">scaled by element size</span>
+    <span class="badge b-r">don't go out of bounds!</span>
+  </div>
+</div>
+
+<!-- NULL & PITFALLS -->
+<div class="pane" id="pane-null">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> pointer_pitfalls.c</div>
+    <pre><span class="cl" id="pt0"><span class="cm">// ✅ NULL pointer — safe "no address" value</span></span>
+<span class="cl" id="pt1"><span class="kw">int</span> *p = <span class="num">NULL</span>;     <span class="cm">// p points nowhere</span></span>
+<span class="cl" id="pt2"><span class="kw">if</span> (p != <span class="num">NULL</span>) *p = <span class="num">5</span>;  <span class="cm">// safe check!</span></span>
+<span class="cl" id="pt3"></span>
+<span class="cl" id="pt4"><span class="cm">// ❌ BUG 1: Uninitialized pointer (wild pointer)</span></span>
+<span class="cl" id="pt5"><span class="kw">int</span> *q;            <span class="cm">// q has garbage address!</span></span>
+<span class="cl" id="pt6">*q = <span class="num">10</span>;           <span class="cm">// CRASH — undefined behavior</span></span>
+<span class="cl" id="pt7"></span>
+<span class="cl" id="pt8"><span class="cm">// ❌ BUG 2: Dangling pointer</span></span>
+<span class="cl" id="pt9"><span class="kw">int</span> *r = (<span class="kw">int</span>*)<span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="kw">int</span>));</span>
+<span class="cl" id="pt10"><span class="fn">free</span>(r);           <span class="cm">// memory freed</span></span>
+<span class="cl" id="pt11">*r = <span class="num">5</span>;            <span class="cm">// CRASH — dangling pointer!</span></span>
+<span class="cl" id="pt12">r = <span class="num">NULL</span>;          <span class="cm">// ✅ fix: set to NULL after free</span></span>
+<span class="cl" id="pt13"></span>
+<span class="cl" id="pt14"><span class="cm">// ❌ BUG 3: Wrong type pointer</span></span>
+<span class="cl" id="pt15"><span class="kw">float</span> f = <span class="num">3.14</span>;</span>
+<span class="cl" id="pt16"><span class="kw">int</span> *ip = (<span class="kw">int</span>*)&amp;f;  <span class="cm">// misinterprets bytes!</span></span></pre>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="ptStep()">Next pitfall ›</button>
+      <button class="btn" onclick="ptReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="pt-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="pt-bar" style="background:#ef4444"></div></div>
+    <div class="smsg" id="pt-msg">Press Next pitfall to learn about common pointer mistakes.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">type</div><div class="vval" id="pt-type">—</div></div>
+      <div class="vbox"><div class="vlbl">what happens</div><div class="vval" id="pt-what" style="font-size:.72rem">—</div></div>
+      <div class="vbox"><div class="vlbl">fix</div><div class="vval" id="pt-fix" style="font-size:.72rem">—</div></div>
+    </div>
+  </div>
+  <div class="warn">Pointer bugs are among the hardest to debug in C. A bad pointer crash may happen far from where the bug was introduced. Always initialise pointers to <code>NULL</code>, check before dereferencing, and set to <code>NULL</code> after <code>free()</code>.</div>
+  <div class="badges">
+    <span class="badge b-g">init to NULL if no address yet</span>
+    <span class="badge b-r">wild pointer → crash</span>
+    <span class="badge b-r">dangling pointer → crash</span>
+    <span class="badge b-a">always check != NULL before *p</span>
+  </div>
+</div>
+
+<!-- CHEATSHEET -->
+<div class="pane" id="pane-cheat">
+  <div class="slbl">complete pointer cheatsheet</div>
+  <table class="cheat-table">
+    <tr><th>Syntax</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><code>int *p</code></td><td>Declare a pointer to int</td><td><code>int *p;</code></td></tr>
+    <tr><td><code>&amp;x</code></td><td>Address of variable x</td><td><code>p = &amp;x;</code></td></tr>
+    <tr><td><code>*p</code></td><td>Value at address p (dereference)</td><td><code>int v = *p;</code></td></tr>
+    <tr><td><code>*p = 5</code></td><td>Write 5 to address p</td><td>Changes original variable</td></tr>
+    <tr><td><code>p++</code></td><td>Move pointer to next element</td><td>Moves by sizeof(int)=4 bytes</td></tr>
+    <tr><td><code>p + n</code></td><td>Pointer n elements ahead</td><td><code>*(p+2)</code> == <code>arr[2]</code></td></tr>
+    <tr><td><code>p1 - p2</code></td><td>Number of elements between pointers</td><td>Returns ptrdiff_t</td></tr>
+    <tr><td><code>NULL</code></td><td>Pointer to nothing (address 0)</td><td><code>int *p = NULL;</code></td></tr>
+    <tr><td><code>int **pp</code></td><td>Pointer to a pointer</td><td><code>pp = &amp;p;</code></td></tr>
+    <tr><td><code>int *p = arr</code></td><td>Point to first element of array</td><td>arr decays to &amp;arr[0]</td></tr>
+    <tr><td><code>arr[i]</code></td><td>Same as *(arr+i)</td><td>Pointer and array interchangeable</td></tr>
+    <tr><td><code>void *p</code></td><td>Generic pointer (any type)</td><td>Must cast before dereferencing</td></tr>
+  </table>
+  <div class="slbl">pointer size</div>
+  <div class="card" style="margin-bottom:1rem">
+    <pre><span class="cm">// Pointer size depends on architecture, NOT the type it points to</span>
+<span class="kw">sizeof</span>(<span class="kw">int</span> *)   == <span class="num">8</span>   <span class="cm">// 64-bit system</span>
+<span class="kw">sizeof</span>(<span class="kw">char</span> *)  == <span class="num">8</span>   <span class="cm">// same!</span>
+<span class="kw">sizeof</span>(<span class="kw">double</span>*) == <span class="num">8</span>   <span class="cm">// same!</span>
+
+<span class="cm">// arr[i] and pointer arithmetic are identical:</span>
+arr[<span class="num">3</span>]  ==  *(arr + <span class="num">3</span>)  <span class="cm">// always true</span>
+&amp;arr[<span class="num">3</span>] ==  (arr + <span class="num">3</span>)  <span class="cm">// address equivalence</span></pre>
+  </div>
+  <div class="badges">
+    <span class="badge b-v">pointer size = 8 bytes (64-bit)</span>
+    <span class="badge b-g">arr[i] == *(arr+i)</span>
+    <span class="badge b-a">arithmetic scaled by type size</span>
+    <span class="badge b-r">NULL = address 0, never dereference</span>
+  </div>
+</div>
+</div>
+
+<script>
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');el.classList.add('active');
+}
+
+// ── WHAT IS A POINTER ──
+let wIdx=0,wPrev=null;
+const wSteps=[
+  {l:'w0',cls:'hi',mc:'mv',msg:'int n = 42 — variable n is created. Value 42 stored at address 0x100.',n:42,p:'?',deref:'?',pOpacity:.3,arrow:false},
+  {l:'w1',cls:'hi-g',mc:'mg',msg:'int *p = &n — p is a pointer. It stores the ADDRESS of n (0x100).',n:42,p:'0x100',deref:'?',pOpacity:1,arrow:true},
+  {l:'w3',cls:'hi',mc:'mv',msg:'printf n → prints the value: 42',n:42,p:'0x100',deref:42,out:'n   = 42'},
+  {l:'w4',cls:'hi',mc:'mv',msg:'printf &n → prints the address of n: 0x100',n:42,p:'0x100',deref:42,out:'n   = 42\n&n  = 0x100'},
+  {l:'w5',cls:'hi',mc:'mv',msg:'printf p → prints what p holds = address of n = 0x100',n:42,p:'0x100',deref:42,out:'n   = 42\n&n  = 0x100\np   = 0x100'},
+  {l:'w6',cls:'hi-a',mc:'ma',msg:'printf *p → dereference p: follow 0x100 → read value = 42',n:42,p:'0x100',deref:42,out:'n   = 42\n&n  = 0x100\np   = 0x100\n*p  = 42'},
+];
+function wStep(){
+  if(wIdx>=wSteps.length)return;
+  if(wPrev){const e=document.getElementById(wPrev);if(e)e.className='cl';}
+  const s=wSteps[wIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  wPrev=s.l;
+  const msg=document.getElementById('w-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('w-n').textContent=s.n;
+  document.getElementById('w-p').textContent=s.p;
+  document.getElementById('w-deref').textContent=s.deref;
+  document.getElementById('wv-nval').textContent=s.n;
+  document.getElementById('wv-pval').textContent=s.p;
+  document.getElementById('wv-p').style.opacity=s.pOpacity;
+  const arrow=document.getElementById('what-arrow');
+  if(s.arrow){arrow.setAttribute('d','M 235 55 C 200 55 140 55 110 55');arrow.setAttribute('opacity','1');}
+  if(s.out)document.getElementById('w-out').textContent=s.out;
+  wIdx++;
+  document.getElementById('w-cnt').textContent='step '+wIdx+' / '+wSteps.length;
+  document.getElementById('w-bar').style.width=(wIdx/wSteps.length*100)+'%';
+}
+function wReset(){
+  wIdx=0;if(wPrev){const e=document.getElementById(wPrev);if(e)e.className='cl';}wPrev=null;
+  document.getElementById('w-msg').className='smsg';document.getElementById('w-msg').textContent='Press Next step to see how a pointer is created and used.';
+  document.getElementById('w-n').textContent='42';document.getElementById('w-p').textContent='?';document.getElementById('w-deref').textContent='?';
+  document.getElementById('wv-nval').textContent='42';document.getElementById('wv-pval').textContent='?';
+  document.getElementById('wv-p').style.opacity='.3';
+  document.getElementById('what-arrow').setAttribute('opacity','0');
+  document.getElementById('w-out').textContent='';
+  document.getElementById('w-cnt').textContent='step 0';document.getElementById('w-bar').style.width='0%';
+}
+
+// ── & AND * ──
+let opIdx=0,opPrev=null;
+const opSteps=[
+  {l:'op0',cls:'hi',mc:'mv',msg:'int x = 10 — x created at address 0x200 with value 10.',x:10,deref:10,val:'—',out:''},
+  {l:'op1',cls:'hi-g',mc:'mg',msg:'int *ptr = &x — ptr stores address 0x200 (address of x).',x:10,deref:10,val:'—',out:''},
+  {l:'op4',cls:'hi-a',mc:'ma',msg:'int val = *ptr — dereference ptr: follow 0x200 → read 10. val=10.',x:10,deref:10,val:10,out:''},
+  {l:'op7',cls:'hi-g',mc:'mg',msg:'*ptr = 99 — write 99 through pointer → x in memory becomes 99!',x:99,deref:99,val:10,out:''},
+  {l:'op9',cls:'hi',mc:'mv',msg:'printf — x=99 (changed via pointer), val=10 (captured old value).',x:99,deref:99,val:10,out:'x=99 val=10'},
+];
+function opStep(){
+  if(opIdx>=opSteps.length)return;
+  if(opPrev){const e=document.getElementById(opPrev);if(e)e.className='cl';}
+  const s=opSteps[opIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  opPrev=s.l;
+  const msg=document.getElementById('op-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('op-x').textContent=s.x;
+  document.getElementById('op-xval').textContent=s.x;
+  document.getElementById('op-deref').textContent=s.deref;
+  document.getElementById('op-val').textContent=s.val;
+  if(s.out)document.getElementById('op-out').textContent=s.out;
+  opIdx++;
+  document.getElementById('op-cnt').textContent='step '+opIdx+' / '+opSteps.length;
+  document.getElementById('op-bar').style.width=(opIdx/opSteps.length*100)+'%';
+}
+function opReset(){
+  opIdx=0;if(opPrev){const e=document.getElementById(opPrev);if(e)e.className='cl';}opPrev=null;
+  document.getElementById('op-msg').className='smsg';document.getElementById('op-msg').textContent='Press Next step to explore & and * operators.';
+  document.getElementById('op-x').textContent='10';document.getElementById('op-xval').textContent='10';
+  document.getElementById('op-deref').textContent='10';document.getElementById('op-val').textContent='—';
+  document.getElementById('op-out').textContent='';
+  document.getElementById('op-cnt').textContent='step 0';document.getElementById('op-bar').style.width='0%';
+}
+
+// ── POINTER ARITHMETIC ──
+const arArr=[10,20,30,40,50];
+let arIdx=0,arPrev=null,arPos=0,arOut=[];
+function renderArMem(activeIdx){
+  const wrap=document.getElementById('arith-mem');wrap.innerHTML='';
+  arArr.forEach((v,i)=>{
+    const cell=document.createElement('div');
+    cell.style.cssText='display:flex;flex-direction:column;align-items:center;min-width:72px';
+    const box=document.createElement('div');
+    const isActive=(i===activeIdx);
+    box.style.cssText=`width:68px;height:60px;border:${isActive?'2px solid #6366f1':'1px solid var(--color-border-secondary)'};border-right-width:0;background:${isActive?'rgba(99,102,241,.15)':'var(--color-background-secondary)'};display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.8rem;font-weight:700;color:${isActive?'#3730a3':'var(--color-text-primary)'};transition:all .2s;gap:2px`;
+    if(i===arArr.length-1)box.style.borderRightWidth='1px';
+    const top=document.createElement('span');top.textContent=v;
+    const bot=document.createElement('span');bot.style.cssText='font-size:.55rem;color:var(--color-text-secondary);font-weight:400';bot.textContent='(0x'+(0x100+i*4).toString(16).toUpperCase()+')';
+    box.appendChild(top);box.appendChild(bot);
+    const idx=document.createElement('div');idx.style.cssText='font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);margin-top:3px';idx.textContent='arr['+i+']';
+    const ptr=document.createElement('div');ptr.style.cssText='font-family:var(--font-mono);font-size:.65rem;color:#6366f1;margin-top:1px;min-height:14px';
+    if(isActive)ptr.textContent='▲ p';
+    cell.appendChild(box);cell.appendChild(idx);cell.appendChild(ptr);
+    wrap.appendChild(cell);
+  });
+}
+const arSteps=[
+  {l:'ar0',cls:'hi',mc:'mv',msg:'Declare arr={10,20,30,40,50}. Each int takes 4 bytes. Total: 20 bytes.',pos:0,pt:'arr[0]',val:10,addr:'0x100',mv:'—'},
+  {l:'ar1',cls:'hi-g',mc:'mg',msg:'int *p = arr — p points to arr[0] at address 0x100.',pos:0,pt:'arr[0]',val:10,addr:'0x100',mv:'init'},
+  {l:'ar3',cls:'hi',mc:'mv',msg:'*p → dereference at 0x100 → value is 10.',pos:0,pt:'arr[0]',val:10,addr:'0x100',mv:'read',out:'10'},
+  {l:'ar4',cls:'hi-a',mc:'ma',msg:'p++ → p moves from 0x100 to 0x104 (+4 bytes, size of int). Now points to arr[1].',pos:1,pt:'arr[1]',val:20,addr:'0x104',mv:'p++'},
+  {l:'ar5',cls:'hi',mc:'mv',msg:'*p → dereference at 0x104 → value is 20.',pos:1,pt:'arr[1]',val:20,addr:'0x104',mv:'read',out:'20'},
+  {l:'ar6',cls:'hi-a',mc:'ma',msg:'p += 2 → jump 2 ints forward → 0x104 + 8 = 0x10C. Now arr[3].',pos:3,pt:'arr[3]',val:40,addr:'0x10C',mv:'p+=2'},
+  {l:'ar7',cls:'hi',mc:'mv',msg:'*p → dereference at 0x10C → value is 40.',pos:3,pt:'arr[3]',val:40,addr:'0x10C',mv:'read',out:'40'},
+  {l:'ar8',cls:'hi-a',mc:'ma',msg:'p-- → step back one int → 0x10C - 4 = 0x108. Now arr[2].',pos:2,pt:'arr[2]',val:30,addr:'0x108',mv:'p--'},
+  {l:'ar9',cls:'hi',mc:'mv',msg:'*p → dereference at 0x108 → value is 30.',pos:2,pt:'arr[2]',val:30,addr:'0x108',mv:'read',out:'30'},
+];
+function arStep(){
+  if(arIdx>=arSteps.length)return;
+  if(arPrev){const e=document.getElementById(arPrev);if(e)e.className='cl';}
+  const s=arSteps[arIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  arPrev=s.l;
+  renderArMem(s.pos);
+  const msg=document.getElementById('ar-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('ar-pt').textContent=s.pt;
+  document.getElementById('ar-val').textContent=s.val;
+  document.getElementById('ar-addr').textContent=s.addr;
+  document.getElementById('ar-mv').textContent=s.mv;
+  if(s.out){arOut.push(s.out);document.getElementById('ar-out').textContent=arOut.join('\n');}
+  arIdx++;
+  document.getElementById('ar-cnt').textContent='step '+arIdx+' / '+arSteps.length;
+  document.getElementById('ar-bar').style.width=(arIdx/arSteps.length*100)+'%';
+}
+function arReset(){
+  arIdx=0;arOut=[];if(arPrev){const e=document.getElementById(arPrev);if(e)e.className='cl';}arPrev=null;
+  renderArMem(0);
+  document.getElementById('ar-msg').className='smsg';document.getElementById('ar-msg').textContent='Press Next step to see pointer arithmetic on an array.';
+  document.getElementById('ar-pt').textContent='arr[0]';document.getElementById('ar-val').textContent='10';
+  document.getElementById('ar-addr').textContent='0x100';document.getElementById('ar-mv').textContent='—';
+  document.getElementById('ar-out').textContent='';
+  document.getElementById('ar-cnt').textContent='step 0';document.getElementById('ar-bar').style.width='0%';
+}
+renderArMem(0);
+
+// ── PITFALLS ──
+let ptIdx=0,ptPrev=null;
+const ptSteps=[
+  {l:'pt1',cls:'hi-g',mc:'mg',msg:'NULL pointer: int *p = NULL — p is safely set to "no address". Always safe starting point.',type:'NULL ptr',what:'points nowhere',fix:'check p!=NULL'},
+  {l:'pt2',cls:'hi-g',mc:'mg',msg:'if (p != NULL) before *p — always guard before dereferencing. This prevents crashes.',type:'NULL check',what:'safe dereference',fix:'always check!'},
+  {l:'pt5',cls:'hi-r',mc:'mr',msg:'Wild pointer: int *q — q is declared but NOT initialised. It holds a random garbage address!',type:'wild pointer',what:'garbage address',fix:'init to NULL'},
+  {l:'pt6',cls:'hi-r',mc:'mr',msg:'*q = 10 — writing to a garbage address CRASHES the program (segmentation fault).',type:'segfault',what:'undefined behavior',fix:'never use uninit ptr'},
+  {l:'pt10',cls:'hi-r',mc:'mr',msg:'free(r) — memory is returned to OS. r still holds the old address but the memory is GONE.',type:'dangling ptr',what:'freed memory',fix:'set r=NULL after free'},
+  {l:'pt11',cls:'hi-r',mc:'mr',msg:'*r = 5 after free — CRASH! Accessing freed memory is undefined behavior.',type:'use after free',what:'crash / corruption',fix:'r=NULL after free'},
+  {l:'pt12',cls:'hi-g',mc:'mg',msg:'r = NULL after free — correct fix. Now r safely points to nothing. Cannot be accidentally dereferenced.',type:'fixed!',what:'safe',fix:'always do this'},
+];
+function ptStep(){
+  if(ptIdx>=ptSteps.length)return;
+  if(ptPrev){const e=document.getElementById(ptPrev);if(e)e.className='cl';}
+  const s=ptSteps[ptIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  ptPrev=s.l;
+  const msg=document.getElementById('pt-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('pt-type').textContent=s.type;
+  document.getElementById('pt-what').textContent=s.what;
+  document.getElementById('pt-fix').textContent=s.fix;
+  ptIdx++;
+  document.getElementById('pt-cnt').textContent='step '+ptIdx+' / '+ptSteps.length;
+  document.getElementById('pt-bar').style.width=(ptIdx/ptSteps.length*100)+'%';
+}
+function ptReset(){
+  ptIdx=0;if(ptPrev){const e=document.getElementById(ptPrev);if(e)e.className='cl';}ptPrev=null;
+  document.getElementById('pt-msg').className='smsg';document.getElementById('pt-msg').textContent='Press Next pitfall to learn about common pointer mistakes.';
+  ['pt-type','pt-what','pt-fix'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('pt-cnt').textContent='step 0';document.getElementById('pt-bar').style.width='0%';
+}
+</script>

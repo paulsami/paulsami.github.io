@@ -1,0 +1,470 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;font-family:var(--font-mono);font-size:.64rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}.ch{color:#fbbf24}
+
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+
+/* char memory cells */
+.mem-wrap{overflow-x:auto;margin-bottom:1rem}
+.mem-row{display:flex;gap:0;min-width:max-content}
+.mem-cell{display:flex;flex-direction:column;align-items:center;min-width:52px}
+.mem-box{width:48px;height:52px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.85rem;font-weight:700;color:var(--color-text-primary);transition:all .2s;border-right-width:0;gap:2px}
+.mem-cell:last-child .mem-box{border-right-width:1px}
+.mem-box .ascii{font-size:.55rem;font-weight:400;color:var(--color-text-secondary)}
+.mem-box.active{background:#eef2ff;color:#3730a3;border-color:#6366f1}
+.mem-box.null{background:#fef2f2;color:#ef4444;border-color:#fca5a5}
+.mem-box.written{background:rgba(16,185,129,.1);color:#065f46;border-color:#10b981}
+.mem-box.empty{color:var(--color-text-secondary);font-weight:400;font-size:.7rem}
+.mem-idx{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);margin-top:3px}
+.mem-addr{font-family:var(--font-mono);font-size:.55rem;color:var(--color-border-secondary);margin-top:1px}
+
+/* stepper */
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);color:var(--color-text-secondary);border-left:3px solid var(--color-border-secondary)}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 12px;min-width:64px}
+.vlbl{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:1rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.warn{border-left:2.5px solid #ef4444;background:rgba(239,68,68,.03);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+
+/* interactive playground */
+.playground{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.pg-input{width:100%;font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;margin-bottom:10px}
+.pg-input:focus{border-color:#6366f1}
+.fn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.fn-btn{font-family:var(--font-mono);font-size:.65rem;padding:7px 4px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s;text-align:center}
+.fn-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:#6366f1}
+.fn-result{font-family:var(--font-mono);font-size:.72rem;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);min-height:36px;color:var(--color-text-primary);line-height:1.8}
+@media(max-width:520px){.two{grid-template-columns:1fr}.fn-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<div class="root">
+<div class="tabs">
+  <button class="tab active" onclick="T('what',this)">what is a string?</button>
+  <button class="tab" onclick="T('declare',this)">declaration</button>
+  <button class="tab" onclick="T('fns',this)">string functions</button>
+  <button class="tab" onclick="T('loop',this)">loop & modify</button>
+  <button class="tab" onclick="T('pitfalls',this)">pitfalls</button>
+</div>
+
+<!-- WHAT IS A STRING -->
+<div class="pane on" id="pane-what">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> what_is_string.c</div>
+    <pre><span class="cl" id="w0"><span class="cm">// A string in C = char array ending with '\0'</span></span>
+<span class="cl" id="w1"><span class="kw">char</span> name[] = <span class="str">"HELLO"</span>;</span>
+<span class="cl" id="w2"></span>
+<span class="cl" id="w3"><span class="cm">// Same thing written manually:</span></span>
+<span class="cl" id="w4"><span class="kw">char</span> name2[] = {<span class="ch">'H'</span>,<span class="ch">'E'</span>,<span class="ch">'L'</span>,<span class="ch">'L'</span>,<span class="ch">'O'</span>,<span class="ch">'\0'</span>};</span>
+<span class="cl" id="w5"></span>
+<span class="cl" id="w6"><span class="cm">// '\0' is ASCII 0 — the null terminator</span></span>
+<span class="cl" id="w7"><span class="cm">// Without it, printf keeps reading garbage!</span></span>
+<span class="cl" id="w8"><span class="fn">printf</span>(<span class="str">"%s\n"</span>, name); <span class="cm">// prints: HELLO</span></span></pre>
+  </div>
+  <div class="slbl">memory layout of "HELLO" — 6 bytes (5 chars + null terminator)</div>
+  <div class="mem-wrap"><div class="mem-row" id="what-mem"></div></div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="whatStep()">Next step ›</button>
+      <button class="btn" onclick="whatReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="what-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="what-bar"></div></div>
+    <div class="smsg" id="what-msg">Press Next step to see how "HELLO" is stored in memory.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">index</div><div class="vval" id="what-i">—</div></div>
+      <div class="vbox"><div class="vlbl">char</div><div class="vval" id="what-c">—</div></div>
+      <div class="vbox"><div class="vlbl">ASCII</div><div class="vval" id="what-a">—</div></div>
+      <div class="vbox"><div class="vlbl">role</div><div class="vval" id="what-r" style="font-size:.8rem">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="what-out"></div>
+  </div>
+  <div class="note">The <strong>null terminator</strong> <code>'\0'</code> (ASCII value 0) is what makes a char array a string. Functions like <code>printf</code>, <code>strlen</code>, <code>strcpy</code> scan characters until they hit <code>'\0'</code> — that's how they know where the string ends.</div>
+  <div class="badges">
+    <span class="badge b-v">string = char array + '\0'</span>
+    <span class="badge b-g">"HELLO" takes 6 bytes</span>
+    <span class="badge b-r">no '\0' = undefined behavior</span>
+    <span class="badge b-a">'\0' is ASCII 0, not '0'(48)</span>
+  </div>
+</div>
+
+<!-- DECLARATION -->
+<div class="pane" id="pane-declare">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> string_declare.c</div>
+      <pre><span class="cl" id="dc0"><span class="cm">// 1. From string literal (auto '\0')</span></span>
+<span class="cl" id="dc1"><span class="kw">char</span> s1[] = <span class="str">"Hi"</span>;        <span class="cm">// size = 3</span></span>
+<span class="cl" id="dc2"></span>
+<span class="cl" id="dc3"><span class="cm">// 2. Fixed size — must leave room for '\0'</span></span>
+<span class="cl" id="dc4"><span class="kw">char</span> s2[<span class="num">10</span>] = <span class="str">"Hi"</span>;      <span class="cm">// [H,i,\0,0,0...]</span></span>
+<span class="cl" id="dc5"></span>
+<span class="cl" id="dc6"><span class="cm">// 3. Pointer to string literal (read-only!)</span></span>
+<span class="cl" id="dc7"><span class="kw">char</span> *s3 = <span class="str">"Hi"</span>;        <span class="cm">// cannot modify!</span></span>
+<span class="cl" id="dc8"></span>
+<span class="cl" id="dc9"><span class="cm">// 4. Empty buffer for user input</span></span>
+<span class="cl" id="dc10"><span class="kw">char</span> buf[<span class="num">50</span>];           <span class="cm">// reserve space</span></span>
+<span class="cl" id="dc11"><span class="fn">fgets</span>(buf, <span class="num">50</span>, stdin); <span class="cm">// safe input</span></span>
+<span class="cl" id="dc12"></span>
+<span class="cl" id="dc13"><span class="cm">// strlen = chars NOT counting '\0'</span></span>
+<span class="cl" id="dc14"><span class="fn">strlen</span>(<span class="str">"Hi"</span>) == <span class="num">2</span>;      <span class="cm">// true</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">memory: char s2[10] = "Hi"</div>
+      <div class="mem-wrap"><div class="mem-row" id="decl-mem2"></div></div>
+      <div class="note" style="margin-top:0">
+        <strong>Key differences:</strong><br><br>
+        <code>char s[]="Hi"</code> — array, modifiable, size auto-computed (3)<br><br>
+        <code>char s[10]="Hi"</code> — array, modifiable, extra slots filled with <code>\0</code><br><br>
+        <code>char *s="Hi"</code> — pointer to read-only literal in memory. Trying to modify crashes!
+      </div>
+      <div class="badges">
+        <span class="badge b-v">always size+1 for '\0'</span>
+        <span class="badge b-r">char* literal is read-only</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STRING FUNCTIONS -->
+<div class="pane" id="pane-fns">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> string.h functions</div>
+    <pre><span class="kw">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="kw">char</span> a[<span class="num">20</span>] = <span class="str">"Hello"</span>;
+<span class="kw">char</span> b[<span class="num">20</span>] = <span class="str">"World"</span>;
+
+<span class="fn">strlen</span>(a)           <span class="cm">// → 5   (length)</span>
+<span class="fn">strcpy</span>(a, b)        <span class="cm">// a = "World"</span>
+<span class="fn">strcat</span>(a, <span class="str">" !"</span>)     <span class="cm">// a = "World !"</span>
+<span class="fn">strcmp</span>(a, b)        <span class="cm">// 0=equal, neg/pos</span>
+<span class="fn">strchr</span>(a, <span class="ch">'o'</span>)     <span class="cm">// pointer to 'o'</span>
+<span class="fn">strstr</span>(a, <span class="str">"orl"</span>)   <span class="cm">// pointer to "orl"</span>
+<span class="fn">strncpy</span>(a,b,<span class="num">3</span>)     <span class="cm">// copy only 3 chars (safer)</span>
+<span class="fn">strncat</span>(a,b,<span class="num">3</span>)     <span class="cm">// append only 3 chars</span></pre>
+  </div>
+  <div class="playground">
+    <div class="slbl">interactive string playground — type a string and try the functions</div>
+    <input class="pg-input" id="pg-str" type="text" value="Hello World" maxlength="30" placeholder="Type a string..." oninput="pgUpdate()">
+    <div class="fn-grid">
+      <button class="fn-btn" onclick="pgRun('strlen')">strlen()</button>
+      <button class="fn-btn" onclick="pgRun('upper')">to uppercase</button>
+      <button class="fn-btn" onclick="pgRun('lower')">to lowercase</button>
+      <button class="fn-btn" onclick="pgRun('reverse')">reverse</button>
+      <button class="fn-btn" onclick="pgRun('count')">count vowels</button>
+      <button class="fn-btn" onclick="pgRun('firstchar')">first char</button>
+      <button class="fn-btn" onclick="pgRun('lastchar')">last char</button>
+      <button class="fn-btn" onclick="pgRun('spaces')">count spaces</button>
+      <button class="fn-btn" onclick="pgRun('digits')">count digits</button>
+    </div>
+    <div class="slbl">result</div>
+    <div class="fn-result" id="pg-result">Click any function button above to see the result.</div>
+    <div class="mem-wrap" style="margin-top:10px"><div class="mem-row" id="pg-mem"></div></div>
+  </div>
+  <div class="note">Always <code>#include &lt;string.h&gt;</code> to use these. The <strong>safe</strong> versions (<code>strncpy</code>, <code>strncat</code>, <code>snprintf</code>) take a max-length argument to prevent buffer overflows — prefer them in real code.</div>
+  <div class="badges">
+    <span class="badge b-v">strlen — length without '\0'</span>
+    <span class="badge b-g">strcpy/strcat — copy/join</span>
+    <span class="badge b-a">strcmp — 0 means equal</span>
+    <span class="badge b-r">prefer strn* safe versions</span>
+  </div>
+</div>
+
+<!-- LOOP & MODIFY -->
+<div class="pane" id="pane-loop">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> string_loop.c</div>
+    <pre><span class="cl" id="lp0"><span class="kw">char</span> s[] = <span class="str">"hello"</span>;</span>
+<span class="cl" id="lp1"><span class="kw">int</span> len = <span class="fn">strlen</span>(s);  <span class="cm">// = 5</span></span>
+<span class="cl" id="lp2"></span>
+<span class="cl" id="lp3"><span class="cm">// Loop until '\0'</span></span>
+<span class="cl" id="lp4"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; s[i] != <span class="ch">'\0'</span>; i++) {</span>
+<span class="cl" id="lp5">    s[i] = s[i] - <span class="num">32</span>; <span class="cm">// lowercase→uppercase</span></span>
+<span class="cl" id="lp6">}                     <span class="cm">// 'a'=97, 'A'=65, diff=32</span></span>
+<span class="cl" id="lp7"></span>
+<span class="cl" id="lp8"><span class="fn">printf</span>(<span class="str">"%s\n"</span>, s); <span class="cm">// prints: HELLO</span></span></pre>
+  </div>
+  <div class="slbl">char-by-char transformation: "hello" → "HELLO"</div>
+  <div class="mem-wrap"><div class="mem-row" id="loop-mem"></div></div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="lpStep()">Next step ›</button>
+      <button class="btn" onclick="lpReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="lp-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="lp-bar"></div></div>
+    <div class="smsg" id="lp-msg">Press Next step to convert "hello" to "HELLO" character by character.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">i</div><div class="vval" id="lp-i">—</div></div>
+      <div class="vbox"><div class="vlbl">s[i]</div><div class="vval" id="lp-c">—</div></div>
+      <div class="vbox"><div class="vlbl">ASCII</div><div class="vval" id="lp-a">—</div></div>
+      <div class="vbox"><div class="vlbl">-32 →</div><div class="vval" id="lp-u">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="lp-out"></div>
+  </div>
+  <div class="note">Looping with <code>s[i] != '\0'</code> is the classic string traversal pattern — no need to know the length upfront. Since characters are just numbers (ASCII), arithmetic on them works: <code>'a' - 32 = 'A'</code>, <code>'A' + 32 = 'a'</code>.</div>
+  <div class="badges">
+    <span class="badge b-v">loop condition: s[i] != '\0'</span>
+    <span class="badge b-g">'a'=97, 'A'=65, diff=32</span>
+    <span class="badge b-a">chars are just integers</span>
+  </div>
+</div>
+
+<!-- PITFALLS -->
+<div class="pane" id="pane-pitfalls">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> string_pitfalls.c</div>
+    <pre><span class="cl" id="pt0"><span class="cm">// ❌ BUG 1: No room for '\0'</span></span>
+<span class="cl" id="pt1"><span class="kw">char</span> s[<span class="num">5</span>] = <span class="str">"Hello"</span>; <span class="cm">// needs 6! overflow!</span></span>
+<span class="cl" id="pt2"></span>
+<span class="cl" id="pt3"><span class="cm">// ❌ BUG 2: strcmp with ==</span></span>
+<span class="cl" id="pt4"><span class="kw">char</span> a[] = <span class="str">"hi"</span>, b[] = <span class="str">"hi"</span>;</span>
+<span class="cl" id="pt5"><span class="kw">if</span> (a == b) <span class="cm">// WRONG! compares addresses</span></span>
+<span class="cl" id="pt6"><span class="kw">if</span> (<span class="fn">strcmp</span>(a,b)==<span class="num">0</span>) <span class="cm">// ✅ correct!</span></span>
+<span class="cl" id="pt7"></span>
+<span class="cl" id="pt8"><span class="cm">// ❌ BUG 3: Modifying a string literal</span></span>
+<span class="cl" id="pt9"><span class="kw">char</span> *p = <span class="str">"hi"</span>;</span>
+<span class="cl" id="pt10">p[<span class="num">0</span>] = <span class="ch">'H'</span>; <span class="cm">// CRASH — read-only memory!</span></span>
+<span class="cl" id="pt11"></span>
+<span class="cl" id="pt12"><span class="cm">// ❌ BUG 4: scanf overflow</span></span>
+<span class="cl" id="pt13"><span class="kw">char</span> buf[<span class="num">10</span>];</span>
+<span class="cl" id="pt14"><span class="fn">scanf</span>(<span class="str">"%s"</span>, buf);       <span class="cm">// dangerous</span></span>
+<span class="cl" id="pt15"><span class="fn">scanf</span>(<span class="str">"%9s"</span>, buf);      <span class="cm">// ✅ limit to 9</span></span></pre>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="ptStep()">Next pitfall ›</button>
+      <button class="btn" onclick="ptReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="pt-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="pt-bar" style="background:#ef4444"></div></div>
+    <div class="smsg" id="pt-msg">Press Next pitfall to learn about each common string mistake.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">bug #</div><div class="vval" id="pt-n">—</div></div>
+      <div class="vbox"><div class="vlbl">what happens</div><div class="vval" id="pt-w" style="font-size:.75rem">—</div></div>
+      <div class="vbox"><div class="vlbl">fix</div><div class="vval" id="pt-f" style="font-size:.75rem">—</div></div>
+    </div>
+  </div>
+  <div class="warn">Strings in C require careful memory management. Buffer overflows are one of the most common security vulnerabilities in C programs. Always allocate <strong>length + 1</strong> bytes, and prefer <code>fgets</code> over <code>scanf("%s")</code> for user input.</div>
+  <div class="badges">
+    <span class="badge b-r">always size = len + 1</span>
+    <span class="badge b-r">use strcmp not ==</span>
+    <span class="badge b-r">char* literals are read-only</span>
+    <span class="badge b-g">fgets for safe input</span>
+  </div>
+</div>
+</div>
+
+<script>
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');
+  el.classList.add('active');
+}
+
+// Mem renderer for chars
+function renderCharMem(id, chars, activeIdx) {
+  const wrap = document.getElementById(id); wrap.innerHTML='';
+  chars.forEach((c,i)=>{
+    const cell=document.createElement('div'); cell.className='mem-cell';
+    const box=document.createElement('div');
+    const isNull=(c==='\0');
+    const isActive=(i===activeIdx);
+    box.className='mem-box'+(isNull?' null':isActive?' active':c==='?'?' empty':' written');
+    const top=document.createElement('span'); top.textContent=isNull?'\\0':c==='?'?'?':c;
+    const bot=document.createElement('span'); bot.className='ascii';
+    bot.textContent=isNull?'(0)':c==='?'?'':('('+c.charCodeAt(0)+')');
+    box.appendChild(top); box.appendChild(bot);
+    const idx=document.createElement('div'); idx.className='mem-idx'; idx.textContent='['+i+']';
+    const addr=document.createElement('div'); addr.className='mem-addr'; addr.textContent='0x'+(200+i).toString(16).toUpperCase();
+    cell.appendChild(box); cell.appendChild(idx); cell.appendChild(addr);
+    wrap.appendChild(cell);
+  });
+}
+
+// -- WHAT IS STRING --
+const helloChars=['H','E','L','L','O','\0'];
+const helloASCII=[72,69,76,76,79,0];
+const helloRoles=['letter','letter','letter','letter','letter','null terminator'];
+let whatIdx=0,whatPrevL=null,whatBuilt=[];
+function whatStep(){
+  if(whatIdx>=7)return;
+  if(whatIdx<6){
+    whatBuilt.push(helloChars[whatIdx]);
+    renderCharMem('what-mem',whatBuilt.concat(Array(6-whatBuilt.length).fill('?')),whatIdx);
+    const msg=document.getElementById('what-msg');
+    if(whatIdx<5){msg.className='smsg mg';msg.textContent='name['+whatIdx+'] = \''+helloChars[whatIdx]+'\' — ASCII '+helloASCII[whatIdx]+' stored at ['+whatIdx+']';}
+    else{msg.className='smsg mr';msg.textContent='name[5] = \'\\0\' — null terminator (ASCII 0) — marks END of string!';}
+    document.getElementById('what-i').textContent=whatIdx;
+    document.getElementById('what-c').textContent=whatIdx<5?("'"+helloChars[whatIdx]+"'"):"'\\0'";
+    document.getElementById('what-a').textContent=helloASCII[whatIdx];
+    document.getElementById('what-r').textContent=helloRoles[whatIdx];
+  } else {
+    renderCharMem('what-mem',helloChars,-1);
+    const msg=document.getElementById('what-msg');msg.className='smsg mv';
+    msg.textContent='printf("%s", name) scans until \\0 → prints: HELLO';
+    document.getElementById('what-out').textContent='HELLO';
+  }
+  whatIdx++;
+  document.getElementById('what-cnt').textContent='step '+whatIdx+' / 7';
+  document.getElementById('what-bar').style.width=(whatIdx/7*100)+'%';
+}
+function whatReset(){
+  whatIdx=0;whatBuilt=[];
+  renderCharMem('what-mem',Array(6).fill('?'),-1);
+  ['what-i','what-c','what-a','what-r'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('what-out').textContent='';
+  document.getElementById('what-msg').className='smsg';
+  document.getElementById('what-msg').textContent='Press Next step to see how "HELLO" is stored in memory.';
+  document.getElementById('what-cnt').textContent='step 0';
+  document.getElementById('what-bar').style.width='0%';
+}
+renderCharMem('what-mem',Array(6).fill('?'),-1);
+
+// -- DECLARATION mem --
+(function(){
+  const arr=['H','i','\0','?','?','?','?','?','?','?'];
+  renderCharMem('decl-mem2',arr,-1);
+})();
+
+// -- PLAYGROUND --
+function pgUpdate(){
+  const s=document.getElementById('pg-str').value||'';
+  const chars=[...s,'\0'];
+  renderCharMem('pg-mem',chars,-1);
+}
+function pgRun(fn){
+  const s=document.getElementById('pg-str').value||'';
+  const res=document.getElementById('pg-result');
+  let out='';
+  switch(fn){
+    case 'strlen': out='strlen("'+s+'") = '+s.length+'\n(counts '+s.length+' chars, not including \\0)'; break;
+    case 'upper': out='toupper result:\n"'+s.toUpperCase()+'"'; break;
+    case 'lower': out='tolower result:\n"'+s.toLowerCase()+'"'; break;
+    case 'reverse': out='reversed:\n"'+[...s].reverse().join('')+'"'; break;
+    case 'count': {const v=(s.match(/[aeiouAEIOU]/g)||[]).length; out='Vowels in "'+s+'" = '+v; break;}
+    case 'firstchar': out=s.length?'first char: \''+s[0]+'\' (ASCII '+s.charCodeAt(0)+')':'(empty string)'; break;
+    case 'lastchar': out=s.length?'last char: \''+s[s.length-1]+'\' (ASCII '+s.charCodeAt(s.length-1)+')':'(empty string)'; break;
+    case 'spaces': out='spaces in "'+s+'" = '+(s.split(' ').length-1); break;
+    case 'digits': {const d=(s.match(/\d/g)||[]).length; out='digits in "'+s+'" = '+d; break;}
+  }
+  res.textContent=out;
+  const chars=[...s,'\0'];
+  renderCharMem('pg-mem',chars,-1);
+}
+pgUpdate();
+
+// -- LOOP & MODIFY --
+const lowerStr=['h','e','l','l','o','\0'];
+let lpStr=['h','e','l','l','o','\0'],lpIdx2=0,lpPrevL=null,lpOut2=[];
+const lpSteps=[
+  {l:'lp0',cls:'hi',mc:'mv',msg:'Declare: char s[] = "hello" — 6 bytes in memory',i:'—',c:'—',a:'—',u:'—'},
+  {l:'lp1',cls:'hi',mc:'mv',msg:'strlen("hello") = 5 (stops at \\0)',i:'—',c:'—',a:'—',u:'—'},
+  {l:'lp4',cls:'hi',mc:'mv',msg:'Loop start: i=0, check s[0]!=\'\\0\' → \'h\'!=\'\\0\' → true',i:0,c:"'h'",a:104,u:'—',active:0},
+  {l:'lp5',cls:'hi-g',mc:'mg',msg:"s[0]='h' (97+7=104) → 104-32=72 → 'H' written",i:0,c:"'h'",a:104,u:"'H'(72)",active:0,write:{i:0,v:'H'}},
+  {l:'lp4',cls:'hi',mc:'mv',msg:'i=1, s[1]=\'e\'!=\'\\0\' → true',i:1,c:"'e'",a:101,u:'—',active:1},
+  {l:'lp5',cls:'hi-g',mc:'mg',msg:"s[1]='e' (101) → 101-32=69 → 'E'",i:1,c:"'e'",a:101,u:"'E'(69)",active:1,write:{i:1,v:'E'}},
+  {l:'lp4',cls:'hi',mc:'mv',msg:'i=2, s[2]=\'l\'!=\'\\0\' → true',i:2,c:"'l'",a:108,u:'—',active:2},
+  {l:'lp5',cls:'hi-g',mc:'mg',msg:"s[2]='l' (108) → 108-32=76 → 'L'",i:2,c:"'l'",a:108,u:"'L'(76)",active:2,write:{i:2,v:'L'}},
+  {l:'lp4',cls:'hi',mc:'mv',msg:'i=3, s[3]=\'l\'!=\'\\0\' → true',i:3,c:"'l'",a:108,u:'—',active:3},
+  {l:'lp5',cls:'hi-g',mc:'mg',msg:"s[3]='l' (108) → 108-32=76 → 'L'",i:3,c:"'l'",a:108,u:"'L'(76)",active:3,write:{i:3,v:'L'}},
+  {l:'lp4',cls:'hi',mc:'mv',msg:'i=4, s[4]=\'o\'!=\'\\0\' → true',i:4,c:"'o'",a:111,u:'—',active:4},
+  {l:'lp5',cls:'hi-g',mc:'mg',msg:"s[4]='o' (111) → 111-32=79 → 'O'",i:4,c:"'o'",a:111,u:"'O'(79)",active:4,write:{i:4,v:'O'}},
+  {l:'lp4',cls:'hi-r',mc:'mr',msg:"i=5, s[5]='\\0' → condition false! Loop ends.",i:5,c:"'\\0'",a:0,u:'—',active:5},
+  {l:'lp8',cls:'hi',mc:'mg',msg:'printf("%s", s) → scans until \\0 → prints: HELLO',i:'—',c:'—',a:'—',u:'—',out:'HELLO'},
+];
+function lpStep(){
+  if(lpIdx2>=lpSteps.length)return;
+  if(lpPrevL){const e=document.getElementById(lpPrevL);if(e)e.className='cl';}
+  const s=lpSteps[lpIdx2];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  lpPrevL=s.l;
+  if(s.write)lpStr[s.write.i]=s.write.v;
+  renderCharMem('loop-mem',lpStr,s.active??-1);
+  const msg=document.getElementById('lp-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('lp-i').textContent=s.i;
+  document.getElementById('lp-c').textContent=s.c;
+  document.getElementById('lp-a').textContent=s.a;
+  document.getElementById('lp-u').textContent=s.u;
+  if(s.out){lpOut2.push(s.out);document.getElementById('lp-out').textContent=lpOut2.join('\n');}
+  lpIdx2++;
+  document.getElementById('lp-cnt').textContent='step '+lpIdx2+' / '+lpSteps.length;
+  document.getElementById('lp-bar').style.width=(lpIdx2/lpSteps.length*100)+'%';
+}
+function lpReset(){
+  lpIdx2=0;lpStr=['h','e','l','l','o','\0'];lpOut2=[];
+  if(lpPrevL){const e=document.getElementById(lpPrevL);if(e)e.className='cl';}lpPrevL=null;
+  renderCharMem('loop-mem',lpStr,-1);
+  const msg=document.getElementById('lp-msg');msg.className='smsg';
+  msg.textContent='Press Next step to convert "hello" to "HELLO" character by character.';
+  ['lp-i','lp-c','lp-a','lp-u'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('lp-out').textContent='';
+  document.getElementById('lp-cnt').textContent='step 0';document.getElementById('lp-bar').style.width='0%';
+}
+renderCharMem('loop-mem',['h','e','l','l','o','\0'],-1);
+
+// -- PITFALLS --
+const ptData=[
+  {l:'pt1',cls:'hi-r',mc:'mr',msg:'Bug 1: char s[5]="Hello" — "Hello" needs 6 bytes (5+\'\\0\'). Buffer overflow! Always declare size as strlen+1.',n:1,w:'buffer overflow',f:'char s[6]="Hello"'},
+  {l:'pt5',cls:'hi-r',mc:'mr',msg:'Bug 2: a==b compares memory addresses, not content. Two arrays always have different addresses even with same content.',n:2,w:'compares pointers',f:'strcmp(a,b)==0'},
+  {l:'pt10',cls:'hi-r',mc:'mr',msg:'Bug 3: char* p="hi" points to read-only memory in the program. Writing to it causes a segfault crash.',n:3,w:'segfault crash',f:'char p[]="hi"'},
+  {l:'pt14',cls:'hi-r',mc:'mr',msg:'Bug 4: scanf("%s",buf) has no length limit — user input longer than 9 chars overflows buf[10]!',n:4,w:'buffer overflow',f:'scanf("%9s",buf)'},
+];
+let ptIdx=0,ptPrevL=null;
+function ptStep(){
+  if(ptIdx>=ptData.length)return;
+  if(ptPrevL){const e=document.getElementById(ptPrevL);if(e)e.className='cl';}
+  const s=ptData[ptIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  ptPrevL=s.l;
+  const msg=document.getElementById('pt-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('pt-n').textContent=s.n;
+  document.getElementById('pt-w').textContent=s.w;
+  document.getElementById('pt-f').textContent=s.f;
+  ptIdx++;
+  document.getElementById('pt-cnt').textContent='pitfall '+ptIdx+' / '+ptData.length;
+  document.getElementById('pt-bar').style.width=(ptIdx/ptData.length*100)+'%';
+}
+function ptReset(){
+  ptIdx=0;if(ptPrevL){const e=document.getElementById(ptPrevL);if(e)e.className='cl';}ptPrevL=null;
+  const msg=document.getElementById('pt-msg');msg.className='smsg';msg.textContent='Press Next pitfall to learn about each common string mistake.';
+  ['pt-n','pt-w','pt-f'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('pt-cnt').textContent='step 0';document.getElementById('pt-bar').style.width='0%';
+}
+</script>
