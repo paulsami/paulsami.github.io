@@ -1,0 +1,616 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.unit-pill{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:20px;padding:6px 16px;margin-bottom:1.25rem}
+.unit-pill span{font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:#fff}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;font-family:var(--font-mono);font-size:.63rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}.ret{color:#ef4444;font-weight:600}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.warn{border-left:2.5px solid #ef4444;background:rgba(239,68,68,.03);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);border-left:3px solid var(--color-border-secondary);line-height:1.5;color:var(--color-text-secondary)}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:58px}
+.vlbl{font-family:var(--font-mono);font-size:.56rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:.9rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8;white-space:pre-wrap}
+
+/* memory blocks */
+.mem-row{display:flex;gap:0;min-width:max-content;margin-bottom:8px}
+.mem-cell{display:flex;flex-direction:column;align-items:center;min-width:60px}
+.mem-box{width:56px;height:56px;border:1px solid var(--color-border-secondary);background:var(--color-background-secondary);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.78rem;font-weight:700;color:var(--color-text-primary);transition:all .2s;border-right-width:0;gap:1px}
+.mem-cell:last-child .mem-box{border-right-width:1px}
+.mem-box .sub{font-size:.52rem;font-weight:400;color:var(--color-text-secondary)}
+.mem-box.act{background:#eef2ff;color:#3730a3;border-color:#6366f1}
+.mem-box.ptr{background:rgba(16,185,129,.1);color:#065f46;border-color:#10b981}
+.mem-box.nul{background:#fef2f2;color:#ef4444;border-color:#fca5a5}
+.mem-idx{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);margin-top:3px}
+.mem-addr{font-family:var(--font-mono);font-size:.52rem;color:var(--color-border-secondary);margin-top:1px}
+
+/* linked list node */
+.ll-wrap{overflow-x:auto;margin-bottom:1rem;padding:10px 0}
+.ll-row{display:flex;align-items:center;gap:0;min-width:max-content}
+.ll-node{display:flex;border-radius:var(--border-radius-md);border:1.5px solid;overflow:hidden;transition:all .25s}
+.ll-node.active{box-shadow:0 0 0 2.5px #f59e0b}
+.ll-data{font-family:var(--font-mono);font-size:.8rem;font-weight:700;padding:10px 12px;background:var(--color-background-secondary);color:var(--color-text-primary);border-right:1px solid;min-width:44px;text-align:center}
+.ll-next{font-family:var(--font-mono);font-size:.65rem;padding:4px 8px;background:rgba(99,102,241,.08);color:#4338ca;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:52px}
+.ll-next .next-lbl{font-size:.52rem;color:var(--color-text-secondary)}
+.ll-arrow{display:flex;align-items:center;padding:0 6px;color:var(--color-text-secondary);font-size:1.1rem}
+.ll-null{font-family:var(--font-mono);font-size:.7rem;padding:10px 12px;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:var(--border-radius-md);color:#ef4444;font-weight:500}
+.ll-head{font-family:var(--font-mono);font-size:.65rem;color:#6366f1;text-align:center;margin-bottom:4px;font-weight:500}
+.node-wrap{display:flex;flex-direction:column;align-items:center}
+/* self-ref struct diagram */
+.struct-box{background:var(--color-background-secondary);border:1.5px solid;border-radius:var(--border-radius-lg);padding:12px 14px;margin-bottom:10px;font-family:var(--font-mono);font-size:.72rem}
+.struct-box.n1{border-color:rgba(99,102,241,.4)}
+.struct-box.n2{border-color:rgba(16,185,129,.4)}
+.struct-box.n3{border-color:rgba(245,158,11,.4)}
+.struct-field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.struct-field:last-child{border-bottom:none}
+.field-name{color:var(--color-text-secondary)}
+.field-val{font-weight:500;color:var(--color-text-primary)}
+.field-ptr{color:#10b981}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+<div class="unit-pill"><span>Pointers · 2 lectures</span></div>
+<div class="tabs">
+  <button class="tab active" onclick="T('idea',this)">idea of pointers</button>
+  <button class="tab" onclick="T('defining',this)">defining pointers</button>
+  <button class="tab" onclick="T('selfref',this)">self-referential struct</button>
+  <button class="tab" onclick="T('ll',this)">notion of linked list</button>
+</div>
+
+<!-- IDEA OF POINTERS -->
+<div class="pane on" id="pane-idea">
+  <div class="two">
+    <div>
+      <div class="slbl">real-world analogy</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px">
+          <div style="font-family:var(--font-mono);font-size:.75rem;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">🏠 House analogy</div>
+          <div style="font-size:.76rem;color:var(--color-text-secondary);line-height:1.6">
+            A <strong>variable</strong> is like a house (it stores something).<br>
+            A <strong>pointer</strong> is like a piece of paper with the house's <em>address</em> written on it.<br>
+            You don't carry the house — you carry the address, and go there when needed.
+          </div>
+        </div>
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px">
+          <div style="font-family:var(--font-mono);font-size:.75rem;font-weight:500;color:var(--color-text-primary);margin-bottom:6px">📦 Memory analogy</div>
+          <div style="font-size:.76rem;color:var(--color-text-secondary);line-height:1.6">
+            RAM = a long row of numbered boxes (addresses).<br>
+            Every variable occupies one or more boxes.<br>
+            A pointer stores the <em>box number</em> (address) of another variable.
+          </div>
+        </div>
+        <div style="background:rgba(99,102,241,.06);border:0.5px solid rgba(99,102,241,.25);border-radius:var(--border-radius-lg);padding:12px 14px">
+          <div style="font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:#6366f1;margin-bottom:4px">Why pointers exist</div>
+          <div style="font-size:.76rem;color:var(--color-text-secondary);line-height:1.7">
+            ✦ Pass large data without copying<br>
+            ✦ Modify a caller's variable from inside a function<br>
+            ✦ Build dynamic structures (linked lists, trees)<br>
+            ✦ Arrays and strings are pointers under the hood
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="slbl">memory layout — int x = 42 and int *p = &x</div>
+      <div style="overflow-x:auto;margin-bottom:1rem">
+        <div style="min-width:max-content">
+          <div style="display:flex;gap:0" id="idea-mem"></div>
+          <div style="display:flex;gap:0;margin-top:16px" id="idea-ptr-mem"></div>
+        </div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:.7rem;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;line-height:1.9">
+        <div><span style="color:#6366f1">x</span> = 42 &nbsp;&nbsp; lives at address <span style="color:#10b981">0x100</span></div>
+        <div><span style="color:#6366f1">p</span> = 0x100 &nbsp; lives at address <span style="color:#10b981">0x108</span></div>
+        <div style="margin-top:4px;color:var(--color-text-secondary)">p stores the address of x, not the value 42</div>
+        <div><span style="color:#f59e0b">*p</span> → follow 0x100 → reads 42</div>
+        <div><span style="color:#ef4444">&x</span> → gives 0x100 (address of x)</div>
+      </div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="slbl">step through: how a pointer is created and used</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="ideaStep()">Next step ›</button>
+      <button class="btn" onclick="ideaReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="idea-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="idea-bar"></div></div>
+    <div class="smsg" id="idea-msg">Press Next step to understand how pointers work in memory.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">x</div><div class="vval" id="idea-x">42</div></div>
+      <div class="vbox"><div class="vlbl">p holds</div><div class="vval" id="idea-p">?</div></div>
+      <div class="vbox"><div class="vlbl">*p reads</div><div class="vval" id="idea-deref">?</div></div>
+      <div class="vbox"><div class="vlbl">&x gives</div><div class="vval" id="idea-addr" style="font-size:.72rem">?</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="idea-out"></div>
+  </div>
+  <div class="note">The <strong>key insight</strong>: a pointer is just an integer — the memory address of another variable. The type (<code>int *</code>, <code>char *</code>) tells C how many bytes to read when you dereference it, not the size of the pointer itself (always 8 bytes on 64-bit systems).</div>
+  <div class="badges">
+    <span class="badge b-v">pointer = stores an address</span>
+    <span class="badge b-g">&x → address of x</span>
+    <span class="badge b-a">*p → value at that address</span>
+    <span class="badge b-r">pointer size = 8 bytes (64-bit)</span>
+  </div>
+</div>
+
+<!-- DEFINING POINTERS -->
+<div class="pane" id="pane-defining">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> defining_pointers.c</div>
+    <pre><span class="cl" id="dp0"><span class="cm">// Syntax: type *pointer_name;</span></span>
+<span class="cl" id="dp1"><span class="kw">int</span>    *p;   <span class="cm">// pointer to int</span></span>
+<span class="cl" id="dp2"><span class="kw">char</span>   *c;   <span class="cm">// pointer to char</span></span>
+<span class="cl" id="dp3"><span class="kw">float</span>  *f;   <span class="cm">// pointer to float</span></span>
+<span class="cl" id="dp4"><span class="kw">double</span> *d;   <span class="cm">// pointer to double</span></span>
+<span class="cl" id="dp5"></span>
+<span class="cl" id="dp6"><span class="cm">// Initialise: point to an existing variable</span></span>
+<span class="cl" id="dp7"><span class="kw">int</span> n = <span class="num">10</span>;</span>
+<span class="cl" id="dp8"><span class="kw">int</span> *ptr = &amp;n;   <span class="cm">// ptr = address of n</span></span>
+<span class="cl" id="dp9"></span>
+<span class="cl" id="dp10"><span class="cm">// Read through pointer (dereference)</span></span>
+<span class="cl" id="dp11"><span class="kw">int</span> val = *ptr;  <span class="cm">// val = 10</span></span>
+<span class="cl" id="dp12"></span>
+<span class="cl" id="dp13"><span class="cm">// Write through pointer</span></span>
+<span class="cl" id="dp14">*ptr = <span class="num">99</span>;       <span class="cm">// n is now 99</span></span>
+<span class="cl" id="dp15"></span>
+<span class="cl" id="dp16"><span class="cm">// Pointer to pointer</span></span>
+<span class="cl" id="dp17"><span class="kw">int</span> **pp = &amp;ptr; <span class="cm">// pp → ptr → n</span></span>
+<span class="cl" id="dp18"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, **pp); <span class="cm">// prints 99</span></span></pre>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="dpStep()">Next step ›</button>
+      <button class="btn" onclick="dpReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="dp-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="dp-bar"></div></div>
+    <div class="smsg" id="dp-msg">Press Next step to trace each pointer operation.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">n</div><div class="vval" id="dp-n">10</div></div>
+      <div class="vbox"><div class="vlbl">ptr</div><div class="vval" id="dp-ptr" style="font-size:.72rem">?</div></div>
+      <div class="vbox"><div class="vlbl">*ptr</div><div class="vval" id="dp-deref">?</div></div>
+      <div class="vbox"><div class="vlbl">val</div><div class="vval" id="dp-val">?</div></div>
+      <div class="vbox"><div class="vlbl">**pp</div><div class="vval" id="dp-pp">?</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="dp-out"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
+    <div class="card" style="margin-bottom:0"><div style="padding:12px 14px">
+      <div style="font-family:var(--font-mono);font-size:.7rem;font-weight:500;color:#10b981;margin-bottom:8px">✅ correct pointer usage</div>
+      <pre style="padding:0;font-size:.68rem;line-height:1.8"><span class="kw">int</span> x = <span class="num">5</span>;
+<span class="kw">int</span> *p = &amp;x;  <span class="cm">// init!</span>
+*p = <span class="num">10</span>;      <span class="cm">// safe ✓</span></pre>
+    </div></div>
+    <div class="card" style="margin-bottom:0"><div style="padding:12px 14px">
+      <div style="font-family:var(--font-mono);font-size:.7rem;font-weight:500;color:#ef4444;margin-bottom:8px">❌ dangerous pointer usage</div>
+      <pre style="padding:0;font-size:.68rem;line-height:1.8"><span class="kw">int</span> *p;      <span class="cm">// uninitialised!</span>
+*p = <span class="num">10</span>;    <span class="cm">// CRASH ✗</span>
+<span class="cm">// p has garbage address</span></pre>
+    </div></div>
+  </div>
+  <div class="note">The <code>*</code> in a <em>declaration</em> (<code>int *p</code>) means "p is a pointer to int". The <code>*</code> in an <em>expression</em> (<code>*p</code>) means "dereference — give me the value at address p". These are two different uses of the same symbol. Always initialise a pointer before using it.</div>
+  <div class="badges">
+    <span class="badge b-v">int *p — declaration</span>
+    <span class="badge b-g">*p — dereference in expression</span>
+    <span class="badge b-a">int **pp — pointer to pointer</span>
+    <span class="badge b-r">never use uninitialised pointer</span>
+  </div>
+</div>
+
+<!-- SELF-REFERENTIAL STRUCT -->
+<div class="pane" id="pane-selfref">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> self_ref_struct.c</div>
+      <pre><span class="cl" id="sr0"><span class="cm">// A struct that contains a pointer</span></span>
+<span class="cl" id="sr1"><span class="cm">// to its OWN type — self-referential</span></span>
+<span class="cl" id="sr2"><span class="kw">struct</span> Node {</span>
+<span class="cl" id="sr3">  <span class="kw">int</span>  data;          <span class="cm">// the value</span></span>
+<span class="cl" id="sr4">  <span class="kw">struct</span> Node *next;  <span class="cm">// pointer to next Node</span></span>
+<span class="cl" id="sr5">};</span>
+<span class="cl" id="sr6"></span>
+<span class="cl" id="sr7"><span class="cm">// Create nodes manually</span></span>
+<span class="cl" id="sr8"><span class="kw">struct</span> Node a, b, c;</span>
+<span class="cl" id="sr9">a.data = <span class="num">10</span>;  a.next = &amp;b;</span>
+<span class="cl" id="sr10">b.data = <span class="num">20</span>;  b.next = &amp;c;</span>
+<span class="cl" id="sr11">c.data = <span class="num">30</span>;  c.next = <span class="num">NULL</span>; <span class="cm">// end!</span></span>
+<span class="cl" id="sr12"></span>
+<span class="cl" id="sr13"><span class="cm">// Access fields</span></span>
+<span class="cl" id="sr14"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, a.data);       <span class="cm">// 10</span></span>
+<span class="cl" id="sr15"><span class="fn">printf</span>(<span class="str">"%d\n"</span>, a.next->data); <span class="cm">// 20</span></span></pre>
+    </div>
+    <div>
+      <div class="slbl">struct Node in memory — each node holds data + address of next</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+        <div class="struct-box n1">
+          <div style="font-family:var(--font-mono);font-size:.68rem;font-weight:600;color:#6366f1;margin-bottom:6px">Node a @ 0x100</div>
+          <div class="struct-field"><span class="field-name">data:</span><span class="field-val" id="sr-a-data">?</span></div>
+          <div class="struct-field"><span class="field-name">next:</span><span class="field-ptr" id="sr-a-next">?</span></div>
+        </div>
+        <div style="text-align:center;font-family:var(--font-mono);font-size:.9rem;color:var(--color-text-secondary)" id="sr-arrow1">↓</div>
+        <div class="struct-box n2">
+          <div style="font-family:var(--font-mono);font-size:.68rem;font-weight:600;color:#10b981;margin-bottom:6px">Node b @ 0x110</div>
+          <div class="struct-field"><span class="field-name">data:</span><span class="field-val" id="sr-b-data">?</span></div>
+          <div class="struct-field"><span class="field-name">next:</span><span class="field-ptr" id="sr-b-next">?</span></div>
+        </div>
+        <div style="text-align:center;font-family:var(--font-mono);font-size:.9rem;color:var(--color-text-secondary)" id="sr-arrow2">↓</div>
+        <div class="struct-box n3">
+          <div style="font-family:var(--font-mono);font-size:.68rem;font-weight:600;color:#d97706;margin-bottom:6px">Node c @ 0x120</div>
+          <div class="struct-field"><span class="field-name">data:</span><span class="field-val" id="sr-c-data">?</span></div>
+          <div class="struct-field"><span class="field-name">next:</span><span class="field-ptr" id="sr-c-next" style="color:#ef4444">?</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="srStep()">Next step ›</button>
+      <button class="btn" onclick="srReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="sr-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="sr-bar"></div></div>
+    <div class="smsg" id="sr-msg">Press Next step to build the self-referential structure.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">current</div><div class="vval" id="sr-cur">—</div></div>
+      <div class="vbox"><div class="vlbl">data</div><div class="vval" id="sr-data">—</div></div>
+      <div class="vbox"><div class="vlbl">next ptr</div><div class="vval" id="sr-nxt" style="font-size:.72rem">—</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="sr-out"></div>
+  </div>
+  <div class="note">A <strong>self-referential structure</strong> contains a pointer to its own type. This is the foundation of all linked data structures. Notice: <code>struct Node *next</code> is a <em>pointer</em> to a Node — not a Node itself (which would be circular and impossible in C). The pointer stores an address, which is just an integer.</div>
+  <div class="badges">
+    <span class="badge b-v">struct contains pointer to itself</span>
+    <span class="badge b-g">node.data — access data field</span>
+    <span class="badge b-a">node.next — access pointer field</span>
+    <span class="badge b-r">NULL marks the last node</span>
+  </div>
+</div>
+
+<!-- LINKED LIST NOTION -->
+<div class="pane" id="pane-ll">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> linked_list_notion.c — concept only</div>
+    <pre><span class="cl" id="ll0"><span class="cm">// Node structure</span></span>
+<span class="cl" id="ll1"><span class="kw">struct</span> Node {</span>
+<span class="cl" id="ll2">  <span class="kw">int</span>  data;</span>
+<span class="cl" id="ll3">  <span class="kw">struct</span> Node *next;</span>
+<span class="cl" id="ll4">};</span>
+<span class="cl" id="ll5"></span>
+<span class="cl" id="ll6"><span class="cm">// Traverse: start at head, follow next until NULL</span></span>
+<span class="cl" id="ll7"><span class="kw">struct</span> Node *curr = head;</span>
+<span class="cl" id="ll8"><span class="kw">while</span> (curr != <span class="num">NULL</span>) {</span>
+<span class="cl" id="ll9">  <span class="fn">printf</span>(<span class="str">"%d "</span>, curr->data);</span>
+<span class="cl" id="ll10">  curr = curr->next; <span class="cm">// move to next node</span></span>
+<span class="cl" id="ll11">}</span></pre>
+  </div>
+  <div class="slbl">linked list — 4 nodes chained together via pointers</div>
+  <div class="ll-wrap" id="ll-visual"></div>
+  <div class="stepper">
+    <div class="slbl">traverse the linked list — follow the chain of pointers</div>
+    <div class="sctl">
+      <button class="btn pr" onclick="llStep()">Next step ›</button>
+      <button class="btn" onclick="llReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="ll-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="ll-bar"></div></div>
+    <div class="smsg" id="ll-msg">Press Next step to traverse the linked list following pointers.</div>
+    <div class="vrow">
+      <div class="vbox"><div class="vlbl">curr</div><div class="vval" id="ll-curr">head</div></div>
+      <div class="vbox"><div class="vlbl">curr->data</div><div class="vval" id="ll-data">—</div></div>
+      <div class="vbox"><div class="vlbl">curr->next</div><div class="vval" id="ll-next" style="font-size:.72rem">—</div></div>
+      <div class="vbox"><div class="vlbl">visited</div><div class="vval" id="ll-vis">0</div></div>
+    </div>
+    <div class="slbl">output</div>
+    <div class="out" id="ll-out"></div>
+  </div>
+
+  <!-- Array vs Linked List -->
+  <div class="slbl">array vs linked list — key differences</div>
+  <table style="width:100%;border-collapse:collapse;font-size:.74rem;margin-bottom:1rem">
+    <tr>
+      <th style="background:var(--color-background-secondary);color:var(--color-text-secondary);font-family:var(--font-mono);font-size:.63rem;padding:8px 10px;border:0.5px solid var(--color-border-tertiary);text-align:left">aspect</th>
+      <th style="background:rgba(99,102,241,.08);color:#6366f1;font-family:var(--font-mono);font-size:.63rem;padding:8px 10px;border:0.5px solid var(--color-border-tertiary)">array</th>
+      <th style="background:rgba(16,185,129,.08);color:#10b981;font-family:var(--font-mono);font-size:.63rem;padding:8px 10px;border:0.5px solid var(--color-border-tertiary)">linked list</th>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)"><strong>memory</strong></td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">contiguous (all together)</td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">scattered anywhere in memory</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)"><strong>access</strong></td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">O(1) — direct by index</td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">O(n) — must traverse from head</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)"><strong>size</strong></td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">fixed at compile time</td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">grows/shrinks dynamically</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)"><strong>insertion</strong></td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">O(n) — shift elements</td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">O(1) — just relink pointers</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)"><strong>extra memory</strong></td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">none</td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">each node stores a pointer too</td>
+    </tr>
+    <tr>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)"><strong>linked by</strong></td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">index arithmetic</td>
+      <td style="padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)">pointers (next field)</td>
+    </tr>
+  </table>
+  <div class="note">A linked list is a chain of nodes where each node contains data and a pointer to the next node. You only need to know the <strong>head</strong> (first node) — from there you can reach every other node by following <code>next</code> pointers. The last node's <code>next</code> is <code>NULL</code> — this is how you know you've reached the end.</div>
+  <div class="badges">
+    <span class="badge b-v">head → node1 → node2 → NULL</span>
+    <span class="badge b-g">curr = curr->next to traverse</span>
+    <span class="badge b-a">-> operator: ptr->field</span>
+    <span class="badge b-r">NULL = end of list</span>
+  </div>
+</div>
+</div>
+
+<script>
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');el.classList.add('active');
+}
+
+// Memory box renderer
+function makeMem(containerId, cells){
+  const wrap=document.getElementById(containerId);if(!wrap)return;wrap.innerHTML='';
+  cells.forEach(c=>{
+    const cell=document.createElement('div');cell.className='mem-cell';
+    const box=document.createElement('div');box.className='mem-box '+(c.cls||'');
+    const top=document.createElement('span');top.textContent=c.val;
+    const sub=document.createElement('span');sub.className='sub';sub.textContent=c.sub||'';
+    box.appendChild(top);if(c.sub)box.appendChild(sub);
+    const idx=document.createElement('div');idx.className='mem-idx';idx.textContent=c.name;
+    const addr=document.createElement('div');addr.className='mem-addr';addr.textContent=c.addr;
+    cell.appendChild(box);cell.appendChild(idx);cell.appendChild(addr);
+    wrap.appendChild(cell);
+  });
+}
+makeMem('idea-mem',[
+  {val:'42',sub:'int',name:'x',addr:'0x100',cls:'act'},
+  {val:'??',sub:'',name:'',addr:'0x104',cls:''},
+]);
+makeMem('idea-ptr-mem',[
+  {val:'0x100',sub:'addr',name:'p',addr:'0x108',cls:'ptr'},
+  {val:'??',sub:'',name:'',addr:'0x10C',cls:''},
+]);
+
+// ── IDEA STEPPER ──
+let ideaIdx=0,ideaPrev=null;
+const ideaSteps=[
+  {mc:'mv',msg:'int x = 42 — variable x created at address 0x100. Stores the value 42.',x:42,p:'?',deref:'?',addr:'?',out:''},
+  {mc:'mg',msg:'int *p = &x — pointer p created at 0x108. It stores the address of x: 0x100.',x:42,p:'0x100',deref:'?',addr:'0x100',out:''},
+  {mc:'mv',msg:'printf("%d", x) — reads x directly → 42',x:42,p:'0x100',deref:'?',addr:'0x100',out:'x = 42'},
+  {mc:'mv',msg:'printf("%p", &x) — &x gives the address of x → 0x100',x:42,p:'0x100',deref:'?',addr:'0x100',out:'x = 42\n&x = 0x100'},
+  {mc:'mv',msg:'printf("%p", p) — p holds 0x100 (same as &x)',x:42,p:'0x100',deref:'?',addr:'0x100',out:'x = 42\n&x = 0x100\np  = 0x100'},
+  {mc:'ma',msg:'printf("%d", *p) — dereference: follow 0x100 → read value there → 42',x:42,p:'0x100',deref:42,addr:'0x100',out:'x = 42\n&x = 0x100\np  = 0x100\n*p = 42'},
+  {mc:'mg',msg:'*p = 99 — write 99 through pointer → x in memory changes to 99!',x:99,p:'0x100',deref:99,addr:'0x100',out:'x = 42\n&x = 0x100\np  = 0x100\n*p = 42\n*p = 99 → x is now 99'},
+];
+function ideaStep(){
+  if(ideaIdx>=ideaSteps.length)return;
+  const s=ideaSteps[ideaIdx];
+  const msg=document.getElementById('idea-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('idea-x').textContent=s.x;
+  document.getElementById('idea-p').textContent=s.p;
+  document.getElementById('idea-deref').textContent=s.deref;
+  document.getElementById('idea-addr').textContent=s.addr;
+  if(s.out!==undefined)document.getElementById('idea-out').textContent=s.out;
+  ideaIdx++;
+  document.getElementById('idea-cnt').textContent='step '+ideaIdx+' / '+ideaSteps.length;
+  document.getElementById('idea-bar').style.width=(ideaIdx/ideaSteps.length*100)+'%';
+}
+function ideaReset(){
+  ideaIdx=0;
+  ['idea-msg'].forEach(id=>{document.getElementById(id).className='smsg';document.getElementById(id).textContent='Press Next step to understand how pointers work in memory.';});
+  document.getElementById('idea-x').textContent='42';document.getElementById('idea-p').textContent='?';
+  document.getElementById('idea-deref').textContent='?';document.getElementById('idea-addr').textContent='?';
+  document.getElementById('idea-out').textContent='';
+  document.getElementById('idea-cnt').textContent='step 0';document.getElementById('idea-bar').style.width='0%';
+}
+
+// ── DEFINING POINTERS STEPPER ──
+let dpIdx=0,dpPrev=null;
+const dpSteps=[
+  {l:'dp7',cls:'hi',mc:'mv',msg:'int n = 10 — variable n at 0x200 with value 10.',n:10,ptr:'?',deref:'?',val:'?',pp:'?'},
+  {l:'dp8',cls:'hi-g',mc:'mg',msg:'int *ptr = &n — ptr stores the address 0x200 (address of n).',n:10,ptr:'0x200',deref:10,val:'?',pp:'?'},
+  {l:'dp11',cls:'hi',mc:'mv',msg:'int val = *ptr — dereference: read value at 0x200 → 10. val = 10.',n:10,ptr:'0x200',deref:10,val:10,pp:'?'},
+  {l:'dp14',cls:'hi-a',mc:'ma',msg:'*ptr = 99 — write 99 through pointer → n is now 99!',n:99,ptr:'0x200',deref:99,val:10,pp:'?'},
+  {l:'dp17',cls:'hi-g',mc:'mg',msg:'int **pp = &ptr — pp stores address of ptr. pp → ptr → n.',n:99,ptr:'0x200',deref:99,val:10,pp:'0x208'},
+  {l:'dp18',cls:'hi',mc:'mv',msg:'**pp: follow pp→ptr, then follow ptr→n → reads 99.',n:99,ptr:'0x200',deref:99,val:10,pp:99,out:'99'},
+];
+function dpStep(){
+  if(dpIdx>=dpSteps.length)return;
+  if(dpPrev){const e=document.getElementById(dpPrev);if(e)e.className='cl';}
+  const s=dpSteps[dpIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  dpPrev=s.l;
+  const msg=document.getElementById('dp-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('dp-n').textContent=s.n;
+  document.getElementById('dp-ptr').textContent=s.ptr;
+  document.getElementById('dp-deref').textContent=s.deref;
+  document.getElementById('dp-val').textContent=s.val;
+  document.getElementById('dp-pp').textContent=s.pp;
+  if(s.out)document.getElementById('dp-out').textContent=s.out;
+  dpIdx++;
+  document.getElementById('dp-cnt').textContent='step '+dpIdx+' / '+dpSteps.length;
+  document.getElementById('dp-bar').style.width=(dpIdx/dpSteps.length*100)+'%';
+}
+function dpReset(){
+  dpIdx=0;if(dpPrev){const e=document.getElementById(dpPrev);if(e)e.className='cl';}dpPrev=null;
+  document.getElementById('dp-msg').className='smsg';document.getElementById('dp-msg').textContent='Press Next step to trace each pointer operation.';
+  document.getElementById('dp-n').textContent='10';
+  ['dp-ptr','dp-deref','dp-val','dp-pp'].forEach(id=>document.getElementById(id).textContent='?');
+  document.getElementById('dp-out').textContent='';
+  document.getElementById('dp-cnt').textContent='step 0';document.getElementById('dp-bar').style.width='0%';
+}
+
+// ── SELF-REF STRUCT STEPPER ──
+let srIdx=0,srPrev=null;
+const srSteps=[
+  {l:'sr2',cls:'hi',mc:'mv',msg:'struct Node defined — each node has: int data + struct Node* next.',cur:'—',data:'—',nxt:'—'},
+  {l:'sr9',cls:'hi-g',mc:'mg',msg:'a.data=10, a.next=&b → node a points to node b (0x110).',cur:'a',data:10,nxt:'0x110',ad:10,an:'0x110 → b',bd:'?',bn:'?',cd:'?',cn:'?'},
+  {l:'sr10',cls:'hi-g',mc:'mg',msg:'b.data=20, b.next=&c → node b points to node c (0x120).',cur:'b',data:20,nxt:'0x120',ad:10,an:'0x110 → b',bd:20,bn:'0x120 → c',cd:'?',cn:'?'},
+  {l:'sr11',cls:'hi-r',mc:'mr',msg:'c.data=30, c.next=NULL → NULL marks end of the chain!',cur:'c',data:30,nxt:'NULL',ad:10,an:'0x110 → b',bd:20,bn:'0x120 → c',cd:30,cn:'NULL (end)'},
+  {l:'sr14',cls:'hi',mc:'mv',msg:'a.data → directly access field → prints 10.',cur:'a',data:10,nxt:'0x110',out:'10'},
+  {l:'sr15',cls:'hi',mc:'mv',msg:'a.next->data → follow a.next pointer to b, read b.data → 20.',cur:'a→b',data:20,nxt:'0x120',out:'10\n20'},
+];
+function srStep(){
+  if(srIdx>=srSteps.length)return;
+  if(srPrev){const e=document.getElementById(srPrev);if(e)e.className='cl';}
+  const s=srSteps[srIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  srPrev=s.l;
+  const msg=document.getElementById('sr-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('sr-cur').textContent=s.cur;
+  document.getElementById('sr-data').textContent=s.data;
+  document.getElementById('sr-nxt').textContent=s.nxt;
+  if(s.ad!==undefined)document.getElementById('sr-a-data').textContent=s.ad;
+  if(s.an!==undefined)document.getElementById('sr-a-next').textContent=s.an;
+  if(s.bd!==undefined)document.getElementById('sr-b-data').textContent=s.bd;
+  if(s.bn!==undefined)document.getElementById('sr-b-next').textContent=s.bn;
+  if(s.cd!==undefined)document.getElementById('sr-c-data').textContent=s.cd;
+  if(s.cn!==undefined)document.getElementById('sr-c-next').textContent=s.cn;
+  if(s.out)document.getElementById('sr-out').textContent=s.out;
+  srIdx++;
+  document.getElementById('sr-cnt').textContent='step '+srIdx+' / '+srSteps.length;
+  document.getElementById('sr-bar').style.width=(srIdx/srSteps.length*100)+'%';
+}
+function srReset(){
+  srIdx=0;if(srPrev){const e=document.getElementById(srPrev);if(e)e.className='cl';}srPrev=null;
+  document.getElementById('sr-msg').className='smsg';document.getElementById('sr-msg').textContent='Press Next step to build the self-referential structure.';
+  ['sr-cur','sr-data','sr-nxt'].forEach(id=>document.getElementById(id).textContent='—');
+  ['sr-a-data','sr-a-next','sr-b-data','sr-b-next','sr-c-data','sr-c-next'].forEach(id=>document.getElementById(id).textContent='?');
+  document.getElementById('sr-out').textContent='';
+  document.getElementById('sr-cnt').textContent='step 0';document.getElementById('sr-bar').style.width='0%';
+}
+
+// ── LINKED LIST ──
+const llData=[10,20,30,40];
+const llAddrs=['0x100','0x200','0x300','0x400'];
+let llIdx=0,llPrev=null,llOut=[];
+
+function renderLL(activeIdx){
+  const wrap=document.getElementById('ll-visual');wrap.innerHTML='';
+  const row=document.createElement('div');row.className='ll-row';
+  // head label
+  const headWrap=document.createElement('div');headWrap.className='node-wrap';
+  const headLbl=document.createElement('div');headLbl.className='ll-head';headLbl.textContent='head';
+  const headBox=document.createElement('div');
+  headBox.style.cssText='font-family:var(--font-mono);font-size:.68rem;padding:6px 10px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:var(--border-radius-md);color:#6366f1;margin-bottom:0';
+  headBox.textContent='0x100';
+  headWrap.appendChild(headLbl);headWrap.appendChild(headBox);row.appendChild(headWrap);
+  // arrow from head
+  const ha=document.createElement('div');ha.className='ll-arrow';ha.textContent='→';row.appendChild(ha);
+
+  llData.forEach((d,i)=>{
+    const nw=document.createElement('div');nw.className='node-wrap';
+    const lbl=document.createElement('div');lbl.className='ll-head';lbl.textContent=llAddrs[i];
+    const node=document.createElement('div');
+    node.className='ll-node'+(i===activeIdx?' active':'');
+    node.style.borderColor=i===activeIdx?'#f59e0b':i<(activeIdx??-1)?'rgba(16,185,129,.4)':'var(--color-border-secondary)';
+    const dataDiv=document.createElement('div');dataDiv.className='ll-data';
+    dataDiv.style.borderColor=i===activeIdx?'#f59e0b':i<(activeIdx??-1)?'rgba(16,185,129,.4)':'var(--color-border-tertiary)';
+    dataDiv.innerHTML=`<div style="font-size:.55rem;color:var(--color-text-secondary);font-weight:400">data</div>${d}`;
+    const nextDiv=document.createElement('div');nextDiv.className='ll-next';
+    nextDiv.innerHTML=`<div class="next-lbl">next</div><div>${i<llData.length-1?llAddrs[i+1]:'NULL'}</div>`;
+    if(i===llData.length-1)nextDiv.style.color='#ef4444';
+    node.appendChild(dataDiv);node.appendChild(nextDiv);
+    nw.appendChild(lbl);nw.appendChild(node);row.appendChild(nw);
+    if(i<llData.length-1){
+      const arr=document.createElement('div');arr.className='ll-arrow';arr.textContent='→';row.appendChild(arr);
+    } else {
+      const na=document.createElement('div');na.className='ll-arrow';na.textContent='→';row.appendChild(na);
+      const nullBox=document.createElement('div');nullBox.className='ll-null';nullBox.textContent='NULL';row.appendChild(nullBox);
+    }
+  });
+  wrap.appendChild(row);
+}
+renderLL(-1);
+
+const llSteps=[
+  {l:'ll7',cls:'hi',mc:'mv',msg:'curr = head → curr points to first node at 0x100.',curr:'head(0x100)',data:'—',next:'—',vis:0,activeIdx:0},
+  {l:'ll8',cls:'hi',mc:'mv',msg:'while(curr != NULL): curr=0x100 ≠ NULL → true, enter loop.',curr:'0x100',data:'—',next:'—',vis:0,activeIdx:0},
+  {l:'ll9',cls:'hi-g',mc:'mg',msg:'curr->data = 10 → printf prints 10',curr:'0x100',data:10,next:'0x200',vis:1,activeIdx:0,out:'10 '},
+  {l:'ll10',cls:'hi',mc:'mv',msg:'curr = curr->next = 0x200 → move to next node',curr:'0x200',data:10,next:'0x200',vis:1,activeIdx:1},
+  {l:'ll8',cls:'hi',mc:'mv',msg:'while(curr != NULL): curr=0x200 ≠ NULL → true',curr:'0x200',data:'—',next:'—',vis:1,activeIdx:1},
+  {l:'ll9',cls:'hi-g',mc:'mg',msg:'curr->data = 20 → printf prints 20',curr:'0x200',data:20,next:'0x300',vis:2,activeIdx:1,out:'10 20 '},
+  {l:'ll10',cls:'hi',mc:'mv',msg:'curr = curr->next = 0x300 → move to next node',curr:'0x300',data:20,next:'0x300',vis:2,activeIdx:2},
+  {l:'ll9',cls:'hi-g',mc:'mg',msg:'curr->data = 30 → printf prints 30',curr:'0x300',data:30,next:'0x400',vis:3,activeIdx:2,out:'10 20 30 '},
+  {l:'ll10',cls:'hi',mc:'mv',msg:'curr = curr->next = 0x400 → move to next node',curr:'0x400',data:30,next:'0x400',vis:3,activeIdx:3},
+  {l:'ll9',cls:'hi-g',mc:'mg',msg:'curr->data = 40 → printf prints 40',curr:'0x400',data:40,next:'NULL',vis:4,activeIdx:3,out:'10 20 30 40 '},
+  {l:'ll10',cls:'hi',mc:'mv',msg:'curr = curr->next = NULL → move to end',curr:'NULL',data:40,next:'NULL',vis:4,activeIdx:-1},
+  {l:'ll8',cls:'hi-r',mc:'mr',msg:'while(curr != NULL): curr=NULL → FALSE! Loop ends. Traversal complete.',curr:'NULL',data:'—',next:'—',vis:4,activeIdx:-1,out:'10 20 30 40\n— Done! —'},
+];
+function llStep(){
+  if(llIdx>=llSteps.length)return;
+  if(llPrev){const e=document.getElementById(llPrev);if(e)e.className='cl';}
+  const s=llSteps[llIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  llPrev=s.l;
+  renderLL(s.activeIdx);
+  const msg=document.getElementById('ll-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('ll-curr').textContent=s.curr;
+  document.getElementById('ll-data').textContent=s.data;
+  document.getElementById('ll-next').textContent=s.next;
+  document.getElementById('ll-vis').textContent=s.vis;
+  if(s.out)document.getElementById('ll-out').textContent=s.out;
+  llIdx++;
+  document.getElementById('ll-cnt').textContent='step '+llIdx+' / '+llSteps.length;
+  document.getElementById('ll-bar').style.width=(llIdx/llSteps.length*100)+'%';
+}
+function llReset(){
+  llIdx=0;if(llPrev){const e=document.getElementById(llPrev);if(e)e.className='cl';}llPrev=null;
+  renderLL(-1);
+  document.getElementById('ll-msg').className='smsg';document.getElementById('ll-msg').textContent='Press Next step to traverse the linked list following pointers.';
+  document.getElementById('ll-curr').textContent='head';
+  ['ll-data','ll-next'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('ll-vis').textContent='0';
+  document.getElementById('ll-out').textContent='';
+  document.getElementById('ll-cnt').textContent='step 0';document.getElementById('ll-bar').style.width='0%';
+}
+</script>

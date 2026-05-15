@@ -1,0 +1,502 @@
+
+<h2 class="sr-only">Two-part widget: iterative vs recursive comparison for factorial and Fibonacci, followed by a 10-question recursion practice quiz.</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.section-title{font-family:var(--font-mono);font-size:.8rem;font-weight:500;color:var(--color-text-primary);margin-bottom:1rem;padding-bottom:6px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;font-family:var(--font-mono);font-size:.63rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.71rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.ret{color:#ef4444;font-weight:600}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+
+/* comparison table */
+.cmp-table{width:100%;border-collapse:collapse;font-size:.75rem;margin-bottom:1rem}
+.cmp-table th{background:var(--color-background-secondary);color:var(--color-text-secondary);font-family:var(--font-mono);font-size:.65rem;padding:8px 12px;border:0.5px solid var(--color-border-tertiary);text-align:left;font-weight:500}
+.cmp-table td{padding:8px 12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);background:var(--color-background-primary);vertical-align:top;line-height:1.5}
+.cmp-table tr:hover td{background:var(--color-background-secondary)}
+.good{color:#059669;font-weight:500}.bad{color:#dc2626;font-weight:500}
+
+/* live compare */
+.live-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.lc-panel{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px}
+.lc-title{font-family:var(--font-mono);font-size:.68rem;font-weight:500;margin-bottom:8px;padding-bottom:6px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.lc-title.iter{color:#10b981}.lc-title.recur{color:#6366f1}
+.step-line{font-family:var(--font-mono);font-size:.68rem;padding:4px 8px;border-radius:var(--border-radius-md);margin-bottom:3px;transition:background .2s;line-height:1.5;color:var(--color-text-secondary)}
+.step-line.active{background:rgba(99,102,241,.15);color:var(--color-text-primary)}
+.step-line.done{background:rgba(16,185,129,.08);color:#059669}
+.ctrl-row{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.ctrl-label{font-family:var(--font-mono);font-size:.72rem;color:var(--color-text-secondary)}
+select,input[type=range]{font-family:var(--font-mono);font-size:.72rem;padding:5px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary)}
+.stat-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.stat{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:5px 10px;font-family:var(--font-mono);font-size:.65rem}
+.stat-lbl{color:var(--color-text-secondary);margin-bottom:1px}
+.stat-val{font-weight:500;color:var(--color-text-primary)}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);border-left:3px solid var(--color-border-secondary);line-height:1.5;color:var(--color-text-secondary)}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:58px}
+.vlbl{font-family:var(--font-mono);font-size:.56rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:.95rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8;white-space:pre-wrap}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+
+/* ── QUIZ ── */
+.divider{border:none;border-top:1.5px solid var(--color-border-tertiary);margin:1.5rem 0}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.score-bar{display:flex;gap:10px;align-items:center}
+.score-box{font-family:var(--font-mono);font-size:.72rem;padding:4px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary)}
+.prog-track{height:4px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.25rem}
+.prog-fill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:2px;transition:width .3s}
+.q-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.q-hd{padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.q-num{font-family:var(--font-mono);font-size:.65rem;font-weight:700;color:#fff;background:#6366f1;border-radius:var(--border-radius-md);padding:2px 8px}
+.q-tag{font-family:var(--font-mono);font-size:.62rem;padding:2px 8px;border-radius:var(--border-radius-md);border:0.5px solid}
+.tag-v{color:#6366f1;border-color:#c4b5fd;background:#f5f3ff}
+.tag-g{color:#059669;border-color:#6ee7b7;background:#d1fae5}
+.tag-a{color:#d97706;border-color:#fcd34d;background:#fffbeb}
+.tag-r{color:#dc2626;border-color:#fca5a5;background:#fef2f2}
+.q-body{padding:14px 16px}
+.q-text{font-size:.82rem;color:var(--color-text-primary);line-height:1.6;margin-bottom:12px}
+pre.q-code{font-family:var(--font-mono);font-size:.71rem;line-height:1.8;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow-x:auto;white-space:pre;margin-bottom:12px}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.opt{font-family:var(--font-mono);font-size:.74rem;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;transition:all .15s;text-align:left;line-height:1.5}
+.opt:hover:not(:disabled){background:var(--color-background-secondary);border-color:#6366f1}
+.opt.correct{background:#d1fae5;border-color:#10b981;color:#065f46;cursor:default}
+.opt.wrong{background:#fef2f2;border-color:#ef4444;color:#991b1b;cursor:default}
+.fill-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.fill-input{font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;flex:1;min-width:100px;max-width:200px}
+.fill-input:focus{border-color:#6366f1}
+.fill-input.ok{border-color:#10b981;background:#d1fae5;color:#065f46}
+.fill-input.bad{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+.feedback{border-radius:var(--border-radius-md);padding:10px 14px;font-size:.76rem;line-height:1.6;margin-top:8px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:#d1fae5;border:0.5px solid #10b981;color:#065f46}
+.feedback.bad{background:#fef2f2;border:0.5px solid #ef4444;color:#991b1b}
+.nav-row{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:10px}
+.result{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px;text-align:center;display:none}
+.result.show{display:block}
+.result-score{font-family:var(--font-mono);font-size:2.5rem;font-weight:700;color:var(--color-text-primary);margin-bottom:6px}
+.result-label{font-family:var(--font-mono);font-size:.8rem;color:var(--color-text-secondary);margin-bottom:12px}
+.result-msg{font-size:.82rem;color:var(--color-text-primary);margin-bottom:14px;line-height:1.6}
+.badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+@media(max-width:520px){.two{grid-template-columns:1fr}.live-compare{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+
+<!-- ══ PART 1: COMPARISON ══ -->
+<div class="section-title">Part 1 — Iterative vs Recursive</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="T('cmp-table',this)">comparison table</button>
+  <button class="tab" onclick="T('cmp-fact',this)">factorial side-by-side</button>
+  <button class="tab" onclick="T('cmp-fib',this)">fibonacci side-by-side</button>
+</div>
+
+<!-- TABLE -->
+<div class="pane on" id="pane-cmp-table">
+  <table class="cmp-table">
+    <tr><th style="width:22%">Aspect</th><th style="width:39%">Iterative</th><th style="width:39%">Recursive</th></tr>
+    <tr><td><strong>Mechanism</strong></td><td>Uses loops (<code>for</code>/<code>while</code>) with explicit variables</td><td>Function calls itself with a smaller input</td></tr>
+    <tr><td><strong>Memory</strong></td><td class="good">O(1) — just a few variables</td><td class="bad">O(n) — one stack frame per call</td></tr>
+    <tr><td><strong>Speed</strong></td><td class="good">Generally faster — no function call overhead</td><td class="bad">Slower — push/pop stack frames each call</td></tr>
+    <tr><td><strong>Stack overflow</strong></td><td class="good">Cannot happen</td><td class="bad">Can crash for large n (stack depth limit)</td></tr>
+    <tr><td><strong>Readability</strong></td><td class="bad">Can be complex for tree/divide-and-conquer problems</td><td class="good">Often cleaner and closer to the math definition</td></tr>
+    <tr><td><strong>Base case</strong></td><td>Loop condition (<code>i &lt; n</code>)</td><td>Explicit <code>if</code> check inside the function</td></tr>
+    <tr><td><strong>Best for</strong></td><td>Simple counting, accumulation, linear scan</td><td>Trees, graphs, divide-and-conquer, mathematical definitions</td></tr>
+    <tr><td><strong>Factorial</strong></td><td>4 lines, O(n) time O(1) space</td><td>3 lines, O(n) time O(n) space</td></tr>
+    <tr><td><strong>Fibonacci</strong></td><td>5 lines, O(n) time O(1) space</td><td>3 lines, O(2ⁿ) time O(n) space — needs memoisation</td></tr>
+    <tr><td><strong>Quick Sort</strong></td><td>Needs an explicit stack data structure</td><td class="good">Natural and elegant — the logic IS the recursion</td></tr>
+  </table>
+  <div class="note">The golden rule: use recursion when the problem is <em>naturally recursive</em> (trees, divide-and-conquer, mathematical induction). Use iteration when the problem is a simple count or scan. For Fibonacci specifically, always prefer the iterative version in production — the naive recursive is O(2ⁿ).</div>
+  <div class="badges">
+    <span class="badge b-g">iterative: O(1) space</span>
+    <span class="badge b-r">recursive: O(n) stack space</span>
+    <span class="badge b-v">recursive: cleaner for trees</span>
+    <span class="badge b-a">fibonacci: iterative is O(n) vs O(2ⁿ)</span>
+  </div>
+</div>
+
+<!-- FACTORIAL SIDE BY SIDE -->
+<div class="pane" id="pane-cmp-fact">
+  <div class="ctrl-row">
+    <span class="ctrl-label">n =</span>
+    <select id="cf-n" onchange="cfLoad(+this.value)">
+      <option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
+    </select>
+    <button class="btn pr" onclick="cfStep()">Next step ›</button>
+    <button class="btn" onclick="cfReset()">↺ Reset</button>
+    <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="cf-cnt">step 0</span>
+  </div>
+  <div class="pbar"><div class="pfill" id="cf-bar"></div></div>
+  <div class="smsg" id="cf-msg">Press Next step to run both versions simultaneously.</div>
+  <div class="live-compare">
+    <div class="lc-panel">
+      <div class="lc-title iter">iterative</div>
+      <div id="cf-iter-steps"></div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-lbl">result</div><div class="stat-val" id="cf-i-res">—</div></div>
+        <div class="stat"><div class="stat-lbl">steps</div><div class="stat-val" id="cf-i-steps">0</div></div>
+        <div class="stat"><div class="stat-lbl">space</div><div class="stat-val">O(1)</div></div>
+      </div>
+    </div>
+    <div class="lc-panel">
+      <div class="lc-title recur">recursive</div>
+      <div id="cf-rec-steps"></div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-lbl">result</div><div class="stat-val" id="cf-r-res">—</div></div>
+        <div class="stat"><div class="stat-lbl">calls</div><div class="stat-val" id="cf-r-calls">0</div></div>
+        <div class="stat"><div class="stat-lbl">space</div><div class="stat-val" id="cf-r-space">O(n)</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#10b981"></span> iterative_factorial.c</div>
+      <pre><span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {
+  <span class="kw">int</span> result = <span class="num">1</span>;
+  <span class="kw">for</span> (<span class="kw">int</span> i=<span class="num">1</span>; i&lt;=n; i++)
+    result *= i;
+  <span class="ret">return</span> result;
+}</pre>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#6366f1"></span> recursive_factorial.c</div>
+      <pre><span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n) {
+  <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="ret">return</span> <span class="num">1</span>;
+  <span class="ret">return</span> n * <span class="fn">factorial</span>(n-<span class="num">1</span>);
+}</pre>
+    </div>
+  </div>
+  <div class="note">Both compute the same answer. The iterative version accumulates into <code>result</code> going <em>up</em> from 1 to n. The recursive version multiplies going <em>down</em> from n to 1 then back up. Same time complexity O(n), but iterative uses O(1) space while recursive uses O(n) stack frames.</div>
+</div>
+
+<!-- FIBONACCI SIDE BY SIDE -->
+<div class="pane" id="pane-cmp-fib">
+  <div class="ctrl-row">
+    <span class="ctrl-label">n =</span>
+    <select id="fb-n" onchange="fbLoad(+this.value)">
+      <option value="4">4</option><option value="5" selected>5</option><option value="6">6</option><option value="7">7</option>
+    </select>
+    <button class="btn pr" onclick="fbStep()">Next step ›</button>
+    <button class="btn" onclick="fbReset()">↺ Reset</button>
+    <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="fb-cnt">step 0</span>
+  </div>
+  <div class="pbar"><div class="pfill" id="fb-bar"></div></div>
+  <div class="smsg" id="fb-msg">Press Next step to run both versions simultaneously.</div>
+  <div class="live-compare">
+    <div class="lc-panel">
+      <div class="lc-title iter">iterative</div>
+      <div id="fb-iter-steps"></div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-lbl">result</div><div class="stat-val" id="fb-i-res">—</div></div>
+        <div class="stat"><div class="stat-lbl">steps</div><div class="stat-val" id="fb-i-steps">0</div></div>
+        <div class="stat"><div class="stat-lbl">space</div><div class="stat-val">O(1)</div></div>
+      </div>
+    </div>
+    <div class="lc-panel">
+      <div class="lc-title recur">recursive</div>
+      <div id="fb-rec-steps"></div>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-lbl">result</div><div class="stat-val" id="fb-r-res">—</div></div>
+        <div class="stat"><div class="stat-lbl">calls</div><div class="stat-val" id="fb-r-calls">0</div></div>
+        <div class="stat"><div class="stat-lbl">time</div><div class="stat-val" id="fb-r-time">O(2ⁿ)</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#10b981"></span> iterative_fib.c</div>
+      <pre><span class="kw">int</span> <span class="fn">fib</span>(<span class="kw">int</span> n) {
+  <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="ret">return</span> n;
+  <span class="kw">int</span> a=<span class="num">0</span>, b=<span class="num">1</span>, c;
+  <span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">2</span>; i&lt;=n; i++){
+    c = a + b;
+    a = b; b = c;
+  }
+  <span class="ret">return</span> b;
+}</pre>
+    </div>
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#6366f1"></span> recursive_fib.c</div>
+      <pre><span class="kw">int</span> <span class="fn">fib</span>(<span class="kw">int</span> n) {
+  <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="ret">return</span> n;
+  <span class="ret">return</span> <span class="fn">fib</span>(n-<span class="num">1</span>) + <span class="fn">fib</span>(n-<span class="num">2</span>);
+}
+<span class="cm">// fib(7) = 25 calls</span>
+<span class="cm">// fib(10) = 177 calls</span>
+<span class="cm">// fib(20) = 21891 calls!</span></pre>
+    </div>
+  </div>
+  <div class="note">This is the clearest case where recursion hurts. The iterative version computes fib(n) in exactly n−1 steps. The recursive version recomputes the same subproblems over and over — fib(7) alone makes 25 calls. For fib(20) that's 21,891 calls vs 19 steps. <strong>Always use iterative or memoised for Fibonacci.</strong></div>
+  <div class="badges">
+    <span class="badge b-g">iterative: O(n) steps, O(1) space</span>
+    <span class="badge b-r">recursive: O(2ⁿ) calls</span>
+    <span class="badge b-v">fix: memoisation cache</span>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══ PART 2: QUIZ ══ -->
+<div class="section-title">Part 2 — Recursion Practice Quiz (10 questions)</div>
+
+<div class="hdr">
+  <div style="font-family:var(--font-mono);font-size:.72rem;color:var(--color-text-secondary)">covers factorial · fibonacci · ackermann · quicksort · iterative vs recursive</div>
+  <div class="score-bar">
+    <div class="score-box">✓ <span style="font-weight:700" id="sc-c">0</span></div>
+    <div class="score-box">✗ <span style="font-weight:700" id="sc-w">0</span></div>
+    <div class="score-box">Q <span style="font-weight:700" id="sc-q">1</span>/10</div>
+  </div>
+</div>
+<div class="prog-track"><div class="prog-fill" id="qprog" style="width:0%"></div></div>
+<div id="quiz-area"></div>
+<div class="result" id="result-panel">
+  <div class="result-score" id="res-score">0/10</div>
+  <div class="result-label">Recursion Quiz Complete!</div>
+  <div class="result-msg" id="res-msg"></div>
+  <div class="badge-row" id="res-badges"></div>
+  <button class="btn pr" onclick="qRestart()">↺ Try Again</button>
+</div>
+
+</div>
+
+<script>
+/* ══ TAB ══ */
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');el.classList.add('active');
+}
+
+/* ══ FACTORIAL SIDE-BY-SIDE ══ */
+let cfN=4, cfIdx=0, cfSteps=[];
+function buildCfSteps(n){
+  const s=[];
+  const iterLines=[];const recLines=[];
+  // iterative: i from 1..n
+  iterLines.push({txt:'int result = 1',active:true});
+  let res=1;
+  for(let i=1;i<=n;i++){
+    res*=i;
+    iterLines.push({txt:`i=${i}: result = ${res}`,active:false});
+  }
+  iterLines.push({txt:`return ${res}`,active:false});
+  // recursive: calls n..0
+  for(let i=n;i>=0;i--) recLines.push({txt:i<=1?`fib(${i}) → BASE 1`:`factorial(${i}) calls factorial(${i-1})`,active:false});
+  let runVal=1;
+  for(let i=1;i<=n;i++){runVal*=i; recLines.push({txt:`factorial(${i}) returns ${runVal}`,active:false});}
+  recLines.push({txt:`return ${runVal}`,active:false});
+  // interleave into steps
+  const maxLen=Math.max(iterLines.length, recLines.length);
+  for(let i=0;i<maxLen;i++) s.push({iStep:i,rStep:i,iterLines:[...iterLines],recLines:[...recLines],iFinal:i>=iterLines.length-1?res:null,rFinal:i>=recLines.length-1?runVal:null,iStepCount:Math.min(i+1,iterLines.length),rCalls:Math.min(i+1,recLines.length)});
+  return {steps:s, iterLines, recLines, final:res, calls: recLines.length};
+}
+function renderLcLines(containerId, lines, activeIdx){
+  const c=document.getElementById(containerId);c.innerHTML='';
+  lines.forEach((l,i)=>{
+    const d=document.createElement('div');
+    d.className='step-line'+(i===activeIdx?' active':i<activeIdx?' done':'');
+    d.textContent=l.txt;c.appendChild(d);
+  });
+  if(activeIdx>=0&&activeIdx<lines.length){const el=c.children[activeIdx];if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});}
+}
+function cfLoad(n){
+  cfN=n;const {steps,iterLines,recLines,final,calls}=buildCfSteps(n);cfSteps={steps,iterLines,recLines,final,calls};cfIdx=0;
+  renderLcLines('cf-iter-steps',iterLines,-1);renderLcLines('cf-rec-steps',recLines,-1);
+  document.getElementById('cf-msg').className='smsg';document.getElementById('cf-msg').textContent='Press Next step to run both versions simultaneously.';
+  document.getElementById('cf-i-res').textContent='—';document.getElementById('cf-r-res').textContent='—';
+  document.getElementById('cf-i-steps').textContent='0';document.getElementById('cf-r-calls').textContent='0';
+  document.getElementById('cf-cnt').textContent='step 0';document.getElementById('cf-bar').style.width='0%';
+}
+function cfStep(){
+  if(!cfSteps||cfIdx>=Math.max(cfSteps.iterLines.length,cfSteps.recLines.length))return;
+  renderLcLines('cf-iter-steps',cfSteps.iterLines,cfIdx);
+  renderLcLines('cf-rec-steps',cfSteps.recLines,cfIdx);
+  const iDone=cfIdx>=cfSteps.iterLines.length-1;
+  const rDone=cfIdx>=cfSteps.recLines.length-1;
+  if(iDone){document.getElementById('cf-i-res').textContent=cfSteps.final;document.getElementById('cf-i-steps').textContent=cfSteps.iterLines.length;}
+  else{document.getElementById('cf-i-steps').textContent=cfIdx+1;}
+  if(rDone){document.getElementById('cf-r-res').textContent=cfSteps.final;document.getElementById('cf-r-calls').textContent=cfSteps.recLines.length;}
+  else{document.getElementById('cf-r-calls').textContent=cfIdx+1;}
+  const msg=document.getElementById('cf-msg');
+  msg.className='smsg '+(iDone&&rDone?'mg':'mv');
+  msg.textContent=iDone&&rDone?`Both done! factorial(${cfN})=${cfSteps.final}. Iterative: ${cfSteps.iterLines.length} steps. Recursive: ${cfSteps.recLines.length} calls.`:`Step ${cfIdx+1}: iterative accumulates, recursive winds down call stack.`;
+  cfIdx++;
+  const total=Math.max(cfSteps.iterLines.length,cfSteps.recLines.length);
+  document.getElementById('cf-cnt').textContent='step '+cfIdx+' / '+total;
+  document.getElementById('cf-bar').style.width=(cfIdx/total*100)+'%';
+}
+function cfReset(){cfLoad(cfN);}
+cfLoad(4);
+
+/* ══ FIBONACCI SIDE-BY-SIDE ══ */
+let fbN=5, fbIdx=0, fbSteps=null;
+function buildFbSteps(n){
+  const iterLines=[];
+  iterLines.push({txt:`n=${n} > 1, so use loop`});
+  iterLines.push({txt:'a=0, b=1, c=?'});
+  const fibs=[0,1];for(let i=2;i<=n;i++)fibs.push(fibs[i-1]+fibs[i-2]);
+  for(let i=2;i<=n;i++) iterLines.push({txt:`i=${i}: c=${fibs[i-1]}+${fibs[i-2]}=${fibs[i]}, a=${fibs[i-1]}, b=${fibs[i]}`});
+  iterLines.push({txt:`return ${fibs[n]}`});
+  // recursive calls count: 2^(n+1)-1 approx
+  function countCalls(k){if(k<=1)return 1;return 1+countCalls(k-1)+countCalls(k-2);}
+  const totalCalls=countCalls(n);
+  const recLines=[];
+  recLines.push({txt:`fib(${n}) — NOT base, calls fib(${n-1}) + fib(${n-2})`});
+  recLines.push({txt:`fib(${n-1}) → calls fib(${n-2}) + fib(${n-3})`});
+  recLines.push({txt:`... (tree of calls expands exponentially)`});
+  recLines.push({txt:`fib(1)=1 ← base case (hit many times)`});
+  recLines.push({txt:`fib(0)=0 ← base case (hit many times)`});
+  recLines.push({txt:`Subresults merge upward...`});
+  recLines.push({txt:`fib(2) computed ${Math.pow(2,n-2)} times (approx)`});
+  recLines.push({txt:`fib(${n}) = ${fibs[n]} (after ${totalCalls} total calls!)`});
+  return {iterLines,recLines,final:fibs[n],totalCalls,iterSteps:iterLines.length};
+}
+function fbLoad(n){
+  fbN=n;fbSteps=buildFbSteps(n);fbIdx=0;
+  renderLcLines('fb-iter-steps',fbSteps.iterLines,-1);renderLcLines('fb-rec-steps',fbSteps.recLines,-1);
+  document.getElementById('fb-msg').className='smsg';document.getElementById('fb-msg').textContent='Press Next step to run both versions simultaneously.';
+  document.getElementById('fb-i-res').textContent='—';document.getElementById('fb-r-res').textContent='—';
+  document.getElementById('fb-i-steps').textContent='0';document.getElementById('fb-r-calls').textContent='0';
+  document.getElementById('fb-cnt').textContent='step 0';document.getElementById('fb-bar').style.width='0%';
+}
+function fbStep(){
+  if(!fbSteps||fbIdx>=Math.max(fbSteps.iterLines.length,fbSteps.recLines.length))return;
+  renderLcLines('fb-iter-steps',fbSteps.iterLines,fbIdx);
+  renderLcLines('fb-rec-steps',fbSteps.recLines,fbIdx);
+  const iDone=fbIdx>=fbSteps.iterLines.length-1;
+  const rDone=fbIdx>=fbSteps.recLines.length-1;
+  if(iDone){document.getElementById('fb-i-res').textContent=fbSteps.final;document.getElementById('fb-i-steps').textContent=fbSteps.iterSteps;}
+  else document.getElementById('fb-i-steps').textContent=fbIdx+1;
+  if(rDone){document.getElementById('fb-r-res').textContent=fbSteps.final;document.getElementById('fb-r-calls').textContent=fbSteps.totalCalls;document.getElementById('fb-r-time').textContent='O(2ⁿ)!';}
+  else document.getElementById('fb-r-calls').textContent='~'+(fbIdx+1);
+  const msg=document.getElementById('fb-msg');
+  msg.className='smsg '+(iDone&&rDone?'mg':iDone?'ma':'mv');
+  if(iDone&&rDone) msg.textContent=`Done! fib(${fbN})=${fbSteps.final}. Iterative: ${fbSteps.iterSteps} steps. Recursive: ${fbSteps.totalCalls} calls. Iterative is ${Math.round(fbSteps.totalCalls/fbSteps.iterSteps)}x faster!`;
+  else if(iDone) msg.textContent=`Iterative DONE! Still waiting for recursive tree to finish...`;
+  else msg.textContent=`Step ${fbIdx+1}: iterative advances one step. Recursive tree still expanding...`;
+  fbIdx++;
+  const total=Math.max(fbSteps.iterLines.length,fbSteps.recLines.length);
+  document.getElementById('fb-cnt').textContent='step '+fbIdx+' / '+total;
+  document.getElementById('fb-bar').style.width=(fbIdx/total*100)+'%';
+}
+function fbReset(){fbLoad(fbN);}
+fbLoad(5);
+
+/* ══ QUIZ ══ */
+const Qs=[
+  {type:'output',tag:'tag-v',tagLabel:'factorial',q:'What does factorial(5) return?',
+   code:`<span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n){\n  <span class="kw">if</span>(n<=<span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;\n  <span class="kw">return</span> n * <span class="fn">factorial</span>(n-<span class="num">1</span>);\n}`,
+   opts:['24','60','120','720'],answer:2,
+   explain:'5! = 5×4×3×2×1 = 120. The chain: factorial(5)=5×factorial(4)=5×4×factorial(3)=5×4×3×factorial(2)=5×4×3×2×factorial(1)=5×4×3×2×1=120.'},
+  {type:'mcq',tag:'tag-g',tagLabel:'base case',q:'What happens if a recursive function has NO base case?',
+   opts:['It returns 0 by default','It runs the loop once then stops','Stack overflow — the program crashes','It returns NULL'],answer:2,
+   explain:'Without a base case, the function calls itself forever, filling up the call stack until it overflows and crashes. Always include a base case that stops the recursion.'},
+  {type:'output',tag:'tag-v',tagLabel:'fibonacci',q:'What is fib(6) using the standard recursive definition (fib(0)=0, fib(1)=1)?',
+   opts:['5','8','11','13'],answer:1,
+   explain:'fib sequence: 0,1,1,2,3,5,8,... so fib(6)=8. The chain: fib(6)=fib(5)+fib(4)=5+3=8.'},
+  {type:'mcq',tag:'tag-r',tagLabel:'complexity',q:'Why is naive recursive Fibonacci O(2ⁿ) and NOT O(n)?',
+   opts:['Because it uses two variables','Because each call makes TWO recursive calls, creating an exponential call tree','Because the function is called twice in main','Because stack frames are slow'],answer:1,
+   explain:'Each call to fib(n) spawns two more calls — fib(n-1) and fib(n-2). This branching creates a binary tree of calls with roughly 2ⁿ nodes total. Compare to factorial which makes exactly ONE recursive call per level.'},
+  {type:'fill',tag:'tag-g',tagLabel:'iterative',q:'Complete the blank: the iterative factorial uses O(<code>___</code>) extra memory space.',
+   blanks:[{id:'fi1',answer:'1',hint:'number'}],
+   explain:'The iterative version only uses a fixed number of variables (result, i) regardless of n. This is O(1) — constant space. The recursive version needs O(n) stack frames.'},
+  {type:'output',tag:'tag-a',tagLabel:'trace',q:'What does this print?',
+   code:`<span class="kw">int</span> <span class="fn">f</span>(<span class="kw">int</span> n){\n  <span class="kw">if</span>(n==<span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;\n  <span class="kw">return</span> n + <span class="fn">f</span>(n-<span class="num">1</span>);\n}\n<span class="fn">printf</span>(<span class="str">"%d"</span>, <span class="fn">f</span>(<span class="num">4</span>));`,
+   opts:['4','6','10','24'],answer:2,
+   explain:'f(4) = 4+f(3) = 4+3+f(2) = 4+3+2+f(1) = 4+3+2+1+f(0) = 4+3+2+1+0 = 10. This is summing 1 to n recursively.'},
+  {type:'mcq',tag:'tag-v',tagLabel:'quick sort',q:'What is the BASE CASE for recursive Quick Sort?',
+   opts:['When the pivot equals the middle element','When lo >= hi (subarray has 0 or 1 elements)','When all elements are equal','When n == 0'],answer:1,
+   explain:'quicksort(a, lo, hi) returns immediately when lo >= hi — meaning the subarray has 0 or 1 elements, which is trivially sorted. This is the stopping condition.'},
+  {type:'mcq',tag:'tag-r',tagLabel:'stack depth',q:'How deep is the call stack when computing factorial(n) recursively?',
+   opts:['O(1)','O(log n)','O(n)','O(n²)'],answer:2,
+   explain:'factorial(n) calls factorial(n-1) which calls factorial(n-2)... all the way to factorial(0). That is n+1 frames on the stack at the deepest point — O(n) stack depth.'},
+  {type:'fill',tag:'tag-a',tagLabel:'ackermann',q:'In the Ackermann function, when m==0 the rule is: A(0, n) = n + <code>___</code>',
+   blanks:[{id:'fi2',answer:'1',hint:'integer'}],
+   explain:'A(0, n) = n + 1. This is the first base case — when m is 0, just add 1 to n. For example A(0,5)=6, A(0,0)=1.'},
+  {type:'mcq',tag:'tag-g',tagLabel:'when to recurse',q:'Which of these is BEST solved with recursion rather than iteration?',
+   opts:['Sum all elements of an array','Find the maximum in an array','Traverse a binary tree','Count vowels in a string'],answer:2,
+   explain:'Binary trees are a naturally recursive structure — each node has left and right subtrees that are themselves trees. Traversal is elegant recursively. The other options (sum, max, vowel count) are simple linear scans — iteration is simpler and uses O(1) space.'},
+];
+
+let qCurr=0,qCorrect=0,qWrong=0,qAnswered=[];
+function qRender(){
+  const q=Qs[qCurr];
+  document.getElementById('sc-q').textContent=qCurr+1;
+  document.getElementById('qprog').style.width=(qCurr/Qs.length*100)+'%';
+  const html=`<div class="q-card">
+    <div class="q-hd"><span class="q-num">Q${qCurr+1}</span><span class="q-tag ${q.tag}">${q.tagLabel}</span></div>
+    <div class="q-body">
+      <div class="q-text">${q.q}</div>
+      ${q.code?`<pre class="q-code">${q.code}</pre>`:''}
+      ${q.type==='fill'?`<div class="fill-row">${q.blanks.map(b=>`<input class="fill-input" id="${b.id}" placeholder="${b.hint}" onkeydown="if(event.key==='Enter')qCheckFill(${qCurr})">`).join('')}</div>`
+        :`<div class="opts">${q.opts.map((o,i)=>`<button class="opt" id="opt-${qCurr}-${i}" onclick="qPick(${qCurr},${i})">${o}</button>`).join('')}</div>`}
+      <div class="nav-row">${q.type==='fill'?`<button class="btn pr" onclick="qCheckFill(${qCurr})">Check ›</button>`:'<span></span>'}
+        <button class="btn" onclick="qSkip()">Skip →</button></div>
+      <div class="feedback" id="fb-${qCurr}"></div>
+    </div></div>`;
+  document.getElementById('quiz-area').innerHTML=html;
+}
+function qPick(qi,chosen){
+  if(qAnswered[qi]!==undefined)return;
+  const q=Qs[qi];qAnswered[qi]=chosen;
+  const ok=(chosen===q.answer);
+  if(ok)qCorrect++;else qWrong++;qUpdateScore();
+  q.opts.forEach((_,i)=>{const b=document.getElementById('opt-'+qi+'-'+i);if(!b)return;b.disabled=true;if(i===q.answer)b.className='opt correct';else if(i===chosen&&!ok)b.className='opt wrong';});
+  qShowFb(qi,ok,q.explain);setTimeout(qAdvance,2200);
+}
+function qCheckFill(qi){
+  if(qAnswered[qi]!==undefined)return;
+  const q=Qs[qi];let allOk=true;
+  q.blanks.forEach(b=>{const inp=document.getElementById(b.id);if(!inp)return;const v=inp.value.trim().toLowerCase();const a=b.answer.toLowerCase();inp.className='fill-input '+(v===a?'ok':'bad');inp.disabled=true;if(v!==a)allOk=false;});
+  qAnswered[qi]=allOk?'ok':'bad';if(allOk)qCorrect++;else qWrong++;qUpdateScore();
+  qShowFb(qi,allOk,q.explain);setTimeout(qAdvance,2400);
+}
+function qShowFb(qi,ok,explain){
+  const fb=document.getElementById('fb-'+qi);if(!fb)return;
+  fb.className='feedback show '+(ok?'ok':'bad');
+  fb.innerHTML=(ok?'✓ Correct! ':'✗ Not quite. ')+explain;
+}
+function qSkip(){qAnswered[qCurr]=qAnswered[qCurr]??'skip';qAdvance();}
+function qAdvance(){qCurr++;if(qCurr>=Qs.length){qShowResult();return;}qRender();}
+function qUpdateScore(){document.getElementById('sc-c').textContent=qCorrect;document.getElementById('sc-w').textContent=qWrong;}
+function qShowResult(){
+  document.getElementById('quiz-area').innerHTML='';
+  document.getElementById('qprog').style.width='100%';
+  const p=document.getElementById('result-panel');p.className='result show';
+  const pct=Math.round(qCorrect/Qs.length*100);
+  document.getElementById('res-score').textContent=qCorrect+'/'+Qs.length;
+  const msgs=[[90,'🎉 Excellent! You have strong command of recursion.'],[70,'👍 Good work! Review complexity and trace a few more examples.'],[50,'📚 Getting there! Focus on base cases and call stack tracing.'],[0,'💡 Keep going! Re-read the guide tabs and try again.']];
+  document.getElementById('res-msg').textContent=msgs.find(([t])=>pct>=t)[1];
+  const badges=document.getElementById('res-badges');
+  badges.innerHTML=`<span class="badge b-g">✓ ${qCorrect} correct</span><span class="badge b-r">✗ ${qWrong} wrong</span>`;
+}
+function qRestart(){qCurr=0;qCorrect=0;qWrong=0;qAnswered=[];document.getElementById('result-panel').className='result';document.getElementById('sc-c').textContent='0';document.getElementById('sc-w').textContent='0';document.getElementById('sc-q').textContent='1';document.getElementById('qprog').style.width='0%';qRender();}
+qRender();
+</script>

@@ -528,11 +528,65 @@
       Nested Loops
       <span class="nav-badge new">interactive</span>
     </div>
+
+    <div class="nav-item" data-target="topic-arrays" onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')">
+      <div class="ni-icon">🧮</div>
+      Arrays
+      <span class="nav-badge">data structures</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-pointers" onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')">
+      <div class="ni-icon">📍</div>
+      Pointers
+      <span class="nav-badge">memory</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-functions" onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')">
+      <div class="ni-icon">🔧</div>
+      Functions
+      <span class="nav-badge">modular</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-strings" onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')">
+      <div class="ni-icon">📝</div>
+      Strings
+      <span class="nav-badge">text</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-char-arrays" onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')">
+      <div class="ni-icon">🔡</div>
+      Char Arrays
+      <span class="nav-badge">strings</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-break-loops" onclick="loadTopic('topic-break-loops','c_menu_loop_break.html','Break In Loops','Break Control','⚡')">
+      <div class="ni-icon">⚡</div>
+      Break In Loops
+      <span class="nav-badge">interactive</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-linked-lists" onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')">
+      <div class="ni-icon">🔗</div>
+      Linked Lists
+      <span class="nav-badge">advanced</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-recursion" onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')">
+      <div class="ni-icon">🔀</div>
+      Recursion
+      <span class="nav-badge">problem-solving</span>
+    </div>
+
+    <div class="nav-item" data-target="topic-recursion-vs-iter" onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')">
+      <div class="ni-icon">⚖️</div>
+      Recursion vs Iteration
+      <span class="nav-badge">comparison</span>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
     Part of <a href="index.html">Samiran Paul's</a> learning hub<br>
-    <span style="margin-top:0.3rem;display:block;color:#3a3f52">C Language · 9 topics</span>
+    <span style="margin-top:0.3rem;display:block;color:#3a3f52">C Language · 12 topics</span>
   </div>
 </aside>
 
@@ -559,7 +613,7 @@
       <div class="stats-row">
         <div class="stat-pill">
           <div class="dot" style="background:#5b6ef5"></div>
-          9 Topics
+          12 Topics
         </div>
         <div class="stat-pill">
           <div class="dot" style="background:#10b981"></div>
@@ -725,6 +779,60 @@
           </div>
           <div class="tc-title">Break In  Loops</div>
           <div class="tc-desc">Live demo of Break in loops  step by step.</div>
+          <div class="tc-footer">
+            <span></span>
+            <div class="tc-arrow">
+              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linked Lists -->
+        <div class="topic-card" style="--tc-color:#d946ef" onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')">
+          <div class="tc-top">
+            <div class="tc-icon">🔗</div>
+            <span class="tc-chip" style="color:#f0abfc;border-color:rgba(240,171,252,0.3)">Advanced</span>
+          </div>
+          <div class="tc-title">Linked Lists</div>
+          <div class="tc-desc">Build dynamic linked list structures using pointers. Learn node creation, traversal, and manipulation.</div>
+          <div class="tc-footer">
+            <span></span>
+            <div class="tc-arrow">
+              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recursion -->
+        <div class="topic-card" style="--tc-color:#ca8a04" onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')">
+          <div class="tc-top">
+            <div class="tc-icon">🔀</div>
+            <span class="tc-chip" style="color:#fcd34d;border-color:rgba(252,211,77,0.3)">Problem-Solving</span>
+          </div>
+          <div class="tc-title">Recursion</div>
+          <div class="tc-desc">Master recursive functions with base cases, call stacks, and factorial/Fibonacci examples.</div>
+          <div class="tc-footer">
+            <span></span>
+            <div class="tc-arrow">
+              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recursion vs Iteration -->
+        <div class="topic-card" style="--tc-color:#06b6d4" onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')">
+          <div class="tc-top">
+            <div class="tc-icon">⚖️</div>
+            <span class="tc-chip" style="color:#a5f3fc;border-color:rgba(165,243,252,0.3)">Comparison</span>
+          </div>
+          <div class="tc-title">Recursion vs Iteration</div>
+          <div class="tc-desc">Compare recursive and iterative solutions side-by-side with performance analysis and quiz.</div>
           <div class="tc-footer">
             <span></span>
             <div class="tc-arrow">
