@@ -1,0 +1,534 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.unit-pill{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#0ea5e9,#6366f1);border-radius:20px;padding:6px 16px;margin-bottom:1.25rem}
+.unit-pill span{font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:#fff}
+.tabs{display:flex;gap:5px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:5px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{flex:1;min-width:80px;padding:8px 4px;font-family:var(--font-mono);font-size:.63rem;font-weight:500;color:var(--color-text-secondary);background:transparent;border:none;border-radius:var(--border-radius-md);cursor:pointer;transition:all .18s;text-align:center}
+.tab:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.tab.active{background:var(--color-background-primary);color:var(--color-text-primary);box-shadow:inset 0 0 0 0.5px var(--color-border-secondary)}
+.pane{display:none}.pane.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.card-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+pre{font-family:var(--font-mono);font-size:.72rem;line-height:1.85;padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}.ret{color:#ef4444;font-weight:600}
+.cl{display:block;border-radius:3px;padding:0 3px;transition:background .15s}
+.cl.hi{background:rgba(99,102,241,.22)}.cl.hi-g{background:rgba(16,185,129,.2)}.cl.hi-a{background:rgba(245,158,11,.2)}.cl.hi-r{background:rgba(239,68,68,.2)}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.warn{border-left:2.5px solid #ef4444;background:rgba(239,68,68,.03);border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:10px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.badge{font-family:var(--font-mono);font-size:.62rem;padding:3px 8px;border-radius:var(--border-radius-md)}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-r{background:#fef2f2;color:#991b1b;border:0.5px solid #fca5a5}
+.b-a{background:#fffbeb;color:#92400e;border:0.5px solid #fcd34d}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.slbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;border-radius:2px;transition:width .2s;background:#6366f1}
+.smsg{font-family:var(--font-mono);font-size:.7rem;min-height:20px;margin-bottom:10px;padding:6px 10px;border-radius:var(--border-radius-md);border-left:3px solid var(--color-border-secondary);line-height:1.5;color:var(--color-text-secondary)}
+.smsg.mg{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.smsg.ma{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.smsg.mr{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+.smsg.mv{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.vbox{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 10px;min-width:58px}
+.vlbl{font-family:var(--font-mono);font-size:.56rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.vval{font-family:var(--font-mono);font-size:.88rem;font-weight:500;color:var(--color-text-primary)}
+.out{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:34px;color:var(--color-text-primary);line-height:1.8;white-space:pre-wrap}
+/* file visual */
+.file-disk{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.file-icon{width:48px;height:58px;background:var(--color-background-secondary);border:1.5px solid var(--color-border-secondary);border-radius:4px 10px 4px 4px;position:relative;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
+.file-icon::before{content:'';position:absolute;top:-1px;right:-1px;width:12px;height:12px;background:var(--color-background-primary);border-bottom:1.5px solid var(--color-border-secondary);border-left:1.5px solid var(--color-border-secondary);border-radius:0 0 0 4px}
+.file-icon .ext{font-family:var(--font-mono);font-size:.6rem;font-weight:700;color:var(--color-text-secondary)}
+.file-icon.open{border-color:#10b981}.file-icon.open .ext{color:#10b981}
+.file-icon.writing{border-color:#f59e0b;animation:pulse .8s ease-in-out infinite}
+.file-icon.closed{border-color:#6366f1}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.3)}50%{box-shadow:0 0 0 6px rgba(245,158,11,0)}}
+.file-content{flex:1;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-family:var(--font-mono);font-size:.72rem;min-height:60px;line-height:1.8;color:var(--color-text-primary);white-space:pre-wrap}
+/* mode table */
+.mode-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.7rem;margin-bottom:1rem}
+.mode-table th{background:var(--color-background-secondary);color:var(--color-text-secondary);padding:7px 10px;border:0.5px solid var(--color-border-tertiary);text-align:left;font-weight:500;font-size:.63rem;text-transform:uppercase;letter-spacing:.04em}
+.mode-table td{padding:7px 10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);color:var(--color-text-primary);vertical-align:top;line-height:1.5}
+.mode-table tr:hover td{background:var(--color-background-secondary)}
+td code{color:#a78bfa;background:rgba(99,102,241,.08);padding:1px 5px;border-radius:3px}
+/* pipeline */
+.pipeline{display:flex;align-items:center;gap:0;margin-bottom:1rem;flex-wrap:wrap;row-gap:8px}
+.pipe-step{font-family:var(--font-mono);font-size:.68rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid;text-align:center;flex:1;min-width:80px}
+.pipe-arrow{color:var(--color-text-secondary);font-size:1rem;padding:0 4px;flex-shrink:0}
+.ps-open{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.3);color:#065f46}
+.ps-rw{background:rgba(99,102,241,.08);border-color:rgba(99,102,241,.3);color:#4338ca}
+.ps-close{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#991b1b}
+/* simulator */
+.sim-terminal{background:#0d1117;border-radius:var(--border-radius-lg);padding:16px;font-family:var(--font-mono);font-size:.72rem;color:#e6edf3;line-height:1.9;min-height:140px;margin-bottom:10px}
+.sim-prompt{color:#3fb950}
+.sim-output{color:#79c0ff}
+.sim-error{color:#f85149}
+.sim-file{color:#d2a8ff}
+.sim-comment{color:#8b949e}
+.op-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.op-btn{font-family:var(--font-mono);font-size:.66rem;padding:7px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.op-btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:#6366f1}
+.op-btn.active-op{background:#6366f1;border-color:#6366f1;color:#fff}
+@media(max-width:520px){.two{grid-template-columns:1fr}.pipeline{flex-direction:column;align-items:stretch}.pipe-arrow{transform:rotate(90deg)}}
+</style>
+
+<div class="root">
+<div class="unit-pill"><span>File Handling in C · Lab topic</span></div>
+<div class="tabs">
+  <button class="tab active" onclick="T('concept',this)">concept</button>
+  <button class="tab" onclick="T('modes',this)">file modes</button>
+  <button class="tab" onclick="T('write',this)">writing</button>
+  <button class="tab" onclick="T('read',this)">reading</button>
+  <button class="tab" onclick="T('sample',this)">full program</button>
+</div>
+
+<!-- CONCEPT -->
+<div class="pane on" id="pane-concept">
+  <div class="slbl">file I/O pipeline — every program follows this order</div>
+  <div class="pipeline">
+    <div class="pipe-step ps-open">1. fopen()<br><span style="font-size:.6rem;opacity:.7">open file, get FILE*</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step ps-rw">2. fprintf / fscanf<br><span style="font-size:.6rem;opacity:.7">read or write data</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step ps-rw">3. fgets / fputs<br><span style="font-size:.6rem;opacity:.7">read or write lines</span></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-step ps-close">4. fclose()<br><span style="font-size:.6rem;opacity:.7">close — always!</span></div>
+  </div>
+
+  <div class="two">
+    <div>
+      <div class="slbl">why files?</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px">
+          <div style="font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:var(--color-text-primary);margin-bottom:5px">Without files</div>
+          <div style="font-size:.75rem;color:var(--color-text-secondary);line-height:1.6">All data lives in RAM. When the program ends or the computer turns off, everything is gone.</div>
+        </div>
+        <div style="background:rgba(99,102,241,.06);border:0.5px solid rgba(99,102,241,.25);border-radius:var(--border-radius-lg);padding:12px 14px">
+          <div style="font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:#6366f1;margin-bottom:5px">With files</div>
+          <div style="font-size:.75rem;color:var(--color-text-secondary);line-height:1.6">Data is saved to disk permanently. Other programs can read it. Data survives after the program exits.</div>
+        </div>
+        <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px">
+          <div style="font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:var(--color-text-primary);margin-bottom:5px">Use cases</div>
+          <div style="font-size:.75rem;color:var(--color-text-secondary);line-height:1.6">Student records, game saves, logs, configuration files, reports, data export.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="slbl">key functions from &lt;stdio.h&gt;</div>
+      <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden">
+        <div style="display:grid;grid-template-columns:auto 1fr;font-family:var(--font-mono);font-size:.68rem">
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:rgba(16,185,129,.06);color:#10b981;font-weight:600">fopen()</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Open a file, returns FILE*</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:rgba(99,102,241,.06);color:#6366f1;font-weight:600">fprintf()</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Write formatted text to file</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:rgba(99,102,241,.06);color:#6366f1;font-weight:600">fscanf()</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Read formatted text from file</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:rgba(99,102,241,.06);color:#6366f1;font-weight:600">fputs()</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Write a string to file</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:rgba(99,102,241,.06);color:#6366f1;font-weight:600">fgets()</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Read a line from file</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:rgba(99,102,241,.06);color:#6366f1;font-weight:600">feof()</div>
+          <div style="padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">Check if end of file reached</div>
+          <div style="padding:8px 12px;background:rgba(239,68,68,.06);color:#ef4444;font-weight:600">fclose()</div>
+          <div style="padding:8px 12px;color:var(--color-text-secondary)">Close file — always call this!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="note">In C, a file is represented by a <code>FILE*</code> pointer (file pointer). <code>fopen()</code> returns this pointer — it's how every other function knows which file to work with. Always check if <code>fopen()</code> returned <code>NULL</code> (file not found / permission denied) before using it.</div>
+  <div class="badges">
+    <span class="badge b-v">#include &lt;stdio.h&gt;</span>
+    <span class="badge b-g">FILE* fp — file pointer</span>
+    <span class="badge b-a">always check fp != NULL</span>
+    <span class="badge b-r">always call fclose(fp)</span>
+  </div>
+</div>
+
+<!-- FILE MODES -->
+<div class="pane" id="pane-modes">
+  <div class="slbl">fopen() modes — second argument controls how the file is opened</div>
+  <table class="mode-table">
+    <tr><th>Mode</th><th>Meaning</th><th>File exists?</th><th>File missing?</th><th>Use when</th></tr>
+    <tr><td><code>"r"</code></td><td>Read only</td><td>Opens for reading</td><td style="color:#ef4444">Returns NULL</td><td>Reading existing data</td></tr>
+    <tr><td><code>"w"</code></td><td>Write only</td><td style="color:#ef4444">Truncates (erases!)</td><td style="color:#10b981">Creates new file</td><td>Writing fresh data</td></tr>
+    <tr><td><code>"a"</code></td><td>Append only</td><td>Adds to end</td><td style="color:#10b981">Creates new file</td><td>Adding to existing data</td></tr>
+    <tr><td><code>"r+"</code></td><td>Read + Write</td><td>Opens for both</td><td style="color:#ef4444">Returns NULL</td><td>Update existing file</td></tr>
+    <tr><td><code>"w+"</code></td><td>Write + Read</td><td style="color:#ef4444">Truncates first</td><td style="color:#10b981">Creates new file</td><td>Create and read back</td></tr>
+    <tr><td><code>"a+"</code></td><td>Append + Read</td><td>Reads all, appends at end</td><td style="color:#10b981">Creates new file</td><td>Read and add more</td></tr>
+    <tr><td><code>"rb"</code>, <code>"wb"</code></td><td>Binary modes</td><td colspan="2">Same as above but binary (no \n translation)</td><td>Images, binary data</td></tr>
+  </table>
+  <div class="slbl">interactive — see what each mode does</div>
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> mode_examples.c</div>
+    <pre><span class="kw">FILE</span> *fp;
+
+<span class="cm">// "w" — create or overwrite</span>
+fp = <span class="fn">fopen</span>(<span class="str">"data.txt"</span>, <span class="str">"w"</span>);
+
+<span class="cm">// "r" — read existing</span>
+fp = <span class="fn">fopen</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>);
+
+<span class="cm">// "a" — add to end of file</span>
+fp = <span class="fn">fopen</span>(<span class="str">"log.txt"</span>, <span class="str">"a"</span>);
+
+<span class="cm">// ALWAYS check!</span>
+<span class="kw">if</span> (fp == <span class="num">NULL</span>) {
+  <span class="fn">printf</span>(<span class="str">"Error opening file!\n"</span>);
+  <span class="ret">return</span> <span class="num">1</span>;
+}</pre>
+  </div>
+  <div class="warn"><strong>Common mistake with "w" mode:</strong> If the file already exists, <code>"w"</code> immediately <em>erases all its contents</em> before writing. If you want to keep existing data and add more, use <code>"a"</code> (append) instead.</div>
+  <div class="badges">
+    <span class="badge b-g">"r" — read only</span>
+    <span class="badge b-v">"w" — write (erases!)</span>
+    <span class="badge b-a">"a" — append (safe)</span>
+    <span class="badge b-r">NULL = file open failed</span>
+  </div>
+</div>
+
+<!-- WRITING TO FILE -->
+<div class="pane" id="pane-write">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> write_file.c</div>
+      <pre><span class="cl" id="wr0"><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span></span>
+<span class="cl" id="wr1"></span>
+<span class="cl" id="wr2"><span class="kw">int</span> <span class="fn">main</span>() {</span>
+<span class="cl" id="wr3">  <span class="kw">FILE</span> *fp;</span>
+<span class="cl" id="wr4">  fp = <span class="fn">fopen</span>(<span class="str">"students.txt"</span>, <span class="str">"w"</span>);</span>
+<span class="cl" id="wr5">  <span class="kw">if</span> (fp == <span class="num">NULL</span>) {</span>
+<span class="cl" id="wr6">    <span class="fn">printf</span>(<span class="str">"Cannot open file!\n"</span>);</span>
+<span class="cl" id="wr7">    <span class="ret">return</span> <span class="num">1</span>;</span>
+<span class="cl" id="wr8">  }</span>
+<span class="cl" id="wr9">  <span class="fn">fprintf</span>(fp, <span class="str">"Alice 95\n"</span>);  <span class="cm">// like printf but to file</span></span>
+<span class="cl" id="wr10">  <span class="fn">fprintf</span>(fp, <span class="str">"Bob   82\n"</span>);</span>
+<span class="cl" id="wr11">  <span class="fn">fprintf</span>(fp, <span class="str">"Carol 78\n"</span>);</span>
+<span class="cl" id="wr12">  <span class="fn">fputs</span>(<span class="str">"Done writing!\n"</span>, fp); <span class="cm">// string to file</span></span>
+<span class="cl" id="wr13">  <span class="fn">fclose</span>(fp);  <span class="cm">// flush + close</span></span>
+<span class="cl" id="wr14">  <span class="fn">printf</span>(<span class="str">"File written successfully!\n"</span>);</span>
+<span class="cl" id="wr15">  <span class="ret">return</span> <span class="num">0</span>;</span>
+<span class="cl" id="wr16">}</span></pre>
+    </div>
+    <div>
+      <div class="slbl">students.txt on disk</div>
+      <div class="file-disk">
+        <div class="file-icon" id="wr-icon"><span class="ext">.txt</span></div>
+        <div class="file-content" id="wr-file">— file not opened yet —</div>
+      </div>
+      <div class="vrow">
+        <div class="vbox"><div class="vlbl">fp</div><div class="vval" id="wr-fp">NULL</div></div>
+        <div class="vbox"><div class="vlbl">mode</div><div class="vval" id="wr-mode">—</div></div>
+        <div class="vbox"><div class="vlbl">status</div><div class="vval" id="wr-status">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="wrStep()">Next step ›</button>
+      <button class="btn" onclick="wrReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="wr-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="wr-bar"></div></div>
+    <div class="smsg" id="wr-msg">Press Next step to write data to a file step by step.</div>
+    <div class="slbl">console output</div>
+    <div class="out" id="wr-out"></div>
+  </div>
+  <div class="note"><code>fprintf(fp, "format", args)</code> works exactly like <code>printf</code> but sends output to the file instead of the screen. <code>fputs(str, fp)</code> writes a string directly. After writing, <code>fclose(fp)</code> flushes the buffer to disk — without it, data may not actually be saved.</div>
+  <div class="badges">
+    <span class="badge b-v">fprintf — like printf to file</span>
+    <span class="badge b-g">fputs — write string to file</span>
+    <span class="badge b-r">fclose flushes buffer to disk</span>
+    <span class="badge b-a">check NULL before writing</span>
+  </div>
+</div>
+
+<!-- READING FROM FILE -->
+<div class="pane" id="pane-read">
+  <div class="two">
+    <div class="card">
+      <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> read_file.c</div>
+      <pre><span class="cl" id="rd0"><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span></span>
+<span class="cl" id="rd1"></span>
+<span class="cl" id="rd2"><span class="kw">int</span> <span class="fn">main</span>() {</span>
+<span class="cl" id="rd3">  <span class="kw">FILE</span> *fp;</span>
+<span class="cl" id="rd4">  <span class="kw">char</span> line[<span class="num">100</span>];</span>
+<span class="cl" id="rd5">  fp = <span class="fn">fopen</span>(<span class="str">"students.txt"</span>, <span class="str">"r"</span>);</span>
+<span class="cl" id="rd6">  <span class="kw">if</span> (fp == <span class="num">NULL</span>) {</span>
+<span class="cl" id="rd7">    <span class="fn">printf</span>(<span class="str">"File not found!\n"</span>);</span>
+<span class="cl" id="rd8">    <span class="ret">return</span> <span class="num">1</span>;</span>
+<span class="cl" id="rd9">  }</span>
+<span class="cl" id="rd10">  <span class="cm">// Read line by line until EOF</span></span>
+<span class="cl" id="rd11">  <span class="kw">while</span> (<span class="fn">fgets</span>(line, <span class="num">100</span>, fp) != <span class="num">NULL</span>) {</span>
+<span class="cl" id="rd12">    <span class="fn">printf</span>(<span class="str">"%s"</span>, line);  <span class="cm">// print each line</span></span>
+<span class="cl" id="rd13">  }</span>
+<span class="cl" id="rd14">  <span class="fn">fclose</span>(fp);</span>
+<span class="cl" id="rd15">  <span class="ret">return</span> <span class="num">0</span>;</span>
+<span class="cl" id="rd16">}</span></pre>
+    </div>
+    <div>
+      <div class="slbl">reading from students.txt</div>
+      <div class="file-disk">
+        <div class="file-icon closed" id="rd-icon"><span class="ext">.txt</span></div>
+        <div class="file-content" id="rd-file">Alice 95
+Bob   82
+Carol 78
+Done writing!</div>
+      </div>
+      <div class="vrow">
+        <div class="vbox"><div class="vlbl">fp</div><div class="vval" id="rd-fp">NULL</div></div>
+        <div class="vbox"><div class="vlbl">line read</div><div class="vval" id="rd-line" style="font-size:.72rem">—</div></div>
+        <div class="vbox"><div class="vlbl">fgets</div><div class="vval" id="rd-eof">—</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="stepper">
+    <div class="sctl">
+      <button class="btn pr" onclick="rdStep()">Next step ›</button>
+      <button class="btn" onclick="rdReset()">↺ Reset</button>
+      <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="rd-cnt">step 0</span>
+    </div>
+    <div class="pbar"><div class="pfill" id="rd-bar"></div></div>
+    <div class="smsg" id="rd-msg">Press Next step to read the file line by line.</div>
+    <div class="slbl">console output</div>
+    <div class="out" id="rd-out"></div>
+  </div>
+  <div class="note"><code>fgets(line, size, fp)</code> reads one line at a time (up to size−1 chars) and stores it in <code>line</code>. It returns <code>NULL</code> when there's nothing more to read (end of file). This is the safe, standard way to read text files line by line.</div>
+  <div class="badges">
+    <span class="badge b-v">fgets reads one line</span>
+    <span class="badge b-g">returns NULL at end of file</span>
+    <span class="badge b-a">fscanf for formatted reads</span>
+    <span class="badge b-r">always open with "r" mode</span>
+  </div>
+</div>
+
+<!-- FULL PROGRAM -->
+<div class="pane" id="pane-sample">
+  <div class="card">
+    <div class="card-hd"><span class="dot" style="background:#ef4444"></span><span class="dot" style="background:#f59e0b"></span><span class="dot" style="background:#10b981"></span> student_records.c — complete example</div>
+    <pre><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* Write student records to a file */</span>
+<span class="kw">void</span> <span class="fn">writeStudents</span>() {
+  <span class="kw">FILE</span> *fp = <span class="fn">fopen</span>(<span class="str">"students.txt"</span>, <span class="str">"w"</span>);
+  <span class="kw">if</span> (fp == <span class="num">NULL</span>) { <span class="fn">printf</span>(<span class="str">"Error!\n"</span>); <span class="ret">return</span>; }
+
+  <span class="kw">char</span> names[][<span class="num">20</span>] = {<span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Carol"</span>};
+  <span class="kw">int</span>  marks[]     = {<span class="num">95</span>, <span class="num">82</span>, <span class="num">78</span>};
+
+  <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++)
+    <span class="fn">fprintf</span>(fp, <span class="str">"%s %d\n"</span>, names[i], marks[i]);
+
+  <span class="fn">fclose</span>(fp);
+  <span class="fn">printf</span>(<span class="str">"Records written!\n"</span>);
+}
+
+<span class="cm">/* Read and display student records */</span>
+<span class="kw">void</span> <span class="fn">readStudents</span>() {
+  <span class="kw">FILE</span> *fp = <span class="fn">fopen</span>(<span class="str">"students.txt"</span>, <span class="str">"r"</span>);
+  <span class="kw">if</span> (fp == <span class="num">NULL</span>) { <span class="fn">printf</span>(<span class="str">"File not found!\n"</span>); <span class="ret">return</span>; }
+
+  <span class="kw">char</span> name[<span class="num">20</span>];
+  <span class="kw">int</span>  mark;
+
+  <span class="fn">printf</span>(<span class="str">"Name      Mark\n"</span>);
+  <span class="fn">printf</span>(<span class="str">"----------\n"</span>);
+
+  <span class="kw">while</span> (<span class="fn">fscanf</span>(fp, <span class="str">"%s %d"</span>, name, &mark) == <span class="num">2</span>) {
+    <span class="fn">printf</span>(<span class="str">"%-9s %d\n"</span>, name, mark);
+  }
+  <span class="fn">fclose</span>(fp);
+}
+
+<span class="cm">/* Append a new student */</span>
+<span class="kw">void</span> <span class="fn">appendStudent</span>(<span class="kw">char</span> *name, <span class="kw">int</span> mark) {
+  <span class="kw">FILE</span> *fp = <span class="fn">fopen</span>(<span class="str">"students.txt"</span>, <span class="str">"a"</span>);
+  <span class="kw">if</span> (fp == <span class="num">NULL</span>) { <span class="fn">printf</span>(<span class="str">"Error!\n"</span>); <span class="ret">return</span>; }
+  <span class="fn">fprintf</span>(fp, <span class="str">"%s %d\n"</span>, name, mark);
+  <span class="fn">fclose</span>(fp);
+  <span class="fn">printf</span>(<span class="str">"Student added!\n"</span>);
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+  <span class="fn">writeStudents</span>();
+  <span class="fn">readStudents</span>();
+  <span class="fn">appendStudent</span>(<span class="str">"David"</span>, <span class="num">88</span>);
+  <span class="fn">readStudents</span>();  <span class="cm">// read again — David appears</span>
+  <span class="ret">return</span> <span class="num">0</span>;
+}</pre>
+  </div>
+  <div class="slbl">interactive simulation — click each operation</div>
+  <div class="op-btns">
+    <button class="op-btn" onclick="sim('write')">▶ writeStudents()</button>
+    <button class="op-btn" onclick="sim('read')">▶ readStudents()</button>
+    <button class="op-btn" onclick="sim('append')">▶ appendStudent("David",88)</button>
+    <button class="op-btn" onclick="sim('read2')">▶ readStudents() again</button>
+    <button class="op-btn" onclick="simClear()">⌫ Clear</button>
+  </div>
+  <div class="file-disk">
+    <div class="file-icon" id="sim-icon"><span class="ext">.txt</span></div>
+    <div class="file-content" id="sim-file">students.txt — not created yet</div>
+  </div>
+  <div class="sim-terminal" id="sim-term">
+    <span class="sim-comment">// Click a button above to simulate each function</span>
+  </div>
+  <div class="note">Notice: <code>writeStudents()</code> uses <code>"w"</code> — it creates the file fresh. <code>readStudents()</code> uses <code>"r"</code> with <code>fscanf</code> to read formatted data (name + integer). <code>appendStudent()</code> uses <code>"a"</code> — it adds David without erasing the existing records. After appending, reading again shows all 4 students.</div>
+  <div class="badges">
+    <span class="badge b-v">"w" → create/overwrite</span>
+    <span class="badge b-g">"r" → read with fscanf</span>
+    <span class="badge b-a">"a" → append safely</span>
+    <span class="badge b-r">fclose after every operation</span>
+  </div>
+</div>
+</div>
+
+<script>
+function T(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('on');el.classList.add('active');
+}
+
+// ── WRITE STEPPER ──
+let wrIdx=0,wrPrev=null;
+const wrSteps=[
+  {l:'wr3',cls:'hi',mc:'mv',msg:'FILE *fp — declare file pointer. Currently NULL (not pointing to any file).',fp:'NULL',mode:'—',status:'declared',file:'— file not opened yet —',icon:''},
+  {l:'wr4',cls:'hi-g',mc:'mg',msg:'fopen("students.txt","w") — open for writing. File created/cleared. Returns file pointer.',fp:'0x4a2f',mode:'"w"',status:'open ✓',file:'(empty — "w" clears it)',icon:'open'},
+  {l:'wr5',cls:'hi',mc:'mv',msg:'if(fp==NULL) check — fp is valid (not NULL), so we skip the error block.',fp:'0x4a2f',mode:'"w"',status:'check ok',file:'(empty)',icon:'open'},
+  {l:'wr9',cls:'hi-g',mc:'mg',msg:'fprintf(fp,"Alice 95\\n") — write first line to file.',fp:'0x4a2f',mode:'"w"',status:'writing',file:'Alice 95',icon:'writing'},
+  {l:'wr10',cls:'hi-g',mc:'mg',msg:'fprintf(fp,"Bob   82\\n") — write second line.',fp:'0x4a2f',mode:'"w"',status:'writing',file:'Alice 95\nBob   82',icon:'writing'},
+  {l:'wr11',cls:'hi-g',mc:'mg',msg:'fprintf(fp,"Carol 78\\n") — write third line.',fp:'0x4a2f',mode:'"w"',status:'writing',file:'Alice 95\nBob   82\nCarol 78',icon:'writing'},
+  {l:'wr12',cls:'hi-g',mc:'mg',msg:'fputs("Done writing!\\n", fp) — write string directly to file.',fp:'0x4a2f',mode:'"w"',status:'writing',file:'Alice 95\nBob   82\nCarol 78\nDone writing!',icon:'writing'},
+  {l:'wr13',cls:'hi-r',mc:'mr',msg:'fclose(fp) — flushes buffer to disk and closes file. ESSENTIAL step!',fp:'NULL',mode:'—',status:'closed',file:'Alice 95\nBob   82\nCarol 78\nDone writing!',icon:'closed'},
+  {l:'wr14',cls:'hi',mc:'mv',msg:'printf on screen — program reports success.',fp:'NULL',mode:'—',status:'done',file:'Alice 95\nBob   82\nCarol 78\nDone writing!',icon:'closed',out:'File written successfully!'},
+];
+function wrStep(){
+  if(wrIdx>=wrSteps.length)return;
+  if(wrPrev){const e=document.getElementById(wrPrev);if(e)e.className='cl';}
+  const s=wrSteps[wrIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  wrPrev=s.l;
+  const msg=document.getElementById('wr-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('wr-fp').textContent=s.fp;
+  document.getElementById('wr-mode').textContent=s.mode;
+  document.getElementById('wr-status').textContent=s.status;
+  document.getElementById('wr-file').textContent=s.file;
+  const icon=document.getElementById('wr-icon');icon.className='file-icon '+(s.icon||'');icon.querySelector('.ext').textContent='.txt';
+  if(s.out)document.getElementById('wr-out').textContent=s.out;
+  wrIdx++;
+  document.getElementById('wr-cnt').textContent='step '+wrIdx+' / '+wrSteps.length;
+  document.getElementById('wr-bar').style.width=(wrIdx/wrSteps.length*100)+'%';
+}
+function wrReset(){
+  wrIdx=0;if(wrPrev){const e=document.getElementById(wrPrev);if(e)e.className='cl';}wrPrev=null;
+  document.getElementById('wr-msg').className='smsg';document.getElementById('wr-msg').textContent='Press Next step to write data to a file step by step.';
+  document.getElementById('wr-fp').textContent='NULL';document.getElementById('wr-mode').textContent='—';document.getElementById('wr-status').textContent='—';
+  document.getElementById('wr-file').textContent='— file not opened yet —';
+  document.getElementById('wr-icon').className='file-icon';document.getElementById('wr-icon').querySelector('.ext').textContent='.txt';
+  document.getElementById('wr-out').textContent='';
+  document.getElementById('wr-cnt').textContent='step 0';document.getElementById('wr-bar').style.width='0%';
+}
+
+// ── READ STEPPER ──
+let rdIdx=0,rdPrev=null;
+const rdSteps=[
+  {l:'rd5',cls:'hi-g',mc:'mg',msg:'fopen("students.txt","r") — open existing file for reading.',fp:'0x5b3a',line:'—',eof:'—'},
+  {l:'rd6',cls:'hi',mc:'mv',msg:'if(fp==NULL) — fp is valid, file exists. Skip error block.',fp:'0x5b3a',line:'—',eof:'ok'},
+  {l:'rd11',cls:'hi',mc:'mv',msg:'fgets(line,100,fp) — read first line from file.',fp:'0x5b3a',line:'"Alice 95\\n"',eof:'not NULL'},
+  {l:'rd12',cls:'hi-g',mc:'mg',msg:'printf line — display "Alice 95" on screen.',fp:'0x5b3a',line:'"Alice 95\\n"',eof:'not NULL',out:'Alice 95'},
+  {l:'rd11',cls:'hi',mc:'mv',msg:'fgets again — read next line "Bob   82\\n".',fp:'0x5b3a',line:'"Bob   82\\n"',eof:'not NULL'},
+  {l:'rd12',cls:'hi-g',mc:'mg',msg:'printf — display "Bob   82".',fp:'0x5b3a',line:'"Bob   82\\n"',eof:'not NULL',out:'Alice 95\nBob   82'},
+  {l:'rd11',cls:'hi',mc:'mv',msg:'fgets — read "Carol 78\\n".',fp:'0x5b3a',line:'"Carol 78\\n"',eof:'not NULL'},
+  {l:'rd12',cls:'hi-g',mc:'mg',msg:'printf — display "Carol 78".',fp:'0x5b3a',line:'"Carol 78\\n"',eof:'not NULL',out:'Alice 95\nBob   82\nCarol 78'},
+  {l:'rd11',cls:'hi',mc:'mv',msg:'fgets — read last line "Done writing!".',fp:'0x5b3a',line:'"Done writing!"',eof:'not NULL'},
+  {l:'rd12',cls:'hi-g',mc:'mg',msg:'printf — display last line.',fp:'0x5b3a',line:'"Done writing!"',eof:'not NULL',out:'Alice 95\nBob   82\nCarol 78\nDone writing!'},
+  {l:'rd11',cls:'hi-r',mc:'mr',msg:'fgets returns NULL — end of file reached! Loop condition false, exit.',fp:'0x5b3a',line:'NULL',eof:'NULL → exit loop'},
+  {l:'rd14',cls:'hi-r',mc:'mr',msg:'fclose(fp) — close the file. Reading complete!',fp:'NULL',line:'—',eof:'closed'},
+];
+function rdStep(){
+  if(rdIdx>=rdSteps.length)return;
+  if(rdPrev){const e=document.getElementById(rdPrev);if(e)e.className='cl';}
+  const s=rdSteps[rdIdx];
+  const e=document.getElementById(s.l);if(e)e.className='cl '+(s.cls||'hi');
+  rdPrev=s.l;
+  const msg=document.getElementById('rd-msg');msg.className='smsg '+(s.mc||'');msg.textContent=s.msg;
+  document.getElementById('rd-fp').textContent=s.fp;
+  document.getElementById('rd-line').textContent=s.line;
+  document.getElementById('rd-eof').textContent=s.eof;
+  if(s.out)document.getElementById('rd-out').textContent=s.out;
+  rdIdx++;
+  document.getElementById('rd-cnt').textContent='step '+rdIdx+' / '+rdSteps.length;
+  document.getElementById('rd-bar').style.width=(rdIdx/rdSteps.length*100)+'%';
+}
+function rdReset(){
+  rdIdx=0;if(rdPrev){const e=document.getElementById(rdPrev);if(e)e.className='cl';}rdPrev=null;
+  document.getElementById('rd-msg').className='smsg';document.getElementById('rd-msg').textContent='Press Next step to read the file line by line.';
+  document.getElementById('rd-fp').textContent='NULL';['rd-line','rd-eof'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('rd-out').textContent='';
+  document.getElementById('rd-cnt').textContent='step 0';document.getElementById('rd-bar').style.width='0%';
+}
+
+// ── FULL PROGRAM SIM ──
+let simFile='';
+const simTerm=()=>document.getElementById('sim-term');
+const simFileEl=()=>document.getElementById('sim-file');
+const simIconEl=()=>document.getElementById('sim-icon');
+function addLine(txt,cls=''){
+  const span=document.createElement('span');span.className=cls;span.textContent=txt;
+  simTerm().appendChild(document.createElement('br'));simTerm().appendChild(span);
+  simTerm().scrollTop=simTerm().scrollHeight;
+}
+function setIcon(cls){const ic=simIconEl();ic.className='file-icon '+(cls||'');ic.querySelector('.ext').textContent='.txt';}
+function sim(op){
+  document.querySelectorAll('.op-btn').forEach(b=>b.classList.remove('active-op'));
+  event.target.classList.add('active-op');
+  if(op==='write'){
+    simFile='Alice 95\nBob   82\nCarol 78';
+    simFileEl().textContent=simFile;setIcon('writing');
+    addLine('// writeStudents() called','sim-comment');
+    addLine('fopen("students.txt","w") → file created','sim-output');
+    addLine('fprintf → "Alice 95"','sim-output');
+    addLine('fprintf → "Bob   82"','sim-output');
+    addLine('fprintf → "Carol 78"','sim-output');
+    addLine('fclose(fp) → data flushed to disk','sim-output');
+    addLine('Records written!','sim-prompt');
+    setIcon('closed');
+  } else if(op==='read'){
+    if(!simFile){addLine('Error: file not found! Run writeStudents() first.','sim-error');setIcon('');return;}
+    setIcon('open');
+    addLine('// readStudents() called','sim-comment');
+    addLine('fopen("students.txt","r") → opened for reading','sim-output');
+    addLine('Name      Mark\n----------','sim-file');
+    simFile.split('\n').forEach(l=>{if(l)addLine(l,'sim-file');});
+    addLine('fclose(fp)','sim-output');setIcon('closed');
+  } else if(op==='append'){
+    if(!simFile){addLine('Error: file not found! Run writeStudents() first.','sim-error');return;}
+    simFile+='\nDavid 88';simFileEl().textContent=simFile;setIcon('writing');
+    addLine('// appendStudent("David",88) called','sim-comment');
+    addLine('fopen("students.txt","a") → opened for append','sim-output');
+    addLine('fprintf → "David 88" added to end','sim-output');
+    addLine('fclose(fp) → saved','sim-output');
+    addLine('Student added!','sim-prompt');setIcon('closed');
+  } else if(op==='read2'){
+    if(!simFile){addLine('Error: file not found!','sim-error');return;}
+    setIcon('open');
+    addLine('// readStudents() called again','sim-comment');
+    addLine('Name      Mark\n----------','sim-file');
+    simFile.split('\n').forEach(l=>{if(l)addLine(l,'sim-file');});
+    addLine('fclose(fp)','sim-output');setIcon('closed');
+  }
+  setTimeout(()=>event.target.classList.remove('active-op'),800);
+}
+function simClear(){
+  simFile='';simFileEl().textContent='students.txt — not created yet';setIcon('');
+  simTerm().innerHTML='<span class="sim-comment">// Click a button above to simulate each function</span>';
+  document.querySelectorAll('.op-btn').forEach(b=>b.classList.remove('active-op'));
+}
+</script>
