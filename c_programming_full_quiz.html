@@ -1,0 +1,430 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+/* home screen */
+.home{display:block}
+.home-title{font-family:var(--font-mono);font-size:1rem;font-weight:700;color:var(--color-text-primary);margin-bottom:.35rem}
+.home-sub{font-size:.78rem;color:var(--color-text-secondary);margin-bottom:1.5rem;line-height:1.5}
+.set-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.25rem}
+.set-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px;cursor:pointer;transition:all .2s;text-align:center}
+.set-card:hover{border-color:#6366f1;background:rgba(99,102,241,.04)}
+.set-num{font-family:var(--font-mono);font-size:1.8rem;font-weight:700;margin-bottom:6px}
+.s1 .set-num{color:#6366f1}.s2 .set-num{color:#10b981}.s3 .set-num{color:#f59e0b}
+.set-label{font-family:var(--font-mono);font-size:.72rem;font-weight:600;color:var(--color-text-primary);margin-bottom:4px}
+.set-desc{font-size:.7rem;color:var(--color-text-secondary);line-height:1.5;margin-bottom:10px}
+.set-topics{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.topic-tag{font-family:var(--font-mono);font-size:.58rem;padding:2px 7px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary)}
+/* history */
+.history-row{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap}
+.hist-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:10px 16px;flex:1;min-width:100px;text-align:center}
+.hist-set{font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-secondary);margin-bottom:3px}
+.hist-score{font-family:var(--font-mono);font-size:1.3rem;font-weight:700}
+/* quiz screen */
+.quiz-screen{display:none}
+.qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.qhdr-title{font-family:var(--font-mono);font-size:.78rem;font-weight:600;color:var(--color-text-primary)}
+.score-row{display:flex;gap:8px}
+.sbox{font-family:var(--font-mono);font-size:.7rem;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary)}
+.prog-track{height:5px;background:var(--color-border-tertiary);border-radius:3px;margin-bottom:1.25rem;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .3s}
+.s1f{background:linear-gradient(90deg,#6366f1,#8b5cf6)}
+.s2f{background:linear-gradient(90deg,#10b981,#06b6d4)}
+.s3f{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+/* question */
+.q-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.q-head{padding:10px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.q-num-badge{font-family:var(--font-mono);font-size:.65rem;font-weight:700;color:#fff;padding:2px 10px;border-radius:var(--border-radius-md)}
+.qb-s1{background:#6366f1}.qb-s2{background:#10b981}.qb-s3{background:#f59e0b}
+.q-mark{font-family:var(--font-mono);font-size:.62rem;padding:2px 8px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.q-topic{font-family:var(--font-mono);font-size:.62rem;padding:2px 8px;border-radius:var(--border-radius-md);color:#4338ca;background:#eef2ff;border:0.5px solid #c7d2fe}
+.q-body{padding:14px 16px}
+.q-txt{font-size:.82rem;color:var(--color-text-primary);line-height:1.65;margin-bottom:12px}
+pre.qcode{font-family:var(--font-mono);font-size:.7rem;line-height:1.8;padding:10px 12px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow-x:auto;white-space:pre;margin-bottom:12px}
+.kw{color:#a78bfa}.cm{color:var(--color-text-secondary);font-style:italic}.num{color:#fb923c}.fn{color:#34d399}.str{color:#86efac}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.opt{font-family:var(--font-mono);font-size:.74rem;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;transition:all .15s;text-align:left;line-height:1.5}
+.opt:hover:not(:disabled){background:var(--color-background-secondary);border-color:#6366f1}
+.opt.correct{background:#d1fae5;border-color:#10b981;color:#065f46;cursor:default}
+.opt.wrong{background:#fef2f2;border-color:#ef4444;color:#991b1b;cursor:default}
+.fill-wrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.fill-in{font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;flex:1;min-width:80px;max-width:220px}
+.fill-in:focus{border-color:#6366f1}
+.fill-in.ok{border-color:#10b981;background:#d1fae5;color:#065f46}
+.fill-in.bad{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+.fb{border-radius:var(--border-radius-md);padding:10px 14px;font-size:.76rem;line-height:1.6;margin-top:8px;display:none}
+.fb.show{display:block}
+.fb.ok{background:#d1fae5;border:0.5px solid #10b981;color:#065f46}
+.fb.bad{background:#fef2f2;border:0.5px solid #ef4444;color:#991b1b}
+.nav{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:10px}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}.btn.pr:hover{background:#4f46e5}
+/* result */
+.result{display:none;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:24px;text-align:center}
+.result.show{display:block}
+.res-circle{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:3px solid}
+.res-pct{font-family:var(--font-mono);font-size:1.5rem;font-weight:700}
+.res-score{font-family:var(--font-mono);font-size:1rem;color:var(--color-text-secondary);margin-bottom:8px}
+.res-msg{font-size:.82rem;color:var(--color-text-primary);margin-bottom:16px;line-height:1.6}
+.review-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
+.rev-box{border-radius:var(--border-radius-md);padding:6px;text-align:center;font-family:var(--font-mono);font-size:.65rem;border:0.5px solid}
+.rev-box.ok{background:#d1fae5;border-color:#10b981;color:#065f46}
+.rev-box.bad{background:#fef2f2;border-color:#ef4444;color:#991b1b}
+.rev-box.sk{background:var(--color-background-primary);border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media(max-width:520px){.set-grid{grid-template-columns:1fr}.review-grid{grid-template-columns:repeat(5,1fr)}}
+</style>
+
+<div class="root">
+
+<!-- HOME -->
+<div class="home" id="home">
+  <div class="home-title">C Programming — Full Chapter Quiz</div>
+  <div class="home-sub">3 sets · 10 marks each · All topics covered<br>Loops · Arrays · Strings · Functions · Pointers · Recursion · File Handling</div>
+
+  <div class="history-row" id="history-row">
+    <div class="hist-box"><div class="hist-set">Set 1</div><div class="hist-score s1" id="h1" style="color:#6366f1">—</div></div>
+    <div class="hist-box"><div class="hist-set">Set 2</div><div class="hist-score s2" id="h2" style="color:#10b981">—</div></div>
+    <div class="hist-box"><div class="hist-set">Set 3</div><div class="hist-score s3" id="h3" style="color:#f59e0b">—</div></div>
+    <div class="hist-box"><div class="hist-set">Best</div><div class="hist-score" id="hbest" style="color:var(--color-text-primary)">—</div></div>
+  </div>
+
+  <div class="set-grid">
+    <div class="set-card s1" onclick="startSet(0)">
+      <div class="set-num">01</div>
+      <div class="set-label">Set 1 — Foundations</div>
+      <div class="set-desc">Loops, arrays, strings and the basics of C output tracing</div>
+      <div class="set-topics">
+        <span class="topic-tag">loops</span><span class="topic-tag">arrays</span><span class="topic-tag">strings</span><span class="topic-tag">break/continue</span>
+      </div>
+    </div>
+    <div class="set-card s2" onclick="startSet(1)">
+      <div class="set-num">02</div>
+      <div class="set-label">Set 2 — Functions & Pointers</div>
+      <div class="set-desc">Functions, call by value/ref, pointers, and self-referential structs</div>
+      <div class="set-topics">
+        <span class="topic-tag">functions</span><span class="topic-tag">pointers</span><span class="topic-tag">call by ref</span><span class="topic-tag">structs</span>
+      </div>
+    </div>
+    <div class="set-card s3" onclick="startSet(2)">
+      <div class="set-num">03</div>
+      <div class="set-label">Set 3 — Advanced</div>
+      <div class="set-desc">Recursion, file handling, linked lists and mixed tricky questions</div>
+      <div class="set-topics">
+        <span class="topic-tag">recursion</span><span class="topic-tag">file I/O</span><span class="topic-tag">linked list</span><span class="topic-tag">mixed</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-screen" id="quiz-screen">
+  <div class="qhdr">
+    <div class="qhdr-title" id="q-set-title">Set 1</div>
+    <div class="score-row">
+      <div class="sbox">✓ <span id="q-correct">0</span></div>
+      <div class="sbox">✗ <span id="q-wrong">0</span></div>
+      <div class="sbox">Q <span id="q-curr">1</span>/10</div>
+      <button class="btn" onclick="goHome()" style="font-size:.64rem;padding:4px 10px">⌂ Home</button>
+    </div>
+  </div>
+  <div class="prog-track"><div class="prog-fill s1f" id="q-prog" style="width:0%"></div></div>
+  <div id="q-area"></div>
+  <div class="result" id="q-result">
+    <div class="res-circle" id="res-circle">
+      <span class="res-pct" id="res-pct">0%</span>
+    </div>
+    <div class="res-score" id="res-score">0/10</div>
+    <div class="res-msg" id="res-msg"></div>
+    <div class="review-grid" id="review-grid"></div>
+    <div class="actions">
+      <button class="btn pr" onclick="restartSet()">↺ Try again</button>
+      <button class="btn" onclick="goHome()">⌂ All sets</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const SETS = [
+// ════ SET 1 — Foundations ════
+[
+  {type:'output',topic:'loops',marks:1,q:'What does this print?',
+   code:`<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>;i<=<span class="num">5</span>;i+=<span class="num">2</span>)\n  <span class="fn">printf</span>(<span class="str">"%d "</span>,i);`,
+   opts:['1 2 3 4 5','1 3 5','2 4','1 3 5 7'],ans:1,
+   ex:'i starts at 1, increments by 2 each time: 1→3→5. When i=7, 7>5 so loop ends. Output: 1 3 5'},
+
+  {type:'output',topic:'loops',marks:1,q:'What does this print?',
+   code:`<span class="kw">int</span> i=<span class="num">0</span>;\n<span class="kw">while</span>(i<<span class="num">4</span>){\n  <span class="kw">if</span>(i==<span class="num">2</span>) {i++; <span class="kw">continue</span>;}\n  <span class="fn">printf</span>(<span class="str">"%d "</span>,i);\n  i++;\n}`,
+   opts:['0 1 2 3','0 1 3','1 2 3','0 1 2'],ans:1,
+   ex:'When i=2, continue skips printf and does i++ to 3. So 2 is never printed. Output: 0 1 3'},
+
+  {type:'mcq',topic:'arrays',marks:1,q:'What is the valid index range for  int a[6] ?',
+   opts:['1 to 6','0 to 6','0 to 5','1 to 5'],ans:2,
+   ex:'Array of size 6 has indices 0,1,2,3,4,5. Last valid index = size - 1 = 5.'},
+
+  {type:'output',topic:'arrays',marks:1,q:'What does this print?',
+   code:`<span class="kw">int</span> a[]={<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>};\n<span class="fn">printf</span>(<span class="str">"%d"</span>, a[<span class="num">2</span>]+a[<span class="num">0</span>]);`,
+   opts:['30','40','10','50'],ans:1,
+   ex:'a[2]=30, a[0]=10. 30+10=40.'},
+
+  {type:'fill',topic:'strings',marks:1,q:'Fill in: A string in C is a char array ending with the character <code>\'___\'</code> (null terminator).',
+   blanks:[{id:'s1b1',ans:'\\0',hint:"\\0"}],
+   ex:"'\\0' (backslash zero) is the null terminator, ASCII value 0. Without it, functions like printf won't know where the string ends."},
+
+  {type:'mcq',topic:'strings',marks:1,q:'strlen("Hello") returns:',
+   opts:['6','5','4','Compile error'],ans:1,
+   ex:'strlen counts characters NOT including the null terminator. "Hello" has 5 chars → returns 5.'},
+
+  {type:'output',topic:'loops',marks:1,q:'How many times does the inner loop body execute?',
+   code:`<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i<<span class="num">3</span>;i++)\n  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">0</span>;j<<span class="num">4</span>;j++)\n    <span class="fn">printf</span>(<span class="str">"."</span>);`,
+   opts:['7','9','12','16'],ans:2,
+   ex:'Outer runs 3 times (i=0,1,2). For each, inner runs 4 times (j=0,1,2,3). Total = 3 × 4 = 12.'},
+
+  {type:'mcq',topic:'strings',marks:1,q:'Which function safely reads a line of input into a char buffer?',
+   opts:['scanf("%s",buf)','gets(buf)','fgets(buf,50,stdin)','getchar()'],ans:2,
+   ex:'fgets(buf, size, stdin) is safe because it limits input to size-1 chars. scanf("%s") and gets() have no limit and can cause buffer overflows.'},
+
+  {type:'output',topic:'arrays',marks:1,q:'What does this print?',
+   code:`<span class="kw">int</span> a[<span class="num">5</span>]={<span class="num">0</span>};\na[<span class="num">2</span>]=<span class="num">7</span>;\n<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">0</span>;i<<span class="num">5</span>;i++)\n  <span class="fn">printf</span>(<span class="str">"%d"</span>,a[i]);`,
+   opts:['00700','00070','70000','00007'],ans:0,
+   ex:'int a[5]={0} initialises all elements to 0. Then a[2]=7. So array is {0,0,7,0,0}. printf prints: 00700'},
+
+  {type:'mcq',topic:'loops',marks:1,q:'What is the key difference between while and do-while?',
+   opts:['while is faster','do-while always runs the body at least once','while can use break, do-while cannot','No difference'],ans:1,
+   ex:'do-while checks the condition AFTER the body runs. So the body always executes at least once, even if the condition is false from the start.'},
+],
+
+// ════ SET 2 — Functions & Pointers ════
+[
+  {type:'output',topic:'functions',marks:1,q:'What does this print?',
+   code:`<span class="kw">int</span> <span class="fn">square</span>(<span class="kw">int</span> x){ <span class="kw">return</span> x*x; }\n<span class="kw">int</span> <span class="fn">main</span>(){\n  <span class="fn">printf</span>(<span class="str">"%d"</span>, <span class="fn">square</span>(<span class="num">4</span>));\n}`,
+   opts:['4','8','12','16'],ans:3,
+   ex:'square(4) returns 4*4 = 16. printf prints 16.'},
+
+  {type:'mcq',topic:'call by value',marks:1,q:'What does this print?',
+   code:`<span class="kw">void</span> <span class="fn">add10</span>(<span class="kw">int</span> n){ n+=<span class="num">10</span>; }\n<span class="kw">int</span> <span class="fn">main</span>(){\n  <span class="kw">int</span> x=<span class="num">5</span>;\n  <span class="fn">add10</span>(x);\n  <span class="fn">printf</span>(<span class="str">"%d"</span>,x);\n}`,
+   opts:['15','10','5','Undefined'],ans:2,
+   ex:'add10 receives a COPY of x. Changes to n inside the function do not affect x in main. x remains 5.'},
+
+  {type:'mcq',topic:'pointers',marks:1,q:'What does &n mean in C?',
+   opts:['The value stored in n','The address of variable n','n incremented by 1','Bitwise AND of n'],ans:1,
+   ex:'& is the address-of operator. &n gives the memory address where n is stored. This address can be stored in a pointer: int *p = &n;'},
+
+  {type:'output',topic:'pointers',marks:1,q:'What does this print?',
+   code:`<span class="kw">int</span> n=<span class="num">7</span>;\n<span class="kw">int</span> *p=&n;\n*p = *p * <span class="num">3</span>;\n<span class="fn">printf</span>(<span class="str">"%d"</span>,n);`,
+   opts:['7','21','3','14'],ans:1,
+   ex:'p points to n. *p = *p * 3 means: read n (7), multiply by 3 (21), write back to n. n is now 21.'},
+
+  {type:'fill',topic:'pointers',marks:1,q:'To declare a pointer to an int named ptr, you write: <code>int ___ ptr;</code>',
+   blanks:[{id:'s2b1',ans:'*',hint:'1 symbol'}],
+   ex:'The * symbol in a declaration means pointer. int *ptr declares ptr as a pointer to an integer. The * in *ptr (expression) means dereference.'},
+
+  {type:'mcq',topic:'functions',marks:1,q:'Which is the correct way to pass n by reference so the function can modify it?',
+   opts:['void f(int n)','void f(int &n)','void f(int *n)','void f(int n[])'],ans:2,
+   ex:'In C (not C++), pass by reference is done by passing a pointer: void f(int *n). Inside, use *n to read/write. Call with f(&variable).'},
+
+  {type:'mcq',topic:'arrays-functions',marks:1,q:'When you pass an array to a function, what actually gets passed?',
+   opts:['A full copy of the array','The size of the array','A pointer to the first element','The last element value'],ans:2,
+   ex:'Arrays decay to a pointer to their first element when passed to a function. No copy is made. Changes inside the function affect the original array.'},
+
+  {type:'output',topic:'pointers',marks:1,q:'What does this print?',
+   code:`<span class="kw">int</span> a[]={<span class="num">5</span>,<span class="num">10</span>,<span class="num">15</span>};\n<span class="kw">int</span> *p=a;\np++;\n<span class="fn">printf</span>(<span class="str">"%d"</span>,*p);`,
+   opts:['5','10','15','6'],ans:1,
+   ex:'p = a points to a[0]=5. p++ moves pointer to a[1]. *p reads a[1] = 10.'},
+
+  {type:'mcq',topic:'structs',marks:1,q:'In a self-referential struct for a linked list, the next field is:',
+   opts:['int next','struct Node next','struct Node *next','void *next'],ans:2,
+   ex:'It must be a POINTER to the same struct type: struct Node *next. A non-pointer Node next is impossible because a struct cannot contain itself (infinite size).'},
+
+  {type:'fill',topic:'pointers',marks:1,q:'A pointer that is safely set to "no address" is initialised to <code>___</code>.',
+   blanks:[{id:'s2b2',ans:'NULL',hint:'keyword'}],
+   ex:'NULL is a special constant (usually 0) meaning "this pointer points to nothing". Always initialise pointers to NULL if you have no address yet, and check if (p != NULL) before dereferencing.'},
+],
+
+// ════ SET 3 — Advanced ════
+[
+  {type:'output',topic:'recursion',marks:1,q:'What does factorial(4) return?',
+   code:`<span class="kw">int</span> <span class="fn">factorial</span>(<span class="kw">int</span> n){\n  <span class="kw">if</span>(n<=<span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;\n  <span class="kw">return</span> n * <span class="fn">factorial</span>(n-<span class="num">1</span>);\n}`,
+   opts:['8','12','24','48'],ans:2,
+   ex:'4! = 4×3×2×1 = 24. Chain: factorial(4)=4×factorial(3)=4×3×factorial(2)=4×3×2×factorial(1)=4×3×2×1=24'},
+
+  {type:'mcq',topic:'recursion',marks:1,q:'What happens if a recursive function has NO base case?',
+   opts:['Returns 0','Runs once then stops','Stack overflow — crash','Returns NULL'],ans:2,
+   ex:'Without a base case the function calls itself forever, filling the call stack until it overflows and the program crashes.'},
+
+  {type:'mcq',topic:'recursion',marks:1,q:'Why is naive recursive Fibonacci much slower than iterative?',
+   opts:['Function calls use more memory registers','It makes two recursive calls per step creating exponential redundant calls','Recursion always uses more CPU','The base case is checked twice'],ans:1,
+   ex:'fib(n) calls fib(n-1) AND fib(n-2). This doubles the calls at each level. fib(2) is computed many times. Time complexity is O(2ⁿ) vs O(n) iterative.'},
+
+  {type:'fill',topic:'file-handling',marks:1,q:'To open a file for writing (creating if needed, erasing if exists), the mode string is <code>___</code>.',
+   blanks:[{id:'s3b1',ans:'w',hint:'"w"'}],
+   ex:'"w" opens for writing. If the file exists it is erased first. If it does not exist it is created. Use "a" to append without erasing.'},
+
+  {type:'mcq',topic:'file-handling',marks:1,q:'What does fclose(fp) do?',
+   opts:['Deletes the file from disk','Flushes the buffer and closes the file','Rewinds the file to the beginning','Opens the file again'],ans:1,
+   ex:'fclose flushes any buffered data to disk and releases the file handle. Without fclose, written data may never actually reach the disk.'},
+
+  {type:'output',topic:'file-handling',marks:1,q:'After this runs, what is in output.txt?',
+   code:`<span class="kw">FILE</span> *fp=<span class="fn">fopen</span>(<span class="str">"output.txt"</span>,<span class="str">"w"</span>);\n<span class="fn">fprintf</span>(fp,<span class="str">"Line1\\n"</span>);\n<span class="fn">fprintf</span>(fp,<span class="str">"Line2\\n"</span>);\n<span class="fn">fclose</span>(fp);`,
+   opts:['Nothing — file is empty','Line1\\nLine2\\n','Line2\\n only','Compile error'],ans:1,
+   ex:'"w" creates/clears the file. fprintf writes "Line1\n" then "Line2\n". fclose flushes it. File contains both lines.'},
+
+  {type:'mcq',topic:'linked-list',marks:1,q:'In a singly linked list, how do you move to the next node?',
+   opts:['curr++','curr = curr.next','curr = curr->next','next(curr)'],ans:2,
+   ex:'curr is a pointer to a Node struct. -> is used to access a field through a pointer. curr = curr->next follows the next pointer to the next node.'},
+
+  {type:'mcq',topic:'recursion',marks:1,q:'What is the base case for recursive Quick Sort?',
+   opts:['When the pivot equals the middle','When lo >= hi (0 or 1 elements)','When all elements equal','When n == 0 only'],ans:1,
+   ex:'quicksort(a, lo, hi) returns immediately when lo >= hi meaning the subarray has 0 or 1 elements — already sorted. This stops the recursion.'},
+
+  {type:'output',topic:'recursion',marks:1,q:'What does f(5) return?',
+   code:`<span class="kw">int</span> <span class="fn">f</span>(<span class="kw">int</span> n){\n  <span class="kw">if</span>(n==<span class="num">0</span>) <span class="kw">return</span> <span class="num">0</span>;\n  <span class="kw">return</span> n + <span class="fn">f</span>(n-<span class="num">1</span>);\n}`,
+   opts:['5','10','15','25'],ans:2,
+   ex:'f(5)=5+f(4)=5+4+f(3)=5+4+3+f(2)=5+4+3+2+f(1)=5+4+3+2+1+f(0)=15+0=15. This sums 1 to n.'},
+
+  {type:'mcq',topic:'mixed',marks:1,q:'Which of these is the best use case for recursion over iteration?',
+   opts:['Summing all elements of an array','Counting vowels in a string','Traversing a binary tree','Finding maximum in an array'],ans:2,
+   ex:'Binary trees are naturally recursive structures — each subtree is itself a tree. Traversal is elegant and natural with recursion. The others are simple linear scans best done with loops.'},
+]
+];
+
+let activeSet=0, curr=0, correct=0, wrong=0, answered=[], bestScores=[null,null,null];
+
+function startSet(idx){
+  activeSet=idx; curr=0; correct=0; wrong=0; answered=[];
+  document.getElementById('home').style.display='none';
+  const qs=document.getElementById('quiz-screen');qs.style.display='block';
+  document.getElementById('q-result').className='result';
+  document.getElementById('q-area').style.display='block';
+  const colors=['s1f','s2f','s3f'];
+  document.getElementById('q-prog').className='prog-fill '+colors[idx];
+  document.getElementById('q-set-title').textContent=['Set 1 — Foundations','Set 2 — Functions & Pointers','Set 3 — Advanced'][idx];
+  document.getElementById('q-correct').textContent='0';
+  document.getElementById('q-wrong').textContent='0';
+  renderQ();
+}
+
+function renderQ(){
+  const q=SETS[activeSet][curr];
+  document.getElementById('q-curr').textContent=curr+1;
+  document.getElementById('q-prog').style.width=(curr/10*100)+'%';
+  const nc=['qb-s1','qb-s2','qb-s3'][activeSet];
+  const html=`<div class="q-card">
+    <div class="q-head">
+      <span class="q-num-badge ${nc}">Q${curr+1}</span>
+      <span class="q-mark">${q.marks} mark</span>
+      <span class="q-topic">${q.topic}</span>
+    </div>
+    <div class="q-body">
+      <div class="q-txt">${q.q}</div>
+      ${q.code?`<pre class="qcode">${q.code}</pre>`:''}
+      ${q.type==='fill'?renderFill(q):renderOpts(q)}
+      <div class="nav">
+        ${q.type==='fill'?`<button class="btn pr" onclick="checkFill(${curr})">Check ›</button>`:'<span></span>'}
+        <button class="btn" onclick="skipQ()">Skip →</button>
+      </div>
+      <div class="fb" id="fb-${curr}"></div>
+    </div>
+  </div>`;
+  document.getElementById('q-area').innerHTML=html;
+}
+
+function renderOpts(q){
+  return `<div class="opts">${q.opts.map((o,i)=>`<button class="opt" id="opt-${curr}-${i}" onclick="pickOpt(${curr},${i})">${o}</button>`).join('')}</div>`;
+}
+function renderFill(q){
+  return `<div class="fill-wrap">${q.blanks.map(b=>`<input class="fill-in" id="${b.id}" placeholder="${b.hint}" onkeydown="if(event.key==='Enter')checkFill(${curr})">`).join('')}</div>`;
+}
+
+function pickOpt(qi,chosen){
+  if(answered[qi]!==undefined)return;
+  const q=SETS[activeSet][qi]; answered[qi]=chosen;
+  const ok=(chosen===q.ans);
+  if(ok)correct++;else wrong++;
+  updateScore();
+  q.opts.forEach((_,i)=>{const b=document.getElementById('opt-'+qi+'-'+i);if(!b)return;b.disabled=true;
+    if(i===q.ans)b.className='opt correct';else if(i===chosen&&!ok)b.className='opt wrong';});
+  showFb(qi,ok,q.ex);
+  setTimeout(advance,2000);
+}
+
+function checkFill(qi){
+  if(answered[qi]!==undefined)return;
+  const q=SETS[activeSet][qi]; let ok=true;
+  q.blanks.forEach(b=>{
+    const inp=document.getElementById(b.id);if(!inp)return;
+    const v=inp.value.trim().toLowerCase().replace(/['"]/g,'');
+    const a=b.ans.toLowerCase().replace(/['"]/g,'');
+    inp.className='fill-in '+(v===a?'ok':'bad');inp.disabled=true;
+    if(v!==a)ok=false;
+  });
+  answered[qi]=ok?'ok':'bad';
+  if(ok)correct++;else wrong++;
+  updateScore();showFb(qi,ok,q.ex);setTimeout(advance,2200);
+}
+
+function showFb(qi,ok,ex){
+  const fb=document.getElementById('fb-'+qi);if(!fb)return;
+  fb.className='fb show '+(ok?'ok':'bad');
+  fb.innerHTML=(ok?'✓ Correct! ':'✗ Not quite. ')+ex;
+}
+function skipQ(){answered[curr]=answered[curr]??'skip';advance();}
+function advance(){curr++;if(curr>=10){showResult();return;}renderQ();}
+function updateScore(){
+  document.getElementById('q-correct').textContent=correct;
+  document.getElementById('q-wrong').textContent=wrong;
+}
+
+function showResult(){
+  document.getElementById('q-area').style.display='none';
+  document.getElementById('q-prog').style.width='100%';
+  const panel=document.getElementById('q-result');panel.className='result show';
+  const pct=Math.round(correct/10*100);
+  const circle=document.getElementById('res-circle');
+  const colors=['#6366f1','#10b981','#f59e0b'];
+  circle.style.borderColor=colors[activeSet];
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-pct').style.color=colors[activeSet];
+  document.getElementById('res-score').textContent=correct+'/10 marks';
+  const msgs=[[90,'🎉 Excellent! Exam-ready performance.'],[70,'👍 Good work! Review the ones you missed.'],[50,'📚 Getting there! Study the weak topics and try again.'],[0,'💡 Keep practicing! Review the guide tabs and retry.']];
+  document.getElementById('res-msg').textContent=msgs.find(([t])=>pct>=t)[1];
+  // review grid
+  const rg=document.getElementById('review-grid');rg.innerHTML='';
+  SETS[activeSet].forEach((q,i)=>{
+    const a=answered[i]; const ok=a===q.ans||a==='ok';const sk=a==='skip'||a===undefined;
+    const div=document.createElement('div');div.className='rev-box '+(sk?'sk':ok?'ok':'bad');
+    div.innerHTML=`Q${i+1}<br>${sk?'—':ok?'✓':'✗'}`;rg.appendChild(div);
+  });
+  // save
+  bestScores[activeSet]=Math.max(bestScores[activeSet]??0,correct);
+  updateHistory();
+}
+
+function updateHistory(){
+  [0,1,2].forEach(i=>{
+    const el=document.getElementById('h'+(i+1));
+    el.textContent=bestScores[i]!==null?bestScores[i]+'/10':'—';
+  });
+  const best=bestScores.filter(s=>s!==null);
+  document.getElementById('hbest').textContent=best.length?Math.max(...best)+'/10':'—';
+}
+
+function restartSet(){
+  curr=0;correct=0;wrong=0;answered=[];
+  document.getElementById('q-result').className='result';
+  document.getElementById('q-area').style.display='block';
+  document.getElementById('q-correct').textContent='0';
+  document.getElementById('q-wrong').textContent='0';
+  document.getElementById('q-curr').textContent='1';
+  document.getElementById('q-prog').style.width='0%';
+  renderQ();
+}
+
+function goHome(){
+  document.getElementById('home').style.display='block';
+  document.getElementById('quiz-screen').style.display='none';
+}
+</script>
