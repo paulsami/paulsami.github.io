@@ -1,1013 +1,1609 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>C Language — Interactive Learning Hub</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>C Language — Interactive Learning Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    :root {
-      --bg: #0d0f14;
-      --sidebar: #111318;
-      --sidebar-border: #1e2130;
-      --accent: #5b6ef5;
-      --accent-glow: rgba(91,110,245,0.18);
-      --accent2: #f0c040;
-      --accent3: #10b981;
-      --text: #e8eaf2;
-      --muted: #6b7080;
-      --card: #161921;
-      --card-border: #232737;
-      --sidebar-w: 270px;
-      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
-      --font-mono: 'JetBrains Mono', monospace;
-      --font-sans: 'DM Sans', sans-serif;
-      --font-display: 'Syne', sans-serif;
-    }
+      :root {
+        --bg: #0d0f14;
+        --sidebar: #111318;
+        --sidebar-border: #1e2130;
+        --accent: #5b6ef5;
+        --accent-glow: rgba(91, 110, 245, 0.18);
+        --accent2: #f0c040;
+        --accent3: #10b981;
+        --text: #e8eaf2;
+        --muted: #6b7080;
+        --card: #161921;
+        --card-border: #232737;
+        --sidebar-w: 270px;
+        --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --font-mono: "JetBrains Mono", monospace;
+        --font-sans: "DM Sans", sans-serif;
+        --font-display: "Syne", sans-serif;
+      }
 
-    html { scroll-behavior: smooth; }
+      html {
+        scroll-behavior: smooth;
+      }
 
-    body {
-      font-family: var(--font-sans);
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg);
+        color: var(--text);
+        display: flex;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      position: fixed;
-      top: 0; left: 0;
-      width: var(--sidebar-w);
-      height: 100vh;
-      background: var(--sidebar);
-      border-right: 1px solid var(--sidebar-border);
-      display: flex;
-      flex-direction: column;
-      padding: 2rem 0;
-      z-index: 100;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #2a2d3e transparent;
-    }
-    .sidebar::-webkit-scrollbar { width: 4px; }
-    .sidebar::-webkit-scrollbar-thumb { background: #2a2d3e; border-radius: 2px; }
+      /* ── SIDEBAR ── */
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--sidebar-w);
+        height: 100vh;
+        background: var(--sidebar);
+        border-right: 1px solid var(--sidebar-border);
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 0;
+        z-index: 100;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #2a2d3e transparent;
+      }
+      .sidebar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .sidebar::-webkit-scrollbar-thumb {
+        background: #2a2d3e;
+        border-radius: 2px;
+      }
 
-    .brand {
-      padding: 0 1.5rem 1.5rem;
-      border-bottom: 1px solid var(--sidebar-border);
-    }
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.72rem;
-      color: var(--muted);
-      text-decoration: none;
-      font-family: var(--font-mono);
-      margin-bottom: 1rem;
-      transition: color 0.2s;
-      letter-spacing: 0.02em;
-    }
-    .back-btn:hover { color: var(--accent); }
-    .back-btn svg { width: 12px; height: 12px; }
+      .brand {
+        padding: 0 1.5rem 1.5rem;
+        border-bottom: 1px solid var(--sidebar-border);
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-decoration: none;
+        font-family: var(--font-mono);
+        margin-bottom: 1rem;
+        transition: color 0.2s;
+        letter-spacing: 0.02em;
+      }
+      .back-btn:hover {
+        color: var(--accent);
+      }
+      .back-btn svg {
+        width: 12px;
+        height: 12px;
+      }
 
-    .brand-icon {
-      width: 44px; height: 44px;
-      background: linear-gradient(135deg, #5b6ef5, #3b4fd8);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: #fff;
-      margin-bottom: 0.75rem;
-      box-shadow: 0 0 28px var(--accent-glow);
-      letter-spacing: -0.04em;
-    }
-    .brand-name {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 1rem;
-      color: var(--text);
-      letter-spacing: -0.02em;
-    }
-    .brand-sub {
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 0.25rem;
-      font-family: var(--font-mono);
-    }
+      .brand-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #5b6ef5, #3b4fd8);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #fff;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 0 28px var(--accent-glow);
+        letter-spacing: -0.04em;
+      }
+      .brand-name {
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 1rem;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .brand-sub {
+        font-size: 0.72rem;
+        color: var(--muted);
+        margin-top: 0.25rem;
+        font-family: var(--font-mono);
+      }
 
-    .nav { flex: 1; padding: 1.25rem 0; }
-    .nav-section-label {
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 0 1.5rem;
-      margin-bottom: 0.4rem;
-      margin-top: 1.25rem;
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.6rem 1.5rem;
-      cursor: pointer;
-      border-left: 2px solid transparent;
-      transition: var(--transition);
-      font-size: 0.845rem;
-      color: var(--muted);
-      font-weight: 400;
-      text-decoration: none;
-    }
-    .nav-item:hover {
-      color: var(--text);
-      background: rgba(91,110,245,0.06);
-    }
-    .nav-item.active {
-      color: var(--accent);
-      border-left-color: var(--accent);
-      background: var(--accent-glow);
-      font-weight: 500;
-    }
-    .nav-item .ni-icon {
-      width: 28px; height: 28px;
-      border-radius: 7px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem;
-      background: rgba(255,255,255,0.04);
-      flex-shrink: 0;
-      transition: background 0.2s;
-    }
-    .nav-item:hover .ni-icon,
-    .nav-item.active .ni-icon {
-      background: rgba(91,110,245,0.15);
-    }
-    .nav-badge {
-      margin-left: auto;
-      font-family: var(--font-mono);
-      font-size: 0.58rem;
-      padding: 2px 6px;
-      border-radius: 100px;
-      background: rgba(91,110,245,0.15);
-      color: #a0aaea;
-    }
-    .nav-badge.new { background: rgba(16,185,129,0.2); color: #34d399; }
+      .nav {
+        flex: 1;
+        padding: 1.25rem 0;
+      }
+      .nav-section-label {
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 0 1.5rem;
+        margin-bottom: 0.4rem;
+        margin-top: 1.25rem;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 1.5rem;
+        cursor: pointer;
+        border-left: 2px solid transparent;
+        transition: var(--transition);
+        font-size: 0.845rem;
+        color: var(--muted);
+        font-weight: 400;
+        text-decoration: none;
+      }
+      .nav-item:hover {
+        color: var(--text);
+        background: rgba(91, 110, 245, 0.06);
+      }
+      .nav-item.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: var(--accent-glow);
+        font-weight: 500;
+      }
+      .nav-item .ni-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        background: rgba(255, 255, 255, 0.04);
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+      .nav-item:hover .ni-icon,
+      .nav-item.active .ni-icon {
+        background: rgba(91, 110, 245, 0.15);
+      }
+      .nav-badge {
+        margin-left: auto;
+        font-family: var(--font-mono);
+        font-size: 0.58rem;
+        padding: 2px 6px;
+        border-radius: 100px;
+        background: rgba(91, 110, 245, 0.15);
+        color: #a0aaea;
+      }
+      .nav-badge.new {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+      }
 
-    .sidebar-footer {
-      padding: 1.25rem 1.5rem;
-      border-top: 1px solid var(--sidebar-border);
-      font-size: 0.72rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .sidebar-footer a { color: var(--accent); text-decoration: none; }
+      .sidebar-footer {
+        padding: 1.25rem 1.5rem;
+        border-top: 1px solid var(--sidebar-border);
+        font-size: 0.72rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .sidebar-footer a {
+        color: var(--accent);
+        text-decoration: none;
+      }
 
-    /* ── MAIN ── */
-    .main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+      /* ── MAIN ── */
+      .main {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-    /* ── SECTIONS ── */
-    .section {
-      min-height: 100vh;
-      padding: 4rem 4rem 5rem;
-      display: none;
-      animation: fadeSlide 0.35s ease forwards;
-      flex: 1;
-    }
-    .section.active { display: flex; flex-direction: column; }
+      /* ── SECTIONS ── */
+      .section {
+        min-height: 100vh;
+        padding: 4rem 4rem 5rem;
+        display: none;
+        animation: fadeSlide 0.35s ease forwards;
+        flex: 1;
+      }
+      .section.active {
+        display: flex;
+        flex-direction: column;
+      }
 
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    /* ── HERO / HOME ── */
-    .hero-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    #home.active { position: relative; overflow: hidden; }
-    #home::before {
-      content: '';
-      position: absolute;
-      top: -150px; right: -80px;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(91,110,245,0.1) 0%, transparent 65%);
-      pointer-events: none;
-    }
-    #home::after {
-      content: '';
-      position: absolute;
-      bottom: -100px; left: -60px;
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 65%);
-      pointer-events: none;
-    }
+      /* ── HERO / HOME ── */
+      .hero-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #home.active {
+        position: relative;
+        overflow: hidden;
+      }
+      #home::before {
+        content: "";
+        position: absolute;
+        top: -150px;
+        right: -80px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(91, 110, 245, 0.1) 0%,
+          transparent 65%
+        );
+        pointer-events: none;
+      }
+      #home::after {
+        content: "";
+        position: absolute;
+        bottom: -100px;
+        left: -60px;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(
+          circle,
+          rgba(16, 185, 129, 0.07) 0%,
+          transparent 65%
+        );
+        pointer-events: none;
+      }
 
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--accent-glow);
-      border: 1px solid rgba(91,110,245,0.25);
-      color: var(--accent);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.4rem 1rem;
-      border-radius: 100px;
-      width: fit-content;
-      margin-bottom: 1.75rem;
-      font-family: var(--font-mono);
-    }
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--accent-glow);
+        border: 1px solid rgba(91, 110, 245, 0.25);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.4rem 1rem;
+        border-radius: 100px;
+        width: fit-content;
+        margin-bottom: 1.75rem;
+        font-family: var(--font-mono);
+      }
 
-    .hero-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.8rem, 5vw, 4.5rem);
-      font-weight: 800;
-      line-height: 1.08;
-      letter-spacing: -0.03em;
-      margin-bottom: 1.25rem;
-      position: relative;
-      z-index: 1;
-    }
-    .hero-title .c-accent { color: var(--accent); }
-    .hero-title .c-green { color: var(--accent3); }
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.8rem, 5vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.25rem;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-title .c-accent {
+        color: var(--accent);
+      }
+      .hero-title .c-green {
+        color: var(--accent3);
+      }
 
-    .hero-desc {
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 560px;
-      line-height: 1.75;
-      margin-bottom: 3rem;
-      position: relative;
-      z-index: 1;
-    }
+      .hero-desc {
+        font-size: 1.05rem;
+        color: var(--muted);
+        max-width: 560px;
+        line-height: 1.75;
+        margin-bottom: 3rem;
+        position: relative;
+        z-index: 1;
+      }
 
-    /* ── TOPIC CARDS GRID ── */
-    .topics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2.5rem;
-      position: relative;
-      z-index: 1;
-    }
+      /* ── TOPIC CARDS GRID ── */
+      .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        position: relative;
+        z-index: 1;
+      }
 
-    .topic-card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      padding: 1.4rem;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
-      text-decoration: none;
-      display: block;
-      position: relative;
-      overflow: hidden;
-    }
-    .topic-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--card-accent-start, rgba(91,110,245,0.06)) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.25s;
-    }
-    .topic-card:hover {
-      border-color: var(--tc-color, var(--accent));
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px var(--tc-color, var(--accent));
-    }
-    .topic-card:hover::before { opacity: 1; }
+      .topic-card {
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 1.4rem;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+      .topic-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        background: linear-gradient(
+          135deg,
+          var(--card-accent-start, rgba(91, 110, 245, 0.06)) 0%,
+          transparent 60%
+        );
+        opacity: 0;
+        transition: opacity 0.25s;
+      }
+      .topic-card:hover {
+        border-color: var(--tc-color, var(--accent));
+        transform: translateY(-3px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3),
+          0 0 0 1px var(--tc-color, var(--accent));
+      }
+      .topic-card:hover::before {
+        opacity: 1;
+      }
 
-    .tc-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-    .tc-icon {
-      width: 42px; height: 42px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
-      background: rgba(255,255,255,0.06);
-    }
-    .tc-chip {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      padding: 3px 8px;
-      border-radius: 100px;
-      border: 1px solid;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .tc-title {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-    .tc-desc {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-    .tc-footer {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      color: var(--muted);
-    }
-    .tc-arrow {
-      margin-left: auto;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.06);
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .topic-card:hover .tc-arrow {
-      background: var(--tc-color, var(--accent));
-      transform: translateX(2px);
-    }
+      .tc-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+      .tc-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .tc-chip {
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        padding: 3px 8px;
+        border-radius: 100px;
+        border: 1px solid;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .tc-title {
+        font-family: var(--font-display);
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .tc-desc {
+        font-size: 0.8rem;
+        color: var(--muted);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+      .tc-footer {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        color: var(--muted);
+      }
+      .tc-arrow {
+        margin-left: auto;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, transform 0.2s;
+      }
+      .topic-card:hover .tc-arrow {
+        background: var(--tc-color, var(--accent));
+        transform: translateX(2px);
+      }
 
-    /* ── SECTION: TOPIC VIEWER ── */
-    #topic-view {
-      padding: 0;
-    }
+      /* ── SECTION: TOPIC VIEWER ── */
+      #topic-view {
+        padding: 0;
+      }
 
-    .topic-header {
-      padding: 2rem 4rem 1.5rem;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: linear-gradient(180deg, rgba(91,110,245,0.05) 0%, transparent 100%);
-    }
-    .topic-back-btn {
-      width: 36px; height: 36px;
-      border-radius: 9px;
-      border: 1px solid var(--card-border);
-      background: var(--card);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-    .topic-back-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .topic-title-wrap { flex: 1; }
-    .topic-title-wrap h1 {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-    .topic-title-wrap .sub {
-      font-size: 0.78rem;
-      color: var(--muted);
-      font-family: var(--font-mono);
-      margin-top: 0.2rem;
-    }
+      .topic-header {
+        padding: 2rem 4rem 1.5rem;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: linear-gradient(
+          180deg,
+          rgba(91, 110, 245, 0.05) 0%,
+          transparent 100%
+        );
+      }
+      .topic-back-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        border: 1px solid var(--card-border);
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .topic-back-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .topic-title-wrap {
+        flex: 1;
+      }
+      .topic-title-wrap h1 {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .topic-title-wrap .sub {
+        font-size: 0.78rem;
+        color: var(--muted);
+        font-family: var(--font-mono);
+        margin-top: 0.2rem;
+      }
 
-    /* Claude-artifact iframe renderer */
-    .topic-content-area {
-      flex: 1;
-      padding: 2.5rem 4rem;
-      overflow-y: auto;
-    }
+      /* Claude-artifact iframe renderer */
+      .topic-content-area {
+        flex: 1;
+        padding: 2.5rem 4rem;
+        overflow-y: auto;
+      }
 
-    /* Render the embedded HTML content using the artifact's CSS vars */
-    .artifact-shell {
-      --font-sans: 'DM Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --color-background-primary: #0d0f14;
-      --color-background-secondary: #161921;
-      --color-border-tertiary: #232737;
-      --color-border-secondary: #2a2d3e;
-      --color-text-primary: #e8eaf2;
-      --color-text-secondary: #6b7080;
-      --border-radius-lg: 12px;
-      --border-radius-md: 8px;
+      /* Render the embedded HTML content using the artifact's CSS vars */
+      .artifact-shell {
+        --font-sans: "DM Sans", sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+        --color-background-primary: #0d0f14;
+        --color-background-secondary: #161921;
+        --color-border-tertiary: #232737;
+        --color-border-secondary: #2a2d3e;
+        --color-text-primary: #e8eaf2;
+        --color-text-secondary: #6b7080;
+        --border-radius-lg: 12px;
+        --border-radius-md: 8px;
 
-      background: transparent;
-      color: var(--color-text-primary);
-    }
+        background: transparent;
+        color: var(--color-text-primary);
+      }
 
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 2.5rem;
-      position: relative;
-      z-index: 1;
-    }
-    .stat-pill {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 100px;
-      padding: 0.5rem 1rem;
-      font-size: 0.78rem;
-    }
-    .stat-pill .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-    }
+      /* ── STATS ROW ── */
+      .stats-row {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .stat-pill {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 100px;
+        padding: 0.5rem 1rem;
+        font-size: 0.78rem;
+      }
+      .stat-pill .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
 
-    /* ── MOBILE ── */
-    .hamburger {
-      display: none;
-      position: fixed;
-      top: 1rem; right: 1rem;
-      z-index: 200;
-      width: 40px; height: 40px;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 99;
-    }
+      /* ── MOBILE ── */
+      .hamburger {
+        display: none;
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 200;
+        width: 40px;
+        height: 40px;
+        background: var(--card);
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 99;
+      }
 
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
-      .sidebar.open { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .section { padding: 2rem 1.5rem 3rem; }
-      .topics-grid { grid-template-columns: 1fr; }
-      .hamburger { display: flex; }
-      .overlay.open { display: block; }
-      .topic-header { padding: 1.5rem; }
-      .topic-content-area { padding: 1.5rem; }
-    }
-  </style>
-</head>
-<body>
-
-<!-- Hamburger -->
-<button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">
-  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-  </svg>
-</button>
-<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
-
-<!-- ── SIDEBAR ── -->
-<aside class="sidebar" id="sidebar">
-  <div class="brand">
-    <a href="index.html" class="back-btn">
-      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      @media (max-width: 768px) {
+        .sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .main {
+          margin-left: 0;
+        }
+        .section {
+          padding: 2rem 1.5rem 3rem;
+        }
+        .topics-grid {
+          grid-template-columns: 1fr;
+        }
+        .hamburger {
+          display: flex;
+        }
+        .overlay.open {
+          display: block;
+        }
+        .topic-header {
+          padding: 1.5rem;
+        }
+        .topic-content-area {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hamburger -->
+    <button
+      class="hamburger"
+      id="hamburger"
+      onclick="toggleSidebar()"
+      aria-label="Menu"
+    >
+      <svg
+        width="18"
+        height="18"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
       </svg>
-      Back to Portfolio
-    </a>
-    <div class="brand-icon">C</div>
-    <div class="brand-name">C Language Hub</div>
-    <div class="brand-sub">interactive learning guide</div>
-  </div>
+    </button>
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
 
-  <nav class="nav">
-    <div class="nav-section-label">Overview</div>
-    <div class="nav-item active" data-target="home" onclick="navigate('home')">
-      <div class="ni-icon">🏠</div>
-      Home
-    </div>
-
-    <div class="nav-section-label">Topics</div>
-
-    <div class="nav-item" data-target="topic-loops" onclick="loadTopic('topic-loops','c_loops_guide.html','C Loops','for · while · do-while','🔄')">
-      <div class="ni-icon">🔄</div>
-      Loops
-      <span class="nav-badge">for · while</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-break" onclick="loadTopic('topic-break','c_break_continue.html','Break & Continue','loop control flow','⚡')">
-      <div class="ni-icon">⚡</div>
-      Break & Continue
-      <span class="nav-badge">control</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-nested" onclick="loadTopic('topic-nested','c_nested_loops_multiplication.html','Nested Loops','multiplication table builder','⊞')">
-      <div class="ni-icon">⊞</div>
-      Nested Loops
-      <span class="nav-badge new">interactive</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-arrays" onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')">
-      <div class="ni-icon">🧮</div>
-      Arrays
-      <span class="nav-badge">data structures</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-pointers" onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')">
-      <div class="ni-icon">📍</div>
-      Pointers
-      <span class="nav-badge">memory</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-functions" onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')">
-      <div class="ni-icon">🔧</div>
-      Functions
-      <span class="nav-badge">modular</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-strings" onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')">
-      <div class="ni-icon">📝</div>
-      Strings
-      <span class="nav-badge">text</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-char-arrays" onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')">
-      <div class="ni-icon">🔡</div>
-      Char Arrays
-      <span class="nav-badge">strings</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-break-loops" onclick="loadTopic('topic-break-loops','c_menu_loop_break.html','Break In Loops','Break Control','⚡')">
-      <div class="ni-icon">⚡</div>
-      Break In Loops
-      <span class="nav-badge">interactive</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-linked-lists" onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')">
-      <div class="ni-icon">🔗</div>
-      Linked Lists
-      <span class="nav-badge">advanced</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-recursion" onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')">
-      <div class="ni-icon">🔀</div>
-      Recursion
-      <span class="nav-badge">problem-solving</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-recursion-vs-iter" onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')">
-      <div class="ni-icon">⚖️</div>
-      Recursion vs Iteration
-      <span class="nav-badge">comparison</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-file-handling" onclick="loadTopic('topic-file-handling','c_file_handling.html','File Handling','reading and writing files','📁')">
-      <div class="ni-icon">📁</div>
-      File Handling
-      <span class="nav-badge">I/O</span>
-    </div>
-
-    <div class="nav-item" data-target="topic-full-quiz" onclick="loadTopic('topic-full-quiz','c_programming_full_quiz.html','C Programming Full Quiz','comprehensive assessment','🎯')">
-      <div class="ni-icon">🎯</div>
-      Full Quiz
-      <span class="nav-badge">assessment</span>
-    </div>
-  </nav>
-
-  <div class="sidebar-footer">
-    Part of <a href="index.html">Samiran Paul's</a> learning hub<br>
-    <span style="margin-top:0.3rem;display:block;color:#3a3f52">C Language · 14 topics</span>
-  </div>
-</aside>
-
-<!-- ── MAIN ── -->
-<main class="main">
-
-  <!-- HOME -->
-  <section class="section active" id="home">
-    <div class="hero-wrap">
-      <div class="hero-tag">
-        <svg width="7" height="7" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="#10b981"/></svg>
-        Interactive · Step-by-step · C Programming
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <a href="index.html" class="back-btn">
+          <svg
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Back to Portfolio
+        </a>
+        <div class="brand-icon">C</div>
+        <div class="brand-name">C Language Hub</div>
+        <div class="brand-sub">interactive learning guide</div>
       </div>
 
-      <h1 class="hero-title">
-        Learn <span class="c-accent">C Language</span><br>
-        the <span class="c-green">interactive</span> way
-      </h1>
+      <nav class="nav">
+        <div class="nav-section-label">Overview</div>
+        <div
+          class="nav-item active"
+          data-target="home"
+          onclick="navigate('home')"
+        >
+          <div class="ni-icon">🏠</div>
+          Home
+        </div>
 
-      <p class="hero-desc">
-        Explore C programming through hands-on, animated guides. Watch code execute step by step, track variables in real time, and build intuition for how C actually works under the hood.
-      </p>
+        <div class="nav-section-label">Topics</div>
 
-      <div class="stats-row">
-        <div class="stat-pill">
-          <div class="dot" style="background:#5b6ef5"></div>
-          13 Topics
+        <div
+          class="nav-item"
+          data-target="topic-loops"
+          onclick="loadTopic('topic-loops','c_loops_guide.html','C Loops','for · while · do-while','🔄')"
+        >
+          <div class="ni-icon">🔄</div>
+          Loops
+          <span class="nav-badge">for · while</span>
         </div>
-        <div class="stat-pill">
-          <div class="dot" style="background:#10b981"></div>
-          Step-by-step execution
+
+        <div
+          class="nav-item"
+          data-target="topic-break"
+          onclick="loadTopic('topic-break','c_break_continue.html','Break & Continue','loop control flow','⚡')"
+        >
+          <div class="ni-icon">⚡</div>
+          Break & Continue
+          <span class="nav-badge">control</span>
         </div>
-        <div class="stat-pill">
-          <div class="dot" style="background:#f59e0b"></div>
-          Live variable tracking
+
+        <div
+          class="nav-item"
+          data-target="topic-nested"
+          onclick="loadTopic('topic-nested','c_nested_loops_multiplication.html','Nested Loops','multiplication table builder','⊞')"
+        >
+          <div class="ni-icon">⊞</div>
+          Nested Loops
+          <span class="nav-badge new">interactive</span>
         </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-arrays"
+          onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')"
+        >
+          <div class="ni-icon">🧮</div>
+          Arrays
+          <span class="nav-badge">data structures</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-pointers"
+          onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')"
+        >
+          <div class="ni-icon">📍</div>
+          Pointers
+          <span class="nav-badge">memory</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-functions"
+          onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')"
+        >
+          <div class="ni-icon">🔧</div>
+          Functions
+          <span class="nav-badge">modular</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-strings"
+          onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')"
+        >
+          <div class="ni-icon">📝</div>
+          Strings
+          <span class="nav-badge">text</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-char-arrays"
+          onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')"
+        >
+          <div class="ni-icon">🔡</div>
+          Char Arrays
+          <span class="nav-badge">strings</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-break-loops"
+          onclick="loadTopic('topic-break-loops','c_menu_loop_break.html','Break In Loops','Break Control','⚡')"
+        >
+          <div class="ni-icon">⚡</div>
+          Break In Loops
+          <span class="nav-badge">interactive</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-linked-lists"
+          onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')"
+        >
+          <div class="ni-icon">🔗</div>
+          Linked Lists
+          <span class="nav-badge">advanced</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-recursion"
+          onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')"
+        >
+          <div class="ni-icon">🔀</div>
+          Recursion
+          <span class="nav-badge">problem-solving</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-recursion-vs-iter"
+          onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')"
+        >
+          <div class="ni-icon">⚖️</div>
+          Recursion vs Iteration
+          <span class="nav-badge">comparison</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-file-handling"
+          onclick="loadTopic('topic-file-handling','c_file_handling.html','File Handling','reading and writing files','📁')"
+        >
+          <div class="ni-icon">📁</div>
+          File Handling
+          <span class="nav-badge">I/O</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-full-quiz"
+          onclick="loadTopic('topic-full-quiz','c_programming_full_quiz.html','C Programming Full Quiz','comprehensive assessment','🎯')"
+        >
+          <div class="ni-icon">🎯</div>
+          Full Quiz
+          <span class="nav-badge">assessment</span>
+        </div>
+        <div
+          class="nav-item"
+          data-target="topic-under-hood"
+          onclick="loadTopic('topic-under-hood','c_under_the_hood.html','C Under the Hood','memory, ABI, and runtime','🧠')"
+        >
+          <div class="ni-icon">🧠</div>
+          C Under the Hood
+          <span class="nav-badge">internals</span>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        Part of <a href="index.html">Samiran Paul's</a> learning hub<br />
+        <span style="margin-top: 0.3rem; display: block; color: #3a3f52"
+          >C Language · 15 topics</span
+        >
       </div>
+    </aside>
 
-      <div class="topics-grid">
-
-        <!-- Loops -->
-        <div class="topic-card" style="--tc-color:#6366f1" onclick="loadTopic('topic-loops','c_loops_guide.html','C Loops','for · while · do-while','🔄')">
-          <div class="tc-top">
-            <div class="tc-icon">🔄</div>
-            <span class="tc-chip" style="color:#a78bfa;border-color:rgba(167,139,250,0.3)">Fundamentals</span>
+    <!-- ── MAIN ── -->
+    <main class="main">
+      <!-- HOME -->
+      <section class="section active" id="home">
+        <div class="hero-wrap">
+          <div class="hero-tag">
+            <svg width="7" height="7" viewBox="0 0 8 8">
+              <circle cx="4" cy="4" r="4" fill="#10b981" />
+            </svg>
+            Interactive · Step-by-step · C Programming
           </div>
-          <div class="tc-title">Loops in C</div>
-          <div class="tc-desc">Master for, while, and do-while loops with interactive step-by-step execution and flowcharts.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
+
+          <h1 class="hero-title">
+            Learn <span class="c-accent">C Language</span><br />
+            the <span class="c-green">interactive</span> way
+          </h1>
+
+          <p class="hero-desc">
+            Explore C programming through hands-on, animated guides. Watch code
+            execute step by step, track variables in real time, and build
+            intuition for how C actually works under the hood.
+          </p>
+
+          <div class="stats-row">
+            <div class="stat-pill">
+              <div class="dot" style="background: #5b6ef5"></div>
+              15 Topics
+            </div>
+            <div class="stat-pill">
+              <div class="dot" style="background: #10b981"></div>
+              Step-by-step execution
+            </div>
+            <div class="stat-pill">
+              <div class="dot" style="background: #f59e0b"></div>
+              Live variable tracking
+            </div>
+          </div>
+
+          <div class="topics-grid">
+            <!-- Loops -->
+            <div
+              class="topic-card"
+              style="--tc-color: #6366f1"
+              onclick="loadTopic('topic-loops','c_loops_guide.html','C Loops','for · while · do-while','🔄')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🔄</div>
+                <span
+                  class="tc-chip"
+                  style="color: #a78bfa; border-color: rgba(167, 139, 250, 0.3)"
+                  >Fundamentals</span
+                >
+              </div>
+              <div class="tc-title">Loops in C</div>
+              <div class="tc-desc">
+                Master for, while, and do-while loops with interactive
+                step-by-step execution and flowcharts.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Break & Continue -->
+            <div
+              class="topic-card"
+              style="--tc-color: #f59e0b"
+              onclick="loadTopic('topic-break','c_break_continue.html','Break & Continue','loop control flow','⚡')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">⚡</div>
+                <span
+                  class="tc-chip"
+                  style="color: #fbbf24; border-color: rgba(251, 191, 36, 0.3)"
+                  >Control Flow</span
+                >
+              </div>
+              <div class="tc-title">Break & Continue</div>
+              <div class="tc-desc">
+                Understand how break exits loops and continue skips iterations —
+                with live code highlighting.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nested Loops -->
+            <div
+              class="topic-card"
+              style="--tc-color: #10b981"
+              onclick="loadTopic('topic-nested','c_nested_loops_multiplication.html','Nested Loops','multiplication table builder','⊞')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">⊞</div>
+                <span
+                  class="tc-chip"
+                  style="color: #34d399; border-color: rgba(52, 211, 153, 0.3)"
+                  >Interactive</span
+                >
+              </div>
+              <div class="tc-title">Nested Loops</div>
+              <div class="tc-desc">
+                Build a multiplication table step by step. Watch the outer and
+                inner loops interact with real-time tracking.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Arrays -->
+            <div
+              class="topic-card"
+              style="--tc-color: #8b5cf6"
+              onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🧮</div>
+                <span
+                  class="tc-chip"
+                  style="color: #c4b5fd; border-color: rgba(196, 181, 253, 0.3)"
+                  >Data Structures</span
+                >
+              </div>
+              <div class="tc-title">Arrays in C</div>
+              <div class="tc-desc">
+                Explore fixed-size arrays, indexing, and element access with
+                clear examples and live memory mapping.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pointers -->
+            <div
+              class="topic-card"
+              style="--tc-color: #ec4899"
+              onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">📍</div>
+                <span
+                  class="tc-chip"
+                  style="color: #fbcfe8; border-color: rgba(251, 207, 232, 0.3)"
+                  >Memory</span
+                >
+              </div>
+              <div class="tc-title">Pointers</div>
+              <div class="tc-desc">
+                Learn pointer declaration, dereference, and pointer arithmetic
+                with animated memory diagrams.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Functions -->
+            <div
+              class="topic-card"
+              style="--tc-color: #14b8a6"
+              onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🔧</div>
+                <span
+                  class="tc-chip"
+                  style="color: #5eead4; border-color: rgba(94, 234, 212, 0.3)"
+                  >Modularity</span
+                >
+              </div>
+              <div class="tc-title">Functions</div>
+              <div class="tc-desc">
+                Practice writing reusable functions, passing arguments, and
+                returning values with interactive examples.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Strings -->
+            <div
+              class="topic-card"
+              style="--tc-color: #f97316"
+              onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">📝</div>
+                <span
+                  class="tc-chip"
+                  style="color: #fdba74; border-color: rgba(253, 186, 116, 0.3)"
+                  >Text</span
+                >
+              </div>
+              <div class="tc-title">String Manipulation</div>
+              <div class="tc-desc">
+                Discover C strings, concatenation, and common library functions
+                with data-driven visual examples.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Char Arrays & Strings -->
+            <div
+              class="topic-card"
+              style="--tc-color: #0ea5e9"
+              onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🔡</div>
+                <span
+                  class="tc-chip"
+                  style="color: #7dd3fc; border-color: rgba(125, 211, 252, 0.3)"
+                  >Strings</span
+                >
+              </div>
+              <div class="tc-title">Char Arrays & Strings</div>
+              <div class="tc-desc">
+                Compare char arrays and string literals, then practice working
+                with text in C programs.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!--  Loops Break -->
+            <div
+              class="topic-card"
+              style="--tc-color: #6366f1"
+              onclick="loadTopic('topic-nested','c_menu_loop_break.html','Breaks Loops','Break Control','⊞')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">⚡</div>
+                <span
+                  class="tc-chip"
+                  style="color: #a78bfa; border-color: rgba(167, 139, 250, 0.3)"
+                  >Interactive</span
+                >
+              </div>
+              <div class="tc-title">Break In Loops</div>
+              <div class="tc-desc">
+                Live demo of Break in loops step by step.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Linked Lists -->
+            <div
+              class="topic-card"
+              style="--tc-color: #d946ef"
+              onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🔗</div>
+                <span
+                  class="tc-chip"
+                  style="color: #f0abfc; border-color: rgba(240, 171, 252, 0.3)"
+                  >Advanced</span
+                >
+              </div>
+              <div class="tc-title">Linked Lists</div>
+              <div class="tc-desc">
+                Build dynamic linked list structures using pointers. Learn node
+                creation, traversal, and manipulation.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recursion -->
+            <div
+              class="topic-card"
+              style="--tc-color: #ca8a04"
+              onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🔀</div>
+                <span
+                  class="tc-chip"
+                  style="color: #fcd34d; border-color: rgba(252, 211, 77, 0.3)"
+                  >Problem-Solving</span
+                >
+              </div>
+              <div class="tc-title">Recursion</div>
+              <div class="tc-desc">
+                Master recursive functions with base cases, call stacks, and
+                factorial/Fibonacci examples.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recursion vs Iteration -->
+            <div
+              class="topic-card"
+              style="--tc-color: #06b6d4"
+              onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">⚖️</div>
+                <span
+                  class="tc-chip"
+                  style="color: #a5f3fc; border-color: rgba(165, 243, 252, 0.3)"
+                  >Comparison</span
+                >
+              </div>
+              <div class="tc-title">Recursion vs Iteration</div>
+              <div class="tc-desc">
+                Compare recursive and iterative solutions side-by-side with
+                performance analysis and quiz.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- File Handling -->
+            <div
+              class="topic-card"
+              style="--tc-color: #84cc16"
+              onclick="loadTopic('topic-file-handling','c_file_handling.html','File Handling','reading and writing files','📁')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">📁</div>
+                <span
+                  class="tc-chip"
+                  style="color: #d4fc79; border-color: rgba(212, 252, 121, 0.3)"
+                  >I/O</span
+                >
+              </div>
+              <div class="tc-title">File Handling</div>
+              <div class="tc-desc">
+                Learn to read from and write to files using C's file I/O
+                functions. Master fopen, fclose, fread, and fwrite.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- C Programming Full Quiz -->
+            <div
+              class="topic-card"
+              style="--tc-color: #8b5cf6"
+              onclick="loadTopic('topic-full-quiz','c_programming_full_quiz.html','C Programming Full Quiz','comprehensive assessment','🎯')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🎯</div>
+                <span
+                  class="tc-chip"
+                  style="color: #d8b4fe; border-color: rgba(216, 180, 254, 0.3)"
+                  >Assessment</span
+                >
+              </div>
+              <div class="tc-title">Full Quiz</div>
+              <div class="tc-desc">
+                Test your comprehensive C programming knowledge with this
+                full-length assessment covering loops, arrays, pointers,
+                functions, strings, and more.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <!-- C Under the Hood -->
+            <div
+              class="topic-card"
+              style="--tc-color: #0f766e"
+              onclick="loadTopic('topic-under-hood','c_under_the_hood.html','C Under the Hood','memory, ABI, and runtime','🧠')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🧠</div>
+                <span
+                  class="tc-chip"
+                  style="color: #5eead4; border-color: rgba(94, 234, 212, 0.3)"
+                  >Internals</span
+                >
+              </div>
+              <div class="tc-title">C Under the Hood</div>
+              <div class="tc-desc">
+                Explore C runtime behavior, stack and heap layout, and how
+                memory and addresses work under the hood.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <!-- Break & Continue -->
-        <div class="topic-card" style="--tc-color:#f59e0b" onclick="loadTopic('topic-break','c_break_continue.html','Break & Continue','loop control flow','⚡')">
-          <div class="tc-top">
-            <div class="tc-icon">⚡</div>
-            <span class="tc-chip" style="color:#fbbf24;border-color:rgba(251,191,36,0.3)">Control Flow</span>
+      <!-- TOPIC VIEWER -->
+      <section
+        class="section"
+        id="topic-view"
+        style="
+          min-height: 100vh;
+          padding: 0;
+          display: none;
+          flex-direction: column;
+        "
+      >
+        <div class="topic-header">
+          <button
+            class="topic-back-btn"
+            onclick="navigate('home')"
+            title="Back to topics"
+          >
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <div class="topic-title-wrap">
+            <h1 id="topic-view-title">Topic</h1>
+            <div class="sub" id="topic-view-sub"></div>
           </div>
-          <div class="tc-title">Break & Continue</div>
-          <div class="tc-desc">Understand how break exits loops and continue skips iterations — with live code highlighting.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
+          <div id="topic-view-icon" style="font-size: 1.5rem"></div>
         </div>
-
-        <!-- Nested Loops -->
-        <div class="topic-card" style="--tc-color:#10b981" onclick="loadTopic('topic-nested','c_nested_loops_multiplication.html','Nested Loops','multiplication table builder','⊞')">
-          <div class="tc-top">
-            <div class="tc-icon">⊞</div>
-            <span class="tc-chip" style="color:#34d399;border-color:rgba(52,211,153,0.3)">Interactive</span>
-          </div>
-          <div class="tc-title">Nested Loops</div>
-          <div class="tc-desc">Build a multiplication table step by step. Watch the outer and inner loops interact with real-time tracking.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
+        <div class="topic-content-area">
+          <div class="artifact-shell" id="topic-render-zone"></div>
         </div>
+      </section>
+    </main>
 
-        <!-- Arrays -->
-        <div class="topic-card" style="--tc-color:#8b5cf6" onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')">
-          <div class="tc-top">
-            <div class="tc-icon">🧮</div>
-            <span class="tc-chip" style="color:#c4b5fd;border-color:rgba(196,181,253,0.3)">Data Structures</span>
-          </div>
-          <div class="tc-title">Arrays in C</div>
-          <div class="tc-desc">Explore fixed-size arrays, indexing, and element access with clear examples and live memory mapping.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+    <script>
+      let currentTopic = null;
 
-        <!-- Pointers -->
-        <div class="topic-card" style="--tc-color:#ec4899" onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')">
-          <div class="tc-top">
-            <div class="tc-icon">📍</div>
-            <span class="tc-chip" style="color:#fbcfe8;border-color:rgba(251,207,232,0.3)">Memory</span>
-          </div>
-          <div class="tc-title">Pointers</div>
-          <div class="tc-desc">Learn pointer declaration, dereference, and pointer arithmetic with animated memory diagrams.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+      function navigate(target) {
+        document.querySelectorAll(".section").forEach((s) => {
+          s.classList.remove("active");
+          s.style.display = "none";
+        });
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
 
-        <!-- Functions -->
-        <div class="topic-card" style="--tc-color:#14b8a6" onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')">
-          <div class="tc-top">
-            <div class="tc-icon">🔧</div>
-            <span class="tc-chip" style="color:#5eead4;border-color:rgba(94,234,212,0.3)">Modularity</span>
-          </div>
-          <div class="tc-title">Functions</div>
-          <div class="tc-desc">Practice writing reusable functions, passing arguments, and returning values with interactive examples.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+        const el = document.getElementById(target);
+        if (el) {
+          el.classList.add("active");
+          el.style.display = "flex";
+        }
+        document
+          .querySelector(`[data-target="${target}"]`)
+          ?.classList.add("active");
+        closeSidebar();
+        window.scrollTo(0, 0);
+      }
 
-        <!-- Strings -->
-        <div class="topic-card" style="--tc-color:#f97316" onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')">
-          <div class="tc-top">
-            <div class="tc-icon">📝</div>
-            <span class="tc-chip" style="color:#fdba74;border-color:rgba(253,186,116,0.3)">Text</span>
-          </div>
-          <div class="tc-title">String Manipulation</div>
-          <div class="tc-desc">Discover C strings, concatenation, and common library functions with data-driven visual examples.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+      async function loadTopic(navId, filename, title, sub, icon) {
+        // Mark sidebar active
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((n) => n.classList.remove("active"));
+        document
+          .querySelector(`[data-target="${navId}"]`)
+          ?.classList.add("active");
 
-        <!-- Char Arrays & Strings -->
-        <div class="topic-card" style="--tc-color:#0ea5e9" onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')">
-          <div class="tc-top">
-            <div class="tc-icon">🔡</div>
-            <span class="tc-chip" style="color:#7dd3fc;border-color:rgba(125,211,252,0.3)">Strings</span>
-          </div>
-          <div class="tc-title">Char Arrays & Strings</div>
-          <div class="tc-desc">Compare char arrays and string literals, then practice working with text in C programs.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+        document.getElementById("topic-view-title").textContent = title;
+        document.getElementById("topic-view-sub").textContent = sub;
+        document.getElementById("topic-view-icon").textContent = icon;
 
-        <!--  Loops Break -->
-        <div class="topic-card" style="--tc-color:#6366f1" onclick="loadTopic('topic-nested','c_menu_loop_break.html','Breaks Loops','Break Control','⊞')">
-          <div class="tc-top">
-            <div class="tc-icon">⚡</div>
-            <span class="tc-chip" style="color:#a78bfa;border-color:rgba(167,139,250,0.3)">Interactive</span>
-          </div>
-          <div class="tc-title">Break In  Loops</div>
-          <div class="tc-desc">Live demo of Break in loops  step by step.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Linked Lists -->
-        <div class="topic-card" style="--tc-color:#d946ef" onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')">
-          <div class="tc-top">
-            <div class="tc-icon">🔗</div>
-            <span class="tc-chip" style="color:#f0abfc;border-color:rgba(240,171,252,0.3)">Advanced</span>
-          </div>
-          <div class="tc-title">Linked Lists</div>
-          <div class="tc-desc">Build dynamic linked list structures using pointers. Learn node creation, traversal, and manipulation.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recursion -->
-        <div class="topic-card" style="--tc-color:#ca8a04" onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')">
-          <div class="tc-top">
-            <div class="tc-icon">🔀</div>
-            <span class="tc-chip" style="color:#fcd34d;border-color:rgba(252,211,77,0.3)">Problem-Solving</span>
-          </div>
-          <div class="tc-title">Recursion</div>
-          <div class="tc-desc">Master recursive functions with base cases, call stacks, and factorial/Fibonacci examples.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recursion vs Iteration -->
-        <div class="topic-card" style="--tc-color:#06b6d4" onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')">
-          <div class="tc-top">
-            <div class="tc-icon">⚖️</div>
-            <span class="tc-chip" style="color:#a5f3fc;border-color:rgba(165,243,252,0.3)">Comparison</span>
-          </div>
-          <div class="tc-title">Recursion vs Iteration</div>
-          <div class="tc-desc">Compare recursive and iterative solutions side-by-side with performance analysis and quiz.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- File Handling -->
-        <div class="topic-card" style="--tc-color:#84cc16" onclick="loadTopic('topic-file-handling','c_file_handling.html','File Handling','reading and writing files','📁')">
-          <div class="tc-top">
-            <div class="tc-icon">📁</div>
-            <span class="tc-chip" style="color:#d4fc79;border-color:rgba(212,252,121,0.3)">I/O</span>
-          </div>
-          <div class="tc-title">File Handling</div>
-          <div class="tc-desc">Learn to read from and write to files using C's file I/O functions. Master fopen, fclose, fread, and fwrite.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- C Programming Full Quiz -->
-        <div class="topic-card" style="--tc-color:#8b5cf6" onclick="loadTopic('topic-full-quiz','c_programming_full_quiz.html','C Programming Full Quiz','comprehensive assessment','🎯')">
-          <div class="tc-top">
-            <div class="tc-icon">🎯</div>
-            <span class="tc-chip" style="color:#d8b4fe;border-color:rgba(216,180,254,0.3)">Assessment</span>
-          </div>
-          <div class="tc-title">Full Quiz</div>
-          <div class="tc-desc">Test your comprehensive C programming knowledge with this full-length assessment covering loops, arrays, pointers, functions, strings, and more.</div>
-          <div class="tc-footer">
-            <span></span>
-            <div class="tc-arrow">
-              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- TOPIC VIEWER -->
-  <section class="section" id="topic-view" style="min-height:100vh; padding:0; display:none; flex-direction:column;">
-    <div class="topic-header">
-      <button class="topic-back-btn" onclick="navigate('home')" title="Back to topics">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-        </svg>
-      </button>
-      <div class="topic-title-wrap">
-        <h1 id="topic-view-title">Topic</h1>
-        <div class="sub" id="topic-view-sub"></div>
-      </div>
-      <div id="topic-view-icon" style="font-size:1.5rem"></div>
-    </div>
-    <div class="topic-content-area">
-      <div class="artifact-shell" id="topic-render-zone"></div>
-    </div>
-  </section>
-
-</main>
-
-<script>
-  let currentTopic = null;
-
-  function navigate(target) {
-    document.querySelectorAll('.section').forEach(s => {
-      s.classList.remove('active');
-      s.style.display = 'none';
-    });
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-    const el = document.getElementById(target);
-    if (el) {
-      el.classList.add('active');
-      el.style.display = 'flex';
-    }
-    document.querySelector(`[data-target="${target}"]`)?.classList.add('active');
-    closeSidebar();
-    window.scrollTo(0, 0);
-  }
-
-  async function loadTopic(navId, filename, title, sub, icon) {
-    // Mark sidebar active
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector(`[data-target="${navId}"]`)?.classList.add('active');
-
-    document.getElementById('topic-view-title').textContent = title;
-    document.getElementById('topic-view-sub').textContent = sub;
-    document.getElementById('topic-view-icon').textContent = icon;
-
-    const zone = document.getElementById('topic-render-zone');
-    zone.innerHTML = `<div style="font-family:var(--font-mono);font-size:.75rem;color:#6b7080;padding:3rem;text-align:center;">
+        const zone = document.getElementById("topic-render-zone");
+        zone.innerHTML = `<div style="font-family:var(--font-mono);font-size:.75rem;color:#6b7080;padding:3rem;text-align:center;">
       Loading <strong>${filename}</strong>…
     </div>`;
 
-    // Show the topic-view section
-    document.querySelectorAll('.section').forEach(s => {
-      s.classList.remove('active');
-      s.style.display = 'none';
-    });
-    const tv = document.getElementById('topic-view');
-    tv.classList.add('active');
-    tv.style.display = 'flex';
+        // Show the topic-view section
+        document.querySelectorAll(".section").forEach((s) => {
+          s.classList.remove("active");
+          s.style.display = "none";
+        });
+        const tv = document.getElementById("topic-view");
+        tv.classList.add("active");
+        tv.style.display = "flex";
 
-    closeSidebar();
-    window.scrollTo(0, 0);
-    currentTopic = filename;
+        closeSidebar();
+        window.scrollTo(0, 0);
+        currentTopic = filename;
 
-    try {
-      // Get the current page's directory and construct the full URL to the file
-      const currentPageURL = new URL(window.location.href);
-      const baseURL = currentPageURL.protocol + '//' + currentPageURL.host + currentPageURL.pathname.substring(0, currentPageURL.pathname.lastIndexOf('/') + 1);
-      const fileURL = baseURL + filename;
-      
-      const res = await fetch(fileURL);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const html = await res.text();
-      zone.innerHTML = html;
+        try {
+          // Get the current page's directory and construct the full URL to the file
+          const currentPageURL = new URL(window.location.href);
+          const baseURL =
+            currentPageURL.protocol +
+            "//" +
+            currentPageURL.host +
+            currentPageURL.pathname.substring(
+              0,
+              currentPageURL.pathname.lastIndexOf("/") + 1
+            );
+          const fileURL = baseURL + filename;
 
-      // Re-run any scripts in the fetched HTML
-      zone.querySelectorAll('script').forEach(old => {
-        const s = document.createElement('script');
-        if (old.src) { s.src = old.src; }
-        else { s.textContent = old.textContent; }
-        document.body.appendChild(s);
-        old.remove();
-      });
-    } catch (e) {
-      zone.innerHTML = `
+          const res = await fetch(fileURL);
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const html = await res.text();
+          zone.innerHTML = html;
+
+          // Re-run any scripts in the fetched HTML
+          zone.querySelectorAll("script").forEach((old) => {
+            const s = document.createElement("script");
+            if (old.src) {
+              s.src = old.src;
+            } else {
+              s.textContent = old.textContent;
+            }
+            document.body.appendChild(s);
+            old.remove();
+          });
+        } catch (e) {
+          zone.innerHTML = `
         <div style="font-family:var(--font-mono);font-size:.8rem;color:#f87171;padding:2rem;
           background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;line-height:1.8;">
           <strong>Could not load ${filename}</strong><br>
           Make sure the file is in the same folder as c_master.html.<br><br>
           <span style="color:#6b7080;">Error: ${e.message}</span>
         </div>`;
-    }
-  }
+        }
+      }
 
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('overlay').classList.toggle('open');
-  }
-  function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('overlay').classList.remove('open');
-  }
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("open");
+        document.getElementById("overlay").classList.toggle("open");
+      }
+      function closeSidebar() {
+        document.getElementById("sidebar").classList.remove("open");
+        document.getElementById("overlay").classList.remove("open");
+      }
 
-  // Init: show home
-  (function init() {
-    document.getElementById('home').classList.add('active');
-    document.getElementById('home').style.display = 'flex';
-    document.getElementById('topic-view').style.display = 'none';
-  })();
-</script>
-</body>
+      // Init: show home
+      (function init() {
+        document.getElementById("home").classList.add("active");
+        document.getElementById("home").style.display = "flex";
+        document.getElementById("topic-view").style.display = "none";
+      })();
+    </script>
+  </body>
 </html>
