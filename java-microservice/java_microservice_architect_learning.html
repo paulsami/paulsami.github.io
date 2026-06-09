@@ -1,0 +1,504 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.app { padding: 1.5rem 0; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 2rem; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 1rem; }
+.nav-btn { background: transparent; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 6px 14px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); transition: all 0.15s; }
+.nav-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+.nav-btn.active { background: #E6F1FB; border-color: #378ADD; color: #0C447C; font-weight: 500; }
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-size: 18px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.4rem; }
+.section-sub { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+.card-icon { font-size: 20px; margin-bottom: 8px; color: #378ADD; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.card-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+.pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; margin: 2px 2px 2px 0; }
+.pill-blue { background: #E6F1FB; color: #0C447C; }
+.pill-teal { background: #E1F5EE; color: #085041; }
+.pill-amber { background: #FAEEDA; color: #633806; }
+.pill-red { background: #FCEBEB; color: #791F1F; }
+.pill-purple { background: #EEEDFE; color: #3C3489; }
+.arch-diagram { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+.arch-row { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 8px 0; }
+.arch-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 8px 14px; font-size: 12px; font-weight: 500; text-align: center; color: var(--color-text-primary); min-width: 90px; }
+.arch-box.blue { background: #E6F1FB; border-color: #378ADD; color: #0C447C; }
+.arch-box.teal { background: #E1F5EE; border-color: #1D9E75; color: #085041; }
+.arch-box.purple { background: #EEEDFE; border-color: #7F77DD; color: #3C3489; }
+.arch-box.amber { background: #FAEEDA; border-color: #EF9F27; color: #633806; }
+.arch-box.coral { background: #FAECE7; border-color: #D85A30; color: #712B13; }
+.arch-arrow { color: var(--color-text-tertiary); font-size: 14px; }
+.code-block { background: #1e1e2e; color: #cdd6f4; border-radius: var(--border-radius-md); padding: 1rem 1.25rem; font-family: var(--font-mono); font-size: 12px; line-height: 1.8; margin: 8px 0 16px; overflow-x: auto; }
+.kw { color: #89b4fa; }
+.str { color: #a6e3a1; }
+.ann { color: #cba6f7; }
+.cmt { color: #6c7086; }
+.type { color: #f9e2af; }
+.quiz-q { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 13px; cursor: pointer; color: var(--color-text-secondary); text-align: left; transition: all 0.15s; }
+.quiz-opt:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+.quiz-opt.correct { background: #EAF3DE; border-color: #639922; color: #27500A; }
+.quiz-opt.wrong { background: #FCEBEB; border-color: #E24B4A; color: #791F1F; }
+.quiz-nav { display: flex; gap: 8px; margin-top: 1rem; align-items: center; }
+.quiz-progress { font-size: 12px; color: var(--color-text-secondary); margin-left: auto; }
+.pattern-card { border-left: 3px solid #378ADD; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; }
+.pattern-card.teal { border-color: #1D9E75; }
+.pattern-card.amber { border-color: #EF9F27; }
+.pattern-card.purple { border-color: #7F77DD; }
+.pattern-card.coral { border-color: #D85A30; }
+.roadmap-step { display: flex; gap: 12px; margin-bottom: 1rem; align-items: flex-start; }
+.step-num { width: 32px; height: 32px; border-radius: 50%; background: #E6F1FB; color: #0C447C; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.step-num.done { background: #EAF3DE; color: #27500A; }
+.step-num.active { background: #378ADD; color: #fff; }
+.step-content { flex: 1; }
+.step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.step-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+.badge-beginner { background: #EAF3DE; color: #27500A; }
+.badge-intermediate { background: #FAEEDA; color: #633806; }
+.badge-advanced { background: #FCEBEB; color: #791F1F; }
+h3.subsec { font-size: 15px; font-weight: 500; color: var(--color-text-primary); margin: 1.2rem 0 0.6rem; }
+.separator { height: 0.5px; background: var(--color-border-tertiary); margin: 1.5rem 0; }
+</style>
+
+<div class="app">
+  <h2 class="sr-only">Java Microservice Architecture Learning Material</h2>
+
+  <div class="nav">
+    <button class="nav-btn active" onclick="show('overview')"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Overview</button>
+    <button class="nav-btn" onclick="show('architecture')"><i class="ti ti-building-arch" aria-hidden="true"></i> Architecture</button>
+    <button class="nav-btn" onclick="show('patterns')"><i class="ti ti-puzzle" aria-hidden="true"></i> Patterns</button>
+    <button class="nav-btn" onclick="show('code')"><i class="ti ti-code" aria-hidden="true"></i> Code Labs</button>
+    <button class="nav-btn" onclick="show('tools')"><i class="ti ti-tool" aria-hidden="true"></i> Tools & Stack</button>
+    <button class="nav-btn" onclick="show('quiz')"><i class="ti ti-brain" aria-hidden="true"></i> Quiz</button>
+    <button class="nav-btn" onclick="show('roadmap')"><i class="ti ti-road" aria-hidden="true"></i> Roadmap</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="section active" id="sec-overview">
+    <p class="section-title">Java Microservice Architecture</p>
+    <p class="section-sub">A complete guide from monolith to distributed systems — designed for Java engineers.</p>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-server" aria-hidden="true"></i></div>
+        <div class="card-title">What are Microservices?</div>
+        <div class="card-body">Small, independently deployable services that do one thing well. Each owns its data and communicates via APIs.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-arrows-split-2" aria-hidden="true"></i></div>
+        <div class="card-title">Vs. Monolith</div>
+        <div class="card-body">Monoliths are single deployable units. Microservices break them into bounded contexts, enabling team autonomy and scaling.</div>
+      </div>
+      <div class="card">
+        <div class="card-icon"><i class="ti ti-award" aria-hidden="true"></i></div>
+        <div class="card-title">Why Java?</div>
+        <div class="card-body">Spring Boot, Quarkus, and Micronaut make Java the gold standard — rich ecosystem, strong typing, proven at scale.</div>
+      </div>
+    </div>
+
+    <h3 class="subsec">Core principles</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-border-all" aria-hidden="true" style="color:#378ADD;margin-right:6px"></i>Single Responsibility</div>
+        <div class="card-body">Each service maps to a single business capability. User Service, Order Service, Payment Service — each with its own database.</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-shield-check" aria-hidden="true" style="color:#1D9E75;margin-right:6px"></i>Decentralized Data</div>
+        <div class="card-body">No shared databases. Services own their data and expose it via APIs only. Enables polyglot persistence.</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-refresh" aria-hidden="true" style="color:#7F77DD;margin-right:6px"></i>Design for Failure</div>
+        <div class="card-body">Network calls fail. Implement circuit breakers, retries, timeouts, and bulkheads to prevent cascade failures.</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-rocket" aria-hidden="true" style="color:#D85A30;margin-right:6px"></i>Continuous Deployment</div>
+        <div class="card-body">Each service is deployed independently via its own CI/CD pipeline. No coordinated releases across teams.</div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+    <h3 class="subsec">Topics covered in this guide</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+      <span class="pill pill-blue">Spring Boot</span><span class="pill pill-blue">REST APIs</span><span class="pill pill-teal">Service Discovery</span><span class="pill pill-teal">API Gateway</span><span class="pill pill-purple">Event-Driven</span><span class="pill pill-purple">Kafka</span><span class="pill pill-amber">Circuit Breaker</span><span class="pill pill-amber">Resilience4j</span><span class="pill pill-red">Distributed Tracing</span><span class="pill pill-red">Docker & K8s</span><span class="pill pill-blue">Security / JWT</span><span class="pill pill-teal">Saga Pattern</span>
+    </div>
+  </div>
+
+  <!-- ARCHITECTURE -->
+  <div class="section" id="sec-architecture">
+    <p class="section-title">System Architecture</p>
+    <p class="section-sub">How all the pieces fit together in a production-grade Java microservice system.</p>
+
+    <div class="arch-diagram">
+      <div style="text-align:center;font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;font-weight:500;">CLIENT LAYER</div>
+      <div class="arch-row">
+        <div class="arch-box blue">Web App</div>
+        <div class="arch-box blue">Mobile App</div>
+        <div class="arch-box blue">3rd Party</div>
+      </div>
+      <div class="arch-row"><div style="color:var(--color-text-tertiary);font-size:18px;">↓</div></div>
+      <div class="arch-row"><div class="arch-box amber" style="width:220px;font-size:13px;">API Gateway<br><span style="font-size:10px;font-weight:400;">Spring Cloud Gateway / Kong</span></div></div>
+      <div class="arch-row"><div style="color:var(--color-text-tertiary);font-size:18px;">↓</div></div>
+      <div style="text-align:center;font-size:12px;color:var(--color-text-secondary);margin-bottom:8px;font-weight:500;">MICROSERVICES LAYER</div>
+      <div class="arch-row">
+        <div class="arch-box teal">User<br>Service</div>
+        <div class="arch-box teal">Order<br>Service</div>
+        <div class="arch-box teal">Payment<br>Service</div>
+        <div class="arch-box teal">Inventory<br>Service</div>
+        <div class="arch-box teal">Notification<br>Service</div>
+      </div>
+      <div class="arch-row">
+        <div style="color:var(--color-text-tertiary);font-size:14px;">↕ sync</div>
+        <div class="arch-box purple" style="min-width:140px;">Message Broker<br><span style="font-size:10px;font-weight:400;">Apache Kafka / RabbitMQ</span></div>
+        <div style="color:var(--color-text-tertiary);font-size:14px;">async ↕</div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--color-text-secondary);margin:8px 0;font-weight:500;">INFRASTRUCTURE LAYER</div>
+      <div class="arch-row">
+        <div class="arch-box coral">Service Registry<br><span style="font-size:10px;">Eureka</span></div>
+        <div class="arch-box coral">Config Server<br><span style="font-size:10px;">Spring Cloud</span></div>
+        <div class="arch-box coral">Distributed Trace<br><span style="font-size:10px;">Zipkin/Jaeger</span></div>
+        <div class="arch-box coral">Log Aggregation<br><span style="font-size:10px;">ELK Stack</span></div>
+      </div>
+    </div>
+
+    <h3 class="subsec">Service communication patterns</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:#0C447C;"><i class="ti ti-arrow-right" aria-hidden="true" style="margin-right:6px"></i>Synchronous — REST/gRPC</div>
+        <div class="card-body">Used when the caller needs an immediate response. Implemented with Spring WebClient, RestTemplate, or OpenFeign. Suitable for read-heavy queries.</div>
+        <div style="margin-top:8px;"><span class="pill pill-blue">OpenFeign</span><span class="pill pill-blue">WebClient</span><span class="pill pill-blue">gRPC</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#085041;"><i class="ti ti-broadcast" aria-hidden="true" style="margin-right:6px"></i>Asynchronous — Events</div>
+        <div class="card-body">Fire-and-forget via Kafka or RabbitMQ. Services react to domain events. Essential for saga orchestration and eventual consistency.</div>
+        <div style="margin-top:8px;"><span class="pill pill-teal">Kafka</span><span class="pill pill-teal">RabbitMQ</span><span class="pill pill-teal">Spring Events</span></div>
+      </div>
+    </div>
+
+    <h3 class="subsec">Data management</h3>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">Database per service</div>
+        <div class="card-body">Each service has its own DB. No shared schema. Choose the right DB for the job: PostgreSQL, MongoDB, Redis, Cassandra.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">CQRS</div>
+        <div class="card-body">Separate Command (write) and Query (read) models. Read-optimized views built from events. Scales independently.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Event Sourcing</div>
+        <div class="card-body">Store state changes as a sequence of events. Enables full audit trail, time travel, and rebuilding projections.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PATTERNS -->
+  <div class="section" id="sec-patterns">
+    <p class="section-title">Design Patterns</p>
+    <p class="section-sub">Essential patterns every Java microservice architect must master.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div class="card pattern-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="card-title" style="margin:0">Circuit Breaker</div>
+          <span class="badge badge-intermediate">intermediate</span>
+        </div>
+        <div class="card-body">Wraps remote calls and trips open when failures exceed a threshold, preventing cascade failures. Implemented via <strong>Resilience4j</strong>. Has three states: CLOSED (normal), OPEN (failing fast), HALF-OPEN (testing recovery).</div>
+        <div style="margin-top:8px;"><span class="pill pill-amber">Resilience4j</span><span class="pill pill-amber">@CircuitBreaker</span><span class="pill pill-amber">Fallback</span></div>
+      </div>
+
+      <div class="card pattern-card teal">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="card-title" style="margin:0">Saga Pattern</div>
+          <span class="badge badge-advanced">advanced</span>
+        </div>
+        <div class="card-body">Manages distributed transactions across services. Two variants: <strong>Choreography</strong> (services react to events) and <strong>Orchestration</strong> (central saga coordinator). Each step has a compensating transaction for rollback.</div>
+        <div style="margin-top:8px;"><span class="pill pill-teal">Choreography</span><span class="pill pill-teal">Orchestration</span><span class="pill pill-teal">Compensation</span></div>
+      </div>
+
+      <div class="card pattern-card amber">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="card-title" style="margin:0">API Gateway</div>
+          <span class="badge badge-intermediate">intermediate</span>
+        </div>
+        <div class="card-body">Single entry point for all clients. Handles cross-cutting concerns: auth, rate limiting, SSL termination, request routing, and response aggregation. Use <strong>Spring Cloud Gateway</strong> or Kong.</div>
+        <div style="margin-top:8px;"><span class="pill pill-amber">Spring Cloud Gateway</span><span class="pill pill-amber">Rate Limiting</span><span class="pill pill-amber">Auth Filter</span></div>
+      </div>
+
+      <div class="card pattern-card purple">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="card-title" style="margin:0">Service Discovery</div>
+          <span class="badge badge-intermediate">intermediate</span>
+        </div>
+        <div class="card-body">Services register themselves and discover each other dynamically. Eliminates hardcoded IPs. Client-side (Ribbon) or server-side (Nginx). Use <strong>Netflix Eureka</strong> or Consul.</div>
+        <div style="margin-top:8px;"><span class="pill pill-purple">Eureka</span><span class="pill pill-purple">Consul</span><span class="pill pill-purple">Load Balancing</span></div>
+      </div>
+
+      <div class="card pattern-card coral">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="card-title" style="margin:0">Outbox Pattern</div>
+          <span class="badge badge-advanced">advanced</span>
+        </div>
+        <div class="card-body">Guarantees at-least-once event publishing. Write to local DB and outbox table in one transaction. A relay process polls the outbox and publishes to the message broker atomically.</div>
+        <div style="margin-top:8px;"><span class="pill pill-red">Transactional</span><span class="pill pill-red">Debezium CDC</span><span class="pill pill-red">Reliability</span></div>
+      </div>
+
+      <div class="card" style="border-left:3px solid #7F77DD;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="card-title" style="margin:0">Strangler Fig</div>
+          <span class="badge badge-beginner">beginner</span>
+        </div>
+        <div class="card-body">Migrate from monolith to microservices incrementally. New features built as services. Traffic gradually shifted. Old monolith code retired as services mature. Low risk migration path.</div>
+        <div style="margin-top:8px;"><span class="pill pill-purple">Migration</span><span class="pill pill-purple">Incremental</span><span class="pill pill-purple">Traffic Routing</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODE LABS -->
+  <div class="section" id="sec-code">
+    <p class="section-title">Code Labs</p>
+    <p class="section-sub">Annotated Java examples for the most critical microservice patterns.</p>
+
+    <div id="lab-tabs" style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap;">
+      <button class="nav-btn active" onclick="showLab('lab1',this)">Spring Boot Service</button>
+      <button class="nav-btn" onclick="showLab('lab2',this)">OpenFeign Client</button>
+      <button class="nav-btn" onclick="showLab('lab3',this)">Circuit Breaker</button>
+      <button class="nav-btn" onclick="showLab('lab4',this)">Kafka Producer</button>
+      <button class="nav-btn" onclick="showLab('lab5',this)">JWT Security</button>
+    </div>
+
+    <div id="lab1" class="lab-content">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">Spring Boot Microservice — Order Service</div>
+        <div class="card-body">A minimal production-ready service with layered architecture, JPA, and REST endpoint.</div>
+      </div>
+      <div class="code-block"><span class="ann">@SpringBootApplication</span><br><span class="ann">@EnableDiscoveryClient</span><br><span class="kw">public class</span> <span class="type">OrderServiceApplication</span> {<br>  <span class="kw">public static void</span> main(<span class="type">String</span>[] args) {<br>    SpringApplication.run(<span class="type">OrderServiceApplication</span>.class, args);<br>  }<br>}<br><br><span class="ann">@RestController</span><br><span class="ann">@RequestMapping</span>(<span class="str">"/api/orders"</span>)<br><span class="kw">public class</span> <span class="type">OrderController</span> {<br>  <span class="ann">@Autowired</span> <span class="kw">private</span> <span class="type">OrderService</span> orderService;<br><br>  <span class="ann">@PostMapping</span><br>  <span class="kw">public</span> <span class="type">ResponseEntity</span>&lt;<span class="type">Order</span>&gt; createOrder(<span class="ann">@RequestBody</span> <span class="type">OrderRequest</span> req) {<br>    <span class="type">Order</span> order = orderService.createOrder(req);<br>    <span class="kw">return</span> ResponseEntity.status(<span class="type">HttpStatus</span>.CREATED).body(order);<br>  }<br><br>  <span class="ann">@GetMapping</span>(<span class="str">"/{id}"</span>)<br>  <span class="kw">public</span> <span class="type">ResponseEntity</span>&lt;<span class="type">Order</span>&gt; getOrder(<span class="ann">@PathVariable</span> <span class="type">Long</span> id) {<br>    <span class="kw">return</span> orderService.findById(id)<br>      .map(ResponseEntity::ok)<br>      .orElse(ResponseEntity.notFound().build());<br>  }<br>}</div>
+    </div>
+
+    <div id="lab2" class="lab-content" style="display:none;">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">Feign Client — Calling Inventory Service</div>
+        <div class="card-body">Declarative HTTP client with built-in load balancing via Spring Cloud LoadBalancer.</div>
+      </div>
+      <div class="code-block"><span class="ann">@FeignClient</span>(name = <span class="str">"inventory-service"</span>, fallback = <span class="type">InventoryFallback</span>.class)<br><span class="kw">public interface</span> <span class="type">InventoryClient</span> {<br><br>  <span class="ann">@GetMapping</span>(<span class="str">"/api/inventory/{productId}"</span>)<br>  <span class="type">InventoryResponse</span> checkStock(<span class="ann">@PathVariable</span> <span class="type">String</span> productId);<br><br>  <span class="ann">@PutMapping</span>(<span class="str">"/api/inventory/reserve"</span>)<br>  <span class="type">ReservationResponse</span> reserveItem(<span class="ann">@RequestBody</span> <span class="type">ReservationRequest</span> req);<br>}<br><br><span class="ann">@Component</span><br><span class="kw">class</span> <span class="type">InventoryFallback</span> <span class="kw">implements</span> <span class="type">InventoryClient</span> {<br>  <span class="ann">@Override</span><br>  <span class="kw">public</span> <span class="type">InventoryResponse</span> checkStock(<span class="type">String</span> productId) {<br>    <span class="cmt">// Return cached/default response on failure</span><br>    <span class="kw">return new</span> <span class="type">InventoryResponse</span>(productId, <span class="kw">false</span>, <span class="str">"Service unavailable"</span>);<br>  }<br>}</div>
+    </div>
+
+    <div id="lab3" class="lab-content" style="display:none;">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">Circuit Breaker with Resilience4j</div>
+        <div class="card-body">Wraps service calls with circuit breaker, retry, and time limiter. Configure thresholds in application.yml.</div>
+      </div>
+      <div class="code-block"><span class="ann">@Service</span><br><span class="kw">public class</span> <span class="type">PaymentService</span> {<br>  <span class="ann">@Autowired</span> <span class="kw">private</span> <span class="type">PaymentGatewayClient</span> gateway;<br><br>  <span class="ann">@CircuitBreaker</span>(name = <span class="str">"paymentGateway"</span>, fallbackMethod = <span class="str">"paymentFallback"</span>)<br>  <span class="ann">@Retry</span>(name = <span class="str">"paymentGateway"</span>)<br>  <span class="ann">@TimeLimiter</span>(name = <span class="str">"paymentGateway"</span>)<br>  <span class="kw">public</span> <span class="type">CompletableFuture</span>&lt;<span class="type">PaymentResult</span>&gt; processPayment(<span class="type">PaymentRequest</span> req) {<br>    <span class="kw">return</span> CompletableFuture.supplyAsync(() -&gt; gateway.charge(req));<br>  }<br><br>  <span class="kw">public</span> <span class="type">CompletableFuture</span>&lt;<span class="type">PaymentResult</span>&gt; paymentFallback(<br>      <span class="type">PaymentRequest</span> req, <span class="type">Throwable</span> ex) {<br>    log.warn(<span class="str">"Payment gateway down, queuing: {}"</span>, ex.getMessage());<br>    eventPublisher.publish(<span class="kw">new</span> <span class="type">PaymentDeferredEvent</span>(req));<br>    <span class="kw">return</span> CompletableFuture.completedFuture(<br>      <span class="type">PaymentResult</span>.deferred(req.getOrderId()));<br>  }<br>}</div>
+    </div>
+
+    <div id="lab4" class="lab-content" style="display:none;">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">Kafka Event Producer — Order Placed Event</div>
+        <div class="card-body">Publish domain events to Kafka. Include correlation ID for distributed tracing across services.</div>
+      </div>
+      <div class="code-block"><span class="ann">@Service</span><br><span class="kw">public class</span> <span class="type">OrderEventPublisher</span> {<br>  <span class="kw">private final</span> <span class="type">KafkaTemplate</span>&lt;<span class="type">String</span>, <span class="type">OrderEvent</span>&gt; kafkaTemplate;<br>  <span class="kw">private static final</span> <span class="type">String</span> TOPIC = <span class="str">"order.placed"</span>;<br><br>  <span class="kw">public void</span> publishOrderPlaced(<span class="type">Order</span> order) {<br>    <span class="type">OrderEvent</span> event = <span class="type">OrderEvent</span>.builder()<br>      .eventId(<span class="type">UUID</span>.randomUUID().toString())<br>      .orderId(order.getId())<br>      .userId(order.getUserId())<br>      .totalAmount(order.getTotal())<br>      .items(order.getItems())<br>      .occurredAt(<span class="type">Instant</span>.now())<br>      .build();<br><br>    <span class="type">Message</span>&lt;<span class="type">OrderEvent</span>&gt; msg = <span class="type">MessageBuilder</span><br>      .withPayload(event)<br>      .setHeader(<span class="type">KafkaHeaders</span>.TOPIC, TOPIC)<br>      .setHeader(<span class="type">KafkaHeaders</span>.KEY, order.getId().toString())<br>      .build();<br><br>    kafkaTemplate.send(msg);<br>    log.info(<span class="str">"Published OrderPlaced event: {}"</span>, event.getEventId());<br>  }<br>}</div>
+    </div>
+
+    <div id="lab5" class="lab-content" style="display:none;">
+      <div class="card" style="margin-bottom:8px;">
+        <div class="card-title">JWT Security in API Gateway</div>
+        <div class="card-body">Validate JWT tokens at the gateway. Downstream services receive pre-validated user context via headers.</div>
+      </div>
+      <div class="code-block"><span class="ann">@Component</span><br><span class="kw">public class</span> <span class="type">JwtAuthFilter</span> <span class="kw">extends</span> <span class="type">AbstractGatewayFilterFactory</span>&lt;<span class="type">JwtAuthFilter.Config</span>&gt; {<br><br>  <span class="ann">@Override</span><br>  <span class="kw">public</span> <span class="type">GatewayFilter</span> apply(<span class="type">Config</span> config) {<br>    <span class="kw">return</span> (exchange, chain) -&gt; {<br>      <span class="type">String</span> token = extractToken(exchange.getRequest());<br>      <span class="kw">if</span> (token == <span class="kw">null</span>) <span class="kw">return</span> unauthorized(exchange);<br><br>      <span class="kw">return</span> jwtValidator.validate(token)<br>        .flatMap(claims -&gt; {<br>          <span class="type">ServerHttpRequest</span> req = exchange.getRequest().mutate()<br>            .header(<span class="str">"X-User-Id"</span>, claims.getSubject())<br>            .header(<span class="str">"X-User-Roles"</span>, claims.get(<span class="str">"roles"</span>))<br>            .build();<br>          <span class="kw">return</span> chain.filter(exchange.mutate().request(req).build());<br>        })<br>        .onErrorResume(e -&gt; unauthorized(exchange));<br>    };<br>  }<br>}</div>
+    </div>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="section" id="sec-tools">
+    <p class="section-title">Tools & Stack</p>
+    <p class="section-sub">The modern Java microservice technology landscape — pick what fits your context.</p>
+
+    <h3 class="subsec">Frameworks</h3>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title"><span class="pill pill-blue" style="margin-right:4px;">★ popular</span>Spring Boot</div>
+        <div class="card-body">De facto standard. Rich ecosystem, auto-configuration, production-ready actuators. Pairs with Spring Cloud for full microservice stack.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quarkus</div>
+        <div class="card-body">Kubernetes-native. Sub-millisecond startup, low memory. Compiled to native with GraalVM. Great for serverless and sidecar patterns.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Micronaut</div>
+        <div class="card-body">Compile-time DI — no reflection overhead. Fast startup, low memory. Built for cloud-native from the ground up.</div>
+      </div>
+    </div>
+
+    <h3 class="subsec">Infrastructure</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-brand-docker" aria-hidden="true" style="color:#378ADD;margin-right:6px"></i>Docker & Kubernetes</div>
+        <div class="card-body">Containerize each service with a multi-stage Dockerfile. Deploy on K8s with Deployment, Service, and ConfigMap manifests. Use Helm for templating.</div>
+        <div style="margin-top:8px;"><span class="pill pill-blue">Dockerfile</span><span class="pill pill-blue">Helm</span><span class="pill pill-blue">K8s Secrets</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-activity" aria-hidden="true" style="color:#1D9E75;margin-right:6px"></i>Observability Stack</div>
+        <div class="card-body">Metrics: Micrometer → Prometheus → Grafana. Tracing: Micrometer Tracing → Zipkin or Jaeger. Logs: Logback + ELK Stack.</div>
+        <div style="margin-top:8px;"><span class="pill pill-teal">Prometheus</span><span class="pill pill-teal">Grafana</span><span class="pill pill-teal">Jaeger</span><span class="pill pill-teal">ELK</span></div>
+      </div>
+    </div>
+
+    <h3 class="subsec">Spring Cloud components</h3>
+    <div class="grid-3">
+      <div class="card"><div class="card-title">Spring Cloud Gateway</div><div class="card-body">API gateway with reactive routing, filter chains, rate limiting.</div></div>
+      <div class="card"><div class="card-title">Spring Cloud Config</div><div class="card-body">Centralized config server backed by Git. Supports refresh without restart.</div></div>
+      <div class="card"><div class="card-title">Netflix Eureka</div><div class="card-body">Service registry and client-side discovery. Health-check integration.</div></div>
+      <div class="card"><div class="card-title">OpenFeign</div><div class="card-body">Declarative REST client. Integrates with Ribbon and circuit breakers.</div></div>
+      <div class="card"><div class="card-title">Resilience4j</div><div class="card-body">Circuit breaker, retry, bulkhead, rate limiter, time limiter.</div></div>
+      <div class="card"><div class="card-title">Spring Cloud Sleuth</div><div class="card-body">Auto-instruments trace IDs across async boundaries and Kafka consumers.</div></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section" id="sec-quiz">
+    <p class="section-title">Knowledge Check</p>
+    <p class="section-sub">Test your understanding. Select the best answer for each question.</p>
+    <div id="quiz-container"></div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="section" id="sec-roadmap">
+    <p class="section-title">Learning Roadmap</p>
+    <p class="section-sub">A structured path from Java developer to microservice architect.</p>
+
+    <div>
+      <div class="roadmap-step">
+        <div class="step-num done"><i class="ti ti-check" style="font-size:14px" aria-hidden="true"></i></div>
+        <div class="step-content">
+          <div class="step-title">Java & OOP Foundations <span class="badge badge-beginner" style="margin-left:6px">beginner</span></div>
+          <div class="step-desc">Strong Java 17+ knowledge, SOLID principles, design patterns, Maven/Gradle.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num active">2</div>
+        <div class="step-content">
+          <div class="step-title">Spring Boot Fundamentals <span class="badge badge-beginner" style="margin-left:6px">beginner</span></div>
+          <div class="step-desc">REST APIs, JPA, Spring Security basics, testing with JUnit 5 + Mockito.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Microservice Concepts <span class="badge badge-intermediate" style="margin-left:6px">intermediate</span></div>
+          <div class="step-desc">Service decomposition, bounded contexts, DDD, API design, inter-service communication.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Spring Cloud & Infrastructure <span class="badge badge-intermediate" style="margin-left:6px">intermediate</span></div>
+          <div class="step-desc">Eureka, Config Server, API Gateway, OpenFeign, Resilience4j, Kafka integration.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Containers & Kubernetes <span class="badge badge-intermediate" style="margin-left:6px">intermediate</span></div>
+          <div class="step-desc">Docker, Kubernetes basics, Helm charts, ConfigMaps, Secrets, health probes.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">Observability & Reliability <span class="badge badge-advanced" style="margin-left:6px">advanced</span></div>
+          <div class="step-desc">Distributed tracing, metrics, dashboards, alerting, chaos engineering basics.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num">7</div>
+        <div class="step-content">
+          <div class="step-title">Advanced Patterns <span class="badge badge-advanced" style="margin-left:6px">advanced</span></div>
+          <div class="step-desc">Saga, Outbox, CQRS, Event Sourcing, service mesh (Istio), multi-tenancy.</div>
+        </div>
+      </div>
+      <div class="roadmap-step">
+        <div class="step-num">8</div>
+        <div class="step-content">
+          <div class="step-title">Architecture & Leadership <span class="badge badge-advanced" style="margin-left:6px">advanced</span></div>
+          <div class="step-desc">Architecture decision records, RFC process, team topology, cost optimization, capacity planning.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="nav-btn" onclick="sendPrompt('Give me a week-by-week study plan for Java microservice architecture')">Week-by-week study plan ↗</button>
+      <button class="nav-btn" onclick="sendPrompt('What are the best books and resources for Java microservice architecture?')">Recommended books ↗</button>
+      <button class="nav-btn" onclick="sendPrompt('Give me a hands-on project idea to practice Java microservices')">Project ideas ↗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "Which pattern prevents cascade failures when a downstream service is slow or unavailable?", opts: ["Saga Pattern","Circuit Breaker","Strangler Fig","Outbox Pattern"], answer: 1 },
+  { q: "In a database-per-service pattern, what is the correct way to fetch data that spans multiple services?", opts: ["Direct DB joins across service databases","API Composition or CQRS read model","Shared schema with access controls","GraphQL federation only"], answer: 1 },
+  { q: "What is the primary purpose of the Outbox Pattern?", opts: ["Improve read performance","Guarantee at-least-once event publishing atomically with DB writes","Replace message brokers","Implement distributed locking"], answer: 1 },
+  { q: "Which Spring Cloud component handles centralized routing, auth filters, and rate limiting?", opts: ["Netflix Eureka","Spring Cloud Config","Spring Cloud Gateway","Resilience4j"], answer: 2 },
+  { q: "In the Saga pattern, what is a compensating transaction used for?", opts: ["Speeding up the happy path","Rolling back completed steps when a later step fails","Caching intermediate results","Notifying the API gateway"], answer: 1 },
+  { q: "Which Resilience4j annotation wraps a method to stop calling a service after too many failures?", opts: ["@Retry","@Bulkhead","@TimeLimiter","@CircuitBreaker"], answer: 3 },
+  { q: "What does CQRS stand for and what problem does it solve?", opts: ["Command Queue Request System — async messaging","Command Query Responsibility Segregation — scales reads and writes independently","Central Queue Routing Service — load balancing","Consistent Queue Replication System — HA"], answer: 1 },
+];
+
+let current = 0, answered = false;
+
+function renderQuiz() {
+  const c = document.getElementById('quiz-container');
+  if (current >= questions.length) {
+    c.innerHTML = `<div class="card" style="text-align:center;padding:2rem;"><div style="font-size:32px;margin-bottom:12px">🎉</div><div class="card-title">Quiz complete!</div><div class="card-body" style="margin:8px 0">You've reviewed all ${questions.length} questions.</div><button class="nav-btn" onclick="current=0;answered=false;renderQuiz()">Restart quiz</button></div>`;
+    return;
+  }
+  const q = questions[current];
+  c.innerHTML = `
+    <div class="card" style="margin-bottom:1rem;">
+      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px;">Question ${current+1} of ${questions.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" id="opt${i}" onclick="selectOpt(${i})">${o}</button>`).join('')}</div>
+    </div>
+    <div class="quiz-nav">
+      <button class="nav-btn" onclick="nextQ()" id="next-btn" style="display:none">Next →</button>
+      <span class="quiz-progress">${current+1} / ${questions.length}</span>
+    </div>`;
+  answered = false;
+}
+
+function selectOpt(i) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  q.opts.forEach((_,j) => {
+    const b = document.getElementById('opt'+j);
+    b.classList.add(j === q.answer ? 'correct' : (j === i && i !== q.answer ? 'wrong' : ''));
+  });
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function nextQ() { current++; renderQuiz(); }
+
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'quiz') renderQuiz();
+}
+
+function showLab(id, btn) {
+  document.querySelectorAll('.lab-content').forEach(l => l.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('#lab-tabs .nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+renderQuiz();
+</script>

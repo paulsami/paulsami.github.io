@@ -1,0 +1,381 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+.hero{background:linear-gradient(135deg,#0f172a,#1e293b,#0f172a);border-radius:var(--border-radius-lg);padding:18px 22px;margin-bottom:1.5rem;border:0.5px solid #334155}
+.hero-title{font-family:var(--font-mono);font-size:.95rem;font-weight:700;color:#f8fafc;margin-bottom:4px}
+.hero-sub{font-size:.74rem;color:#94a3b8;line-height:1.55}
+/* syntax comparison */
+.syn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.syn-card{border-radius:var(--border-radius-lg);overflow:hidden;border:1.5px solid}
+.s-a{border-color:rgba(99,102,241,.5)}
+.s-b{border-color:rgba(16,185,129,.5)}
+.syn-hd{padding:8px 14px;font-family:var(--font-mono);font-size:.65rem;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid rgba(255,255,255,.08)}
+.sa-hd{background:rgba(99,102,241,.15);color:#a5b4fc}
+.sb-hd{background:rgba(16,185,129,.15);color:#6ee7b7}
+.syn-pill{font-family:var(--font-mono);font-size:.58rem;padding:2px 8px;border-radius:10px;margin-left:auto}
+.spa{background:rgba(99,102,241,.2);color:#c7d2fe}.spb{background:rgba(16,185,129,.2);color:#a7f3d0}
+.syn-body{padding:14px;background:#0d1117;font-family:var(--font-mono);font-size:.78rem;line-height:2;color:#e6edf3}
+.kw{color:#ff7b72}.tp{color:#79c0ff}.nm{color:#d2a8ff}.br{color:#e6edf3;opacity:.5}.hl-a{background:rgba(99,102,241,.2);border-radius:3px;padding:1px 3px}.hl-b{background:rgba(16,185,129,.2);border-radius:3px;padding:1px 3px}
+/* annotation */
+.ann-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.ann-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px}
+.ann-title{font-family:var(--font-mono);font-size:.68rem;font-weight:600;margin-bottom:10px;padding-bottom:6px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.a-purple{color:#a78bfa}.a-green{color:#34d399}
+.ann-item{display:flex;gap:10px;margin-bottom:10px;font-size:.74rem;line-height:1.55}
+.ann-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;font-weight:700;margin-top:1px}
+.ai-p{background:rgba(99,102,241,.15);color:#a78bfa}.ai-g{background:rgba(16,185,129,.15);color:#34d399}
+.ann-label{font-family:var(--font-mono);font-size:.62rem;font-weight:600;margin-bottom:2px}
+.ann-desc{color:var(--color-text-secondary)}
+/* memory diagram */
+.mem-section{margin-bottom:1.25rem}
+.sec-title{font-family:var(--font-mono);font-size:.7rem;font-weight:600;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sec-line{flex:1;height:0.5px;background:var(--color-border-tertiary)}
+.mem-visual{background:#0d1117;border-radius:var(--border-radius-lg);padding:16px;border:0.5px solid #21262d;overflow-x:auto}
+.mem-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.mem-label{font-family:var(--font-mono);font-size:.65rem;color:#8b949e;width:130px;flex-shrink:0;padding-top:6px}
+.mem-cells{display:flex;gap:3px;flex-wrap:wrap}
+.mcell{display:flex;flex-direction:column;align-items:center}
+.mbox{font-family:var(--font-mono);font-size:.68rem;font-weight:600;width:72px;height:38px;border-radius:5px;display:flex;align-items:center;justify-content:center;border:1px solid;transition:all .2s}
+.mb-argc{background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.4);color:#fbbf24}
+.mb-ptr{background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.4);color:#a5b4fc}
+.mb-str{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.4);color:#6ee7b7}
+.mb-null{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#f87171}
+.mbox-label{font-family:var(--font-mono);font-size:.52rem;color:#484f58;margin-top:3px;text-align:center}
+.mem-arrow{display:flex;align-items:center;padding:0 2px;color:#484f58;font-size:.9rem;padding-top:6px}
+/* equiv table */
+.table-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1.25rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.74rem}
+.tbl th{background:var(--color-background-primary);color:var(--color-text-secondary);font-family:var(--font-mono);font-size:.63rem;padding:9px 14px;border:0.5px solid var(--color-border-tertiary);text-align:left;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.tbl td{padding:9px 14px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);background:var(--color-background-secondary);vertical-align:top;line-height:1.55}
+.tbl tr:hover td{background:var(--color-background-primary)}
+.tbl td code{font-family:var(--font-mono);font-size:.68rem;color:#a78bfa;background:rgba(99,102,241,.08);padding:1px 5px;border-radius:3px}
+.tag-same{background:#d1fae5;color:#065f46;border:0.5px solid #6ee7b7;font-family:var(--font-mono);font-size:.6rem;padding:2px 7px;border-radius:10px}
+.tag-diff{background:#fef3c7;color:#92400e;border:0.5px solid #fcd34d;font-family:var(--font-mono);font-size:.6rem;padding:2px 7px;border-radius:10px}
+/* stepper */
+.stepper{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;margin-bottom:1.25rem}
+.sctl{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}
+.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:10px}
+.pfill{height:100%;background:#6366f1;border-radius:2px;transition:width .2s}
+.smsg{font-family:var(--font-mono);font-size:.7rem;padding:8px 12px;border-radius:var(--border-radius-md);border-left:3px solid;line-height:1.6;min-height:22px}
+.sm-v{border-left-color:#6366f1;background:rgba(99,102,241,.06);color:#4338ca}
+.sm-g{border-left-color:#10b981;background:rgba(16,185,129,.06);color:#065f46}
+.sm-a{border-left-color:#f59e0b;background:rgba(245,158,11,.06);color:#92400e}
+.sm-r{border-left-color:#ef4444;background:rgba(239,68,68,.06);color:#991b1b}
+/* verdict */
+.verdict{background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(16,185,129,.06));border:0.5px solid rgba(99,102,241,.25);border-radius:var(--border-radius-lg);padding:16px 18px}
+.verdict-title{font-family:var(--font-mono);font-size:.78rem;font-weight:700;color:var(--color-text-primary);margin-bottom:10px}
+.verdict-row{display:flex;gap:10px;margin-bottom:8px;font-size:.76rem;line-height:1.55}
+.v-icon{flex-shrink:0;width:18px;font-size:.8rem}
+.note{border-left:2.5px solid #6366f1;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:8px 12px;font-size:.75rem;color:var(--color-text-secondary);line-height:1.6;margin-bottom:1rem}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.badge{font-family:var(--font-mono);font-size:.6rem;padding:3px 9px;border-radius:var(--border-radius-md)}
+.b-g{background:#d1fae5;color:#064e3b;border:0.5px solid #6ee7b7}
+.b-v{background:#f5f3ff;color:#4c1d95;border:0.5px solid #c4b5fd}
+.b-a{background:#fffbeb;color:#78350f;border:0.5px solid #fcd34d}
+@media(max-width:520px){.syn-row,.ann-grid{grid-template-columns:1fr}}
+</style>
+
+<div class="root">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-title">main() Parameter Comparison</div>
+  <div class="hero-sub"><code style="color:#a5b4fc">char *argv[]</code> &nbsp;vs&nbsp; <code style="color:#6ee7b7">char **argv</code> — two ways to write the same thing in C</div>
+</div>
+
+<!-- SYNTAX SIDE BY SIDE -->
+<div class="syn-row">
+  <div class="syn-card s-a">
+    <div class="syn-hd sa-hd">
+      <span>Form A — Array notation</span>
+      <span class="syn-pill spa">classic</span>
+    </div>
+    <div class="syn-body">
+<span class="kw">int</span> <span class="nm">main</span><span class="br">(</span><span class="kw">int</span> <span class="nm">argc</span>,
+       <span class="kw">char</span> <span class="hl-a">*argv[]</span><span class="br">) {</span>
+  <span style="color:#484f58">// argv is an array of</span>
+  <span style="color:#484f58">// char pointers</span>
+<span class="br">}</span>
+    </div>
+  </div>
+  <div class="syn-card s-b">
+    <div class="syn-hd sb-hd">
+      <span>Form B — Pointer notation</span>
+      <span class="syn-pill spb">equivalent</span>
+    </div>
+    <div class="syn-body">
+<span class="kw">int</span> <span class="nm">main</span><span class="br">(</span><span class="kw">int</span> <span class="nm">argc</span>,
+       <span class="kw">char</span> <span class="hl-b">**argv</span><span class="br">) {</span>
+  <span style="color:#484f58">// argv is a pointer to</span>
+  <span style="color:#484f58">// a char pointer</span>
+<span class="br">}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ANNOTATIONS -->
+<div class="ann-grid">
+  <div class="ann-card">
+    <div class="ann-title a-purple">Form A — char *argv[] explained</div>
+    <div class="ann-item">
+      <div class="ann-icon ai-p">1</div>
+      <div><div class="ann-label">argv</div><div class="ann-desc">Name of the parameter. Holds the command-line arguments.</div></div>
+    </div>
+    <div class="ann-item">
+      <div class="ann-icon ai-p">2</div>
+      <div><div class="ann-label">[] — array of</div><div class="ann-desc">Declares argv as an array. The size is unspecified — determined at runtime by argc.</div></div>
+    </div>
+    <div class="ann-item">
+      <div class="ann-icon ai-p">3</div>
+      <div><div class="ann-label">char *</div><div class="ann-desc">Each element of the array is a pointer to a char (i.e., a C string). So argv is an array of strings.</div></div>
+    </div>
+    <div class="ann-item">
+      <div class="ann-icon ai-p">✦</div>
+      <div><div class="ann-label">Reading style</div><div class="ann-desc">Right-to-left: "argv is an array [] of pointers * to char". Most textbooks use this form.</div></div>
+    </div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-title a-green">Form B — char **argv explained</div>
+    <div class="ann-item">
+      <div class="ann-icon ai-g">1</div>
+      <div><div class="ann-label">argv</div><div class="ann-desc">Same name — holds the same command-line arguments as Form A.</div></div>
+    </div>
+    <div class="ann-item">
+      <div class="ann-icon ai-g">2</div>
+      <div><div class="ann-label">** — pointer to pointer</div><div class="ann-desc">argv is a pointer to a char*. The first * makes it a pointer; the second * means it points to another pointer.</div></div>
+    </div>
+    <div class="ann-item">
+      <div class="ann-icon ai-g">3</div>
+      <div><div class="ann-label">char</div><div class="ann-desc">The ultimate target type is char. So: argv → pointer → char* → char string.</div></div>
+    </div>
+    <div class="ann-item">
+      <div class="ann-icon ai-g">✦</div>
+      <div><div class="ann-label">Reading style</div><div class="ann-desc">Right-to-left: "argv is a pointer * to a pointer * to char". Common in systems/OS programming.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MEMORY DIAGRAM -->
+<div class="mem-section">
+  <div class="sec-title">Memory Layout <div class="sec-line"></div></div>
+  <div class="mem-visual">
+    <div class="mem-row">
+      <div class="mem-label" style="color:#8b949e">argc<br><span style="font-size:.55rem;color:#484f58">int (4 bytes)</span></div>
+      <div class="mem-cells">
+        <div class="mcell"><div class="mbox mb-argc">3</div><div class="mbox-label">argc<br>0x100</div></div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:.65rem;color:#8b949e;padding-top:6px;margin-left:10px">e.g. ./prog hello world → argc = 3</div>
+    </div>
+    <div class="mem-row">
+      <div class="mem-label" style="color:#a5b4fc">argv (Form A)<br><code style="font-size:.55rem;color:#7c3aed">char *argv[]</code></div>
+      <div class="mem-cells">
+        <div class="mcell"><div class="mbox mb-ptr">0x200</div><div class="mbox-label">argv[0]<br>./prog</div></div>
+        <div class="mem-arrow">→</div>
+        <div class="mcell"><div class="mbox mb-str">"./prog"</div><div class="mbox-label">string<br>0x200</div></div>
+      </div>
+    </div>
+    <div class="mem-row">
+      <div class="mem-label" style="color:#a5b4fc"></div>
+      <div class="mem-cells">
+        <div class="mcell"><div class="mbox mb-ptr">0x210</div><div class="mbox-label">argv[1]<br>hello</div></div>
+        <div class="mem-arrow">→</div>
+        <div class="mcell"><div class="mbox mb-str">"hello"</div><div class="mbox-label">string<br>0x210</div></div>
+      </div>
+    </div>
+    <div class="mem-row">
+      <div class="mem-label" style="color:#a5b4fc"></div>
+      <div class="mem-cells">
+        <div class="mcell"><div class="mbox mb-ptr">0x220</div><div class="mbox-label">argv[2]<br>world</div></div>
+        <div class="mem-arrow">→</div>
+        <div class="mcell"><div class="mbox mb-str">"world"</div><div class="mbox-label">string<br>0x220</div></div>
+      </div>
+    </div>
+    <div class="mem-row">
+      <div class="mem-label" style="color:#a5b4fc"></div>
+      <div class="mem-cells">
+        <div class="mcell"><div class="mbox mb-null">NULL</div><div class="mbox-label">argv[3]<br>sentinel</div></div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:.65rem;color:#484f58;padding-top:6px;margin-left:10px">argv[argc] is always NULL — C standard guarantee</div>
+    </div>
+    <div class="mem-row" style="margin-top:10px;padding-top:10px;border-top:0.5px solid #21262d">
+      <div class="mem-label" style="color:#6ee7b7">argv (Form B)<br><code style="font-size:.55rem;color:#059669">char **argv</code></div>
+      <div class="mem-cells">
+        <div class="mcell"><div class="mbox mb-ptr" style="border-color:rgba(16,185,129,.5);color:#6ee7b7">0x300</div><div class="mbox-label">argv ptr<br>0x108</div></div>
+        <div class="mem-arrow">→</div>
+        <div class="mcell"><div class="mbox mb-ptr">0x200</div><div class="mbox-label">argv[0]<br>./prog</div></div>
+        <div class="mem-arrow">→</div>
+        <div class="mcell"><div class="mbox mb-str">"./prog"</div><div class="mbox-label">string<br>0x200</div></div>
+      </div>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:.62rem;color:#484f58;margin-top:8px">Both forms point to the SAME memory layout at runtime — the notation only differs in source code</div>
+  </div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<div class="sec-title">Side-by-Side Comparison <div class="sec-line"></div></div>
+<div class="table-card">
+  <table class="tbl">
+    <tr><th>Aspect</th><th>char *argv[]</th><th>char **argv</th><th>Same?</th></tr>
+    <tr>
+      <td><strong>What argv is</strong></td>
+      <td>Array of <code>char*</code> pointers</td>
+      <td>Pointer to a <code>char*</code> pointer</td>
+      <td><span class="tag-same">✓ Same</span></td>
+    </tr>
+    <tr>
+      <td><strong>Runtime behaviour</strong></td>
+      <td colspan="2" style="text-align:center;color:var(--color-text-secondary)">Identical — compiler generates the same machine code</td>
+      <td><span class="tag-same">✓ Same</span></td>
+    </tr>
+    <tr>
+      <td><strong>Access argv[i]</strong></td>
+      <td><code>argv[0]</code> → program name</td>
+      <td><code>argv[0]</code> → program name</td>
+      <td><span class="tag-same">✓ Same</span></td>
+    </tr>
+    <tr>
+      <td><strong>Pointer arithmetic</strong></td>
+      <td><code>*(argv+1)</code> works</td>
+      <td><code>*(argv+1)</code> works</td>
+      <td><span class="tag-same">✓ Same</span></td>
+    </tr>
+    <tr>
+      <td><strong>C standard</strong></td>
+      <td>Explicitly listed in C11 §5.1.2.2.1</td>
+      <td>Equivalent form, also valid per standard</td>
+      <td><span class="tag-same">✓ Same</span></td>
+    </tr>
+    <tr>
+      <td><strong>Readability</strong></td>
+      <td>Clearer — shows it is an array of strings</td>
+      <td>Shows the pointer-to-pointer nature explicitly</td>
+      <td><span class="tag-diff">Style only</span></td>
+    </tr>
+    <tr>
+      <td><strong>Can use argv++?</strong></td>
+      <td style="color:#ef4444">⚠ No — array name in parameter can't be incremented</td>
+      <td style="color:#10b981">✓ Yes — pointer can be incremented: argv++</td>
+      <td><span class="tag-diff">Differs!</span></td>
+    </tr>
+    <tr>
+      <td><strong>Common in</strong></td>
+      <td>Textbooks, teaching, beginner code</td>
+      <td>Systems programming, OS code, advanced usage</td>
+      <td><span class="tag-diff">Style only</span></td>
+    </tr>
+    <tr>
+      <td><strong>sizeof(argv)</strong></td>
+      <td colspan="2" style="text-align:center">Both give size of a pointer (8 bytes on 64-bit) — NOT array size</td>
+      <td><span class="tag-same">✓ Same</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- STEPPER -->
+<div class="stepper">
+  <div class="sec-title" style="margin-bottom:10px">Step Through — How argv Works <div class="sec-line"></div></div>
+  <div class="sctl">
+    <button class="btn pr" onclick="doStep()">Next step ›</button>
+    <button class="btn" onclick="doReset()">↺ Reset</button>
+    <span style="font-family:var(--font-mono);font-size:.66rem;color:var(--color-text-secondary)" id="st-cnt">step 0</span>
+  </div>
+  <div class="pbar"><div class="pfill" id="st-bar" style="width:0%"></div></div>
+  <div class="smsg sm-v" id="st-msg">Press Next step to trace how argv is accessed.</div>
+  <div style="margin-top:10px;background:#0d1117;border-radius:var(--border-radius-md);padding:12px;border:0.5px solid #21262d">
+    <div style="font-family:var(--font-mono);font-size:.7rem;line-height:2;color:#e6edf3" id="st-code"></div>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap" id="st-vars"></div>
+</div>
+
+<!-- VERDICT -->
+<div class="verdict">
+  <div class="verdict-title">⚖️ Verdict — Which should you use?</div>
+  <div class="verdict-row"><span class="v-icon">🟣</span><div><strong>char *argv[]</strong> — use this in exams and teaching. It is self-documenting: you can immediately see "array of string pointers". Preferred by most C textbooks and university syllabi.</div></div>
+  <div class="verdict-row"><span class="v-icon">🟢</span><div><strong>char **argv</strong> — use this when you need to do pointer arithmetic like <code>argv++</code> inside the function, or when emphasising the pointer-to-pointer relationship. Common in Unix/Linux systems code.</div></div>
+  <div class="verdict-row"><span class="v-icon">✅</span><div><strong>Both are 100% correct</strong> and compile to identical machine code. The C standard explicitly permits both. The choice is purely a matter of style and intent.</div></div>
+</div>
+
+<div class="badges" style="margin-top:12px">
+  <span class="badge b-g">identical at runtime</span>
+  <span class="badge b-v">char *argv[] → clearer for beginners</span>
+  <span class="badge b-a">char **argv → enables argv++ increment</span>
+  <span class="badge b-g">argv[argc] == NULL always</span>
+</div>
+
+</div>
+
+<script>
+const steps = [
+  {msg:'Program is run as:  ./prog hello world',mc:'sm-v',
+   code:`<span style="color:#8b949e">// Command line:</span>
+<span style="color:#f0f6fc">./prog hello world</span>`,
+   vars:[{l:'argc',v:'3',c:'#fbbf24'},{l:'argv[0]',v:'"./prog"',c:'#a5b4fc'},{l:'argv[1]',v:'"hello"',c:'#6ee7b7'},{l:'argv[2]',v:'"world"',c:'#6ee7b7'},{l:'argv[3]',v:'NULL',c:'#f87171'}]},
+  {msg:'argc = 3 — always includes program name itself',mc:'sm-a',
+   code:`<span style="color:#ff7b72">int</span> argc = <span style="color:#79c0ff">3</span>;  <span style="color:#8b949e">// "./prog", "hello", "world"</span>`,
+   vars:[{l:'argc',v:'3',c:'#fbbf24'}]},
+  {msg:'argv[0] — always the program name/path',mc:'sm-v',
+   code:`<span style="color:#8b949e">// Both forms work identically:</span>
+<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, argv[<span style="color:#79c0ff">0</span>]);   <span style="color:#8b949e">// "./prog"</span>
+<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, *argv);      <span style="color:#8b949e">// same!</span>`,
+   vars:[{l:'argv[0]',v:'"./prog"',c:'#a5b4fc'},{l:'*argv',v:'"./prog"',c:'#a5b4fc'}]},
+  {msg:'argv[1] — first real argument',mc:'sm-g',
+   code:`<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, argv[<span style="color:#79c0ff">1</span>]);    <span style="color:#8b949e">// "hello"</span>
+<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, *(argv+<span style="color:#79c0ff">1</span>));  <span style="color:#8b949e">// same!</span>`,
+   vars:[{l:'argv[1]',v:'"hello"',c:'#6ee7b7'}]},
+  {msg:'argv[2] — second real argument',mc:'sm-g',
+   code:`<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, argv[<span style="color:#79c0ff">2</span>]);    <span style="color:#8b949e">// "world"</span>`,
+   vars:[{l:'argv[2]',v:'"world"',c:'#6ee7b7'}]},
+  {msg:'argv++ only works with char **argv (pointer), not char *argv[] (array parameter)',mc:'sm-a',
+   code:`<span style="color:#8b949e">// char **argv  → CAN do:</span>
+<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, *argv);  argv++;
+<span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s"</span>, *argv);  <span style="color:#8b949e">// now "hello"</span>
+
+<span style="color:#8b949e">// char *argv[] → CANNOT do:</span>
+<span style="color:#ff7b72">// argv++;  ← compile error!</span>`,
+   vars:[{l:'char **argv',v:'✓ argv++',c:'#6ee7b7'},{l:'char *argv[]',v:'✗ argv++',c:'#f87171'}]},
+  {msg:'argv[argc] is always NULL — the C standard guarantees this sentinel',mc:'sm-r',
+   code:`<span style="color:#8b949e">// C standard §5.1.2.2.1:</span>
+<span style="color:#d2a8ff">assert</span>(argv[argc] == <span style="color:#79c0ff">NULL</span>);  <span style="color:#8b949e">// always true</span>
+
+<span style="color:#8b949e">// Useful for pointer-style loop:</span>
+<span style="color:#ff7b72">for</span> (<span style="color:#ff7b72">char</span> **p = argv; *p != <span style="color:#79c0ff">NULL</span>; p++)
+    <span style="color:#d2a8ff">printf</span>(<span style="color:#a5d6ff">"%s\\n"</span>, *p);`,
+   vars:[{l:'argv[argc]',v:'NULL',c:'#f87171'},{l:'guarantee',v:'C standard',c:'#fbbf24'}]},
+  {msg:'Both compile to identical machine code — completely interchangeable at runtime!',mc:'sm-g',
+   code:`<span style="color:#8b949e">// These two declarations are IDENTICAL to the compiler:</span>
+<span style="color:#ff7b72">int</span> <span style="color:#d2a8ff">main</span>(<span style="color:#ff7b72">int</span> argc, <span style="color:#ff7b72">char</span> *argv[])  { }
+<span style="color:#ff7b72">int</span> <span style="color:#d2a8ff">main</span>(<span style="color:#ff7b72">int</span> argc, <span style="color:#ff7b72">char</span> **argv)   { }
+<span style="color:#8b949e">// ↑ Both valid per C11 §5.1.2.2.1</span>`,
+   vars:[{l:'runtime',v:'identical',c:'#6ee7b7'},{l:'machine code',v:'same',c:'#6ee7b7'}]},
+];
+
+let idx=0;
+function doStep(){
+  if(idx>=steps.length)return;
+  const s=steps[idx];
+  const msg=document.getElementById('st-msg');
+  msg.className='smsg '+s.mc;msg.textContent=s.msg;
+  document.getElementById('st-code').innerHTML=s.code;
+  const vars=document.getElementById('st-vars');
+  vars.innerHTML=s.vars.map(v=>`<div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 10px">
+    <div style="font-family:var(--font-mono);font-size:.55rem;color:var(--color-text-secondary);text-transform:uppercase;margin-bottom:2px">${v.l}</div>
+    <div style="font-family:var(--font-mono);font-size:.78rem;font-weight:600;color:${v.c}">${v.v}</div>
+  </div>`).join('');
+  idx++;
+  document.getElementById('st-cnt').textContent='step '+idx+' / '+steps.length;
+  document.getElementById('st-bar').style.width=(idx/steps.length*100)+'%';
+}
+function doReset(){
+  idx=0;
+  document.getElementById('st-msg').className='smsg sm-v';
+  document.getElementById('st-msg').textContent='Press Next step to trace how argv is accessed.';
+  document.getElementById('st-code').innerHTML='';
+  document.getElementById('st-vars').innerHTML='';
+  document.getElementById('st-cnt').textContent='step 0';
+  document.getElementById('st-bar').style.width='0%';
+}
+</script>

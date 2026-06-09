@@ -1,0 +1,375 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+/* header */
+.hero{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#4338ca 100%);border-radius:var(--border-radius-lg);padding:20px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:.5}
+.hero-content{position:relative;z-index:1}
+.hero-title{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px}
+.hero-sub{font-size:.76rem;color:#a5b4fc;margin-bottom:14px;line-height:1.5}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap}
+.hpill{font-family:var(--font-mono);font-size:.62rem;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.12);color:#e0e7ff;border:0.5px solid rgba(255,255,255,.2)}
+/* progress */
+.progress-section{margin-bottom:1.5rem}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.prog-title{font-family:var(--font-mono);font-size:.72rem;font-weight:500;color:var(--color-text-primary)}
+.prog-stats{display:flex;gap:10px}
+.pstat{font-family:var(--font-mono);font-size:.65rem;padding:3px 10px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.module-bars{display:flex;flex-direction:column;gap:8px}
+.mbar-row{display:flex;align-items:center;gap:10px}
+.mbar-label{font-family:var(--font-mono);font-size:.63rem;color:var(--color-text-secondary);width:90px;flex-shrink:0}
+.mbar-track{flex:1;height:8px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden;cursor:pointer}
+.mbar-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.m1f{background:linear-gradient(90deg,#6366f1,#8b5cf6)}
+.m2f{background:linear-gradient(90deg,#0ea5e9,#06b6d4)}
+.m3f{background:linear-gradient(90deg,#10b981,#059669)}
+.m4f{background:linear-gradient(90deg,#f59e0b,#d97706)}
+.m5f{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.mbar-pct{font-family:var(--font-mono);font-size:.62rem;color:var(--color-text-secondary);width:32px;text-align:right}
+/* module cards */
+.modules-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem}
+.mod-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;cursor:pointer;transition:all .2s}
+.mod-card:hover{border-color:var(--color-border-primary);transform:translateY(-1px)}
+.mod-card.active-mod{border-color:currentColor}
+.mc-top{padding:12px 14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.mc-num{font-family:var(--font-mono);font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.mc-title{font-family:var(--font-mono);font-size:.76rem;font-weight:600;color:var(--color-text-primary);margin-bottom:6px}
+.mc-tags{display:flex;flex-wrap:wrap;gap:4px}
+.mtag{font-family:var(--font-mono);font-size:.58rem;padding:2px 7px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.mc-bot{padding:8px 14px;display:flex;justify-content:space-between;align-items:center}
+.mc-topics-count{font-family:var(--font-mono);font-size:.63rem;color:var(--color-text-secondary)}
+.mc-badge{font-family:var(--font-mono);font-size:.6rem;padding:2px 8px;border-radius:var(--border-radius-md)}
+/* detail panel */
+.detail-panel{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:1.5rem;overflow:hidden}
+.dp-header{padding:14px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dp-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.dp-title-area{flex:1}
+.dp-title{font-family:var(--font-mono);font-size:.82rem;font-weight:600;color:var(--color-text-primary)}
+.dp-sub{font-family:var(--font-mono);font-size:.63rem;color:var(--color-text-secondary);margin-top:2px}
+.dp-body{padding:14px 16px}
+.topics-list{display:flex;flex-direction:column;gap:0}
+.topic-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .15s}
+.topic-item:last-child{border-bottom:none}
+.topic-item:hover{background:var(--color-background-primary)}
+.topic-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-top:1px}
+.topic-check.checked{background:#10b981;border-color:#10b981;color:#fff}
+.topic-check.checked::after{content:'✓';font-size:.65rem;font-weight:700}
+.topic-info{flex:1}
+.topic-name{font-size:.78rem;color:var(--color-text-primary);font-weight:500;margin-bottom:3px}
+.topic-desc{font-size:.7rem;color:var(--color-text-secondary);line-height:1.5}
+.topic-code{font-family:var(--font-mono);font-size:.63rem;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:2px 7px;color:#6366f1;display:inline-block;margin-top:3px}
+/* quick ref */
+.quick-ref{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:1.5rem}
+.qr-title{font-family:var(--font-mono);font-size:.7rem;font-weight:600;color:var(--color-text-primary);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.qr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.qr-box{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px;cursor:pointer;transition:all .15s}
+.qr-box:hover{border-color:#6366f1}
+.qr-cmd{font-family:var(--font-mono);font-size:.68rem;font-weight:600;color:#6366f1;margin-bottom:2px}
+.qr-desc{font-size:.65rem;color:var(--color-text-secondary);line-height:1.4}
+/* buttons */
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}
+.quiz-cta{background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:var(--border-radius-lg);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;cursor:pointer;transition:opacity .2s}
+.quiz-cta:hover{opacity:.9}
+.qcta-text{color:#fff}
+.qcta-title{font-family:var(--font-mono);font-size:.82rem;font-weight:600;margin-bottom:3px}
+.qcta-sub{font-size:.72rem;color:#c7d2fe}
+.qcta-btn{font-family:var(--font-mono);font-size:.72rem;padding:8px 20px;background:#fff;color:#4338ca;border:none;border-radius:var(--border-radius-md);cursor:pointer;font-weight:600}
+@media(max-width:520px){.modules-grid{grid-template-columns:1fr}.qr-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<div class="root">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-title">🐍 Python for Engineering Students</div>
+    <div class="hero-sub">Full syllabus guide · VTU / AKTU / Anna University<br>5 modules · Track your progress · Click topics to mark complete</div>
+    <div class="hero-pills">
+      <span class="hpill">Module 1: Fundamentals</span>
+      <span class="hpill">Module 2: Data Structures</span>
+      <span class="hpill">Module 3: Functions</span>
+      <span class="hpill">Module 4: OOP</span>
+      <span class="hpill">Module 5: Files & Exceptions</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS TRACKER -->
+<div class="progress-section">
+  <div class="prog-header">
+    <div class="prog-title">Study Progress</div>
+    <div class="prog-stats">
+      <div class="pstat">✓ <span id="done-count">0</span> done</div>
+      <div class="pstat"><span id="total-count">0</span> topics</div>
+    </div>
+  </div>
+  <div class="module-bars" id="module-bars"></div>
+</div>
+
+<!-- MODULE CARDS -->
+<div class="modules-grid" id="mod-grid"></div>
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detail-panel">
+  <div class="dp-header">
+    <div class="dp-icon" id="dp-icon">📘</div>
+    <div class="dp-title-area">
+      <div class="dp-title" id="dp-title">Select a module to explore</div>
+      <div class="dp-sub" id="dp-sub">Click any module card above</div>
+    </div>
+    <button class="btn" onclick="clearAll()" style="font-size:.62rem;padding:4px 10px">↺ Clear module</button>
+  </div>
+  <div class="dp-body">
+    <div class="topics-list" id="topics-list">
+      <div style="font-size:.78rem;color:var(--color-text-secondary);padding:20px 0;text-align:center">← Click a module card to see its topics</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK REFERENCE -->
+<div class="quick-ref">
+  <div class="qr-title">⚡ Quick Reference — Key Python Syntax</div>
+  <div class="qr-grid" id="qr-grid"></div>
+</div>
+
+<!-- QUIZ CTA -->
+<div class="quiz-cta" onclick="sendPrompt('Create 3 sets of interactive Python quiz covering all 5 modules, 10 marks each set')">
+  <div class="qcta-text">
+    <div class="qcta-title">📝 Ready to test yourself?</div>
+    <div class="qcta-sub">Generate 3 interactive quiz sets · 10 marks each · All 5 modules</div>
+  </div>
+  <button class="qcta-btn">Start Quiz →</button>
+</div>
+
+</div>
+
+<script>
+const MODULES = [
+  {
+    id:0, emoji:'⚙️', color:'#6366f1', light:'rgba(99,102,241,.1)', fillClass:'m1f',
+    num:'Module 1', title:'Fundamentals & Control Flow',
+    tags:['variables','operators','loops','conditionals'],
+    badge:'Foundation',badgeBg:'rgba(99,102,241,.12)',badgeColor:'#6366f1',
+    topics:[
+      {name:'Python Setup & Environment',desc:'Install Python via Anaconda or IDLE, configure interpreter, run first program.',code:'python --version'},
+      {name:'Variables & Identifiers',desc:'Naming rules, dynamic typing, multiple assignment, type() function.',code:'x = 10; name = "Alice"'},
+      {name:'Data Types',desc:'int, float, str, bool, type conversion (int(), float(), str()).',code:'type(x) → <class "int">'},
+      {name:'Arithmetic & Assignment Operators',desc:'+, -, *, /, //, %, **  and compound: +=, -= etc.',code:'x**2  x//3  x%2'},
+      {name:'Logical & Comparison Operators',desc:'and, or, not  and  ==, !=, <, >, <=, >=.',code:'x>5 and y<10'},
+      {name:'Bitwise & Membership Operators',desc:'&, |, ^, ~, <<, >>  and  in, not in.',code:'"a" in "apple"'},
+      {name:'if / elif / else',desc:'Conditional blocks, nested conditions, one-line ternary.',code:'x if cond else y'},
+      {name:'for loop',desc:'Iterating over sequences, range(), enumerate(), nested loops.',code:'for i in range(5):'},
+      {name:'while loop',desc:'Condition-controlled loops, infinite loops with break.',code:'while n > 0:'},
+      {name:'break, continue, pass',desc:'Alter loop flow: break exits, continue skips, pass is placeholder.',code:'if x==2: continue'},
+    ]
+  },
+  {
+    id:1, emoji:'📦', color:'#0ea5e9', light:'rgba(14,165,233,.1)', fillClass:'m2f',
+    num:'Module 2', title:'Built-in Data Structures',
+    tags:['strings','lists','tuples','sets','dicts'],
+    badge:'Core DSA',badgeBg:'rgba(14,165,233,.12)',badgeColor:'#0ea5e9',
+    topics:[
+      {name:'Strings — Slicing & Methods',desc:'Indexing, slicing [start:end:step], upper(), lower(), strip(), split(), join().',code:'s[1:4]  s.upper()'},
+      {name:'String Immutability',desc:'Strings cannot be changed in place; must create new string. id() demonstration.',code:'"hello".replace("h","j")'},
+      {name:'String Formatting',desc:'f-strings, .format(), %s notation.',code:'f"Hello {name}"'},
+      {name:'Lists — Creation & Indexing',desc:'Mutable ordered sequence, negative indexing, slicing, nested lists.',code:'a = [1,2,3]; a[-1]'},
+      {name:'List Methods',desc:'append(), extend(), insert(), remove(), pop(), sort(), reverse().',code:'a.append(4)'},
+      {name:'List Comprehension',desc:'Concise way to create lists with optional condition.',code:'[x**2 for x in range(10)]'},
+      {name:'Tuples',desc:'Immutable ordered sequence, tuple packing/unpacking, when to use tuples.',code:'t = (1,2,3); a,b,c = t'},
+      {name:'Sets',desc:'Unordered unique values, union, intersection, difference, add(), remove().',code:'s = {1,2,3}; s.add(4)'},
+      {name:'Dictionaries — Basics',desc:'Key-value pairs, creation, access, update, delete.',code:'d = {"a":1}; d["b"]=2'},
+      {name:'Dictionary — Methods & Nesting',desc:'keys(), values(), items(), nested dicts, dict comprehension.',code:'for k,v in d.items():'},
+    ]
+  },
+  {
+    id:2, emoji:'🔧', color:'#10b981', light:'rgba(16,185,129,.1)', fillClass:'m3f',
+    num:'Module 3', title:'Functions & Modular Programming',
+    tags:['def','recursion','*args','modules'],
+    badge:'Modular',badgeBg:'rgba(16,185,129,.12)',badgeColor:'#10b981',
+    topics:[
+      {name:'Defining & Calling Functions',desc:'def keyword, docstrings, return statement, multiple return values.',code:'def add(a,b): return a+b'},
+      {name:'Positional & Keyword Arguments',desc:'Positional order matters, keyword args by name, mixing both.',code:'greet(name="Alice")'},
+      {name:'*args and **kwargs',desc:'Variable number of arguments: *args → tuple, **kwargs → dict.',code:'def f(*args, **kwargs):'},
+      {name:'Default Arguments',desc:'Parameters with default values, mutable default trap.',code:'def greet(name="User"):'},
+      {name:'Scope — Local vs Global',desc:'LEGB rule, global keyword, nonlocal keyword.',code:'global x; x = 10'},
+      {name:'Lambda Functions',desc:'Anonymous single-expression functions, use with map/filter/sorted.',code:'sq = lambda x: x**2'},
+      {name:'Recursion — Factorial & Fibonacci',desc:'Base case + recursive case, call stack, memoisation intro.',code:'def fact(n): return n*fact(n-1)'},
+      {name:'map(), filter(), reduce()',desc:'Functional programming tools on iterables.',code:'list(map(str, [1,2,3]))'},
+      {name:'Creating Custom Modules',desc:'Save functions in .py file, import with import / from…import.',code:'import mymodule'},
+      {name:'Standard Libraries: math, random, os',desc:'math.sqrt(), random.randint(), os.getcwd() etc.',code:'import math; math.pi'},
+    ]
+  },
+  {
+    id:3, emoji:'🏗️', color:'#f59e0b', light:'rgba(245,158,11,.1)', fillClass:'m4f',
+    num:'Module 4', title:'Object-Oriented Programming',
+    tags:['classes','inheritance','polymorphism','OOP'],
+    badge:'OOP',badgeBg:'rgba(245,158,11,.12)',badgeColor:'#d97706',
+    topics:[
+      {name:'Classes & Objects',desc:'class keyword, instantiation, attributes vs methods, self parameter.',code:'class Dog:  def bark(self):'},
+      {name:'__init__ Constructor',desc:'Initialise object attributes, called automatically on creation.',code:'def __init__(self, name):'},
+      {name:'Instance & Class Variables',desc:'Per-object vs shared variables, accessing via self vs ClassName.',code:'self.name vs Dog.count'},
+      {name:'Encapsulation',desc:'Hiding data with _ and __ name mangling, getters/setters, @property.',code:'self.__balance'},
+      {name:'Single Inheritance',desc:'Subclass inherits parent methods & attributes, super() call.',code:'class Cat(Animal):'},
+      {name:'Multiple & Multilevel Inheritance',desc:'Multiple parents, MRO (Method Resolution Order), diamond problem.',code:'class C(A, B):'},
+      {name:'Polymorphism & Method Overriding',desc:'Same method name, different behaviour per class, duck typing.',code:'def speak(self): ...'},
+      {name:'Abstraction with ABC',desc:'Abstract base classes, @abstractmethod decorator, interface pattern.',code:'from abc import ABC'},
+      {name:'Magic / Dunder Methods',desc:'__str__, __repr__, __len__, __add__ — operator overloading.',code:'def __str__(self):'},
+      {name:'Class Decorators: @staticmethod, @classmethod',desc:'Static: no self. Class method: cls as first arg.',code:'@classmethod\n def create(cls):'},
+    ]
+  },
+  {
+    id:4, emoji:'📁', color:'#ef4444', light:'rgba(239,68,68,.1)', fillClass:'m5f',
+    num:'Module 5', title:'File Handling & Exception Management',
+    tags:['open','read','write','try/except'],
+    badge:'Practical',badgeBg:'rgba(239,68,68,.12)',badgeColor:'#dc2626',
+    topics:[
+      {name:'Opening & Closing Files',desc:'open(file, mode), modes: r, w, a, r+, file object, close().',code:'f = open("data.txt","r")'},
+      {name:'Reading Files',desc:'read(), readline(), readlines(), iterating line by line.',code:'for line in f:'},
+      {name:'Writing to Files',desc:'write(), writelines(), difference between w (overwrite) and a (append).',code:'f.write("Hello\\n")'},
+      {name:'with Statement',desc:'Context manager auto-closes file — preferred pattern.',code:'with open("f.txt") as f:'},
+      {name:'Working with CSV Files',desc:'csv module: reader(), writer(), DictReader, DictWriter.',code:'import csv'},
+      {name:'try / except Block',desc:'Catching exceptions, multiple except clauses, handling specific errors.',code:'try:\n  ...\nexcept ValueError:'},
+      {name:'else and finally',desc:'else runs if no exception; finally always runs (cleanup).',code:'finally: f.close()'},
+      {name:'Raising Exceptions',desc:'raise keyword, custom exception classes, re-raising.',code:'raise ValueError("bad")'},
+      {name:'Built-in Exception Types',desc:'ValueError, TypeError, IndexError, KeyError, FileNotFoundError etc.',code:'except FileNotFoundError:'},
+      {name:'Custom Exception Classes',desc:'Inherit from Exception, add custom message/attributes.',code:'class MyError(Exception):'},
+    ]
+  }
+];
+
+const QR = [
+  {cmd:'list comp',desc:'[x*2 for x in lst if x>0]'},
+  {cmd:'f-string',desc:'f"Result: {value:.2f}"'},
+  {cmd:'lambda',desc:'fn = lambda x,y: x+y'},
+  {cmd:'*args',desc:'def f(*a): sum(a)'},
+  {cmd:'**kwargs',desc:'def f(**k): k["x"]'},
+  {cmd:'with file',desc:'with open("f") as fp:'},
+  {cmd:'list slice',desc:'lst[1:-1:2]'},
+  {cmd:'dict comp',desc:'{k:v for k,v in d.items()}'},
+  {cmd:'try/except',desc:'try:\n  ...\nexcept E as e:'},
+  {cmd:'class init',desc:'def __init__(self,x):'},
+  {cmd:'super()',desc:'super().__init__(args)'},
+  {cmd:'recursion',desc:'if n==0: return 1\nreturn n*f(n-1)'},
+];
+
+// STATE
+const checked = {}; // moduleId → Set of topic indices
+MODULES.forEach(m=>{ checked[m.id]=new Set(); });
+let activeModule = null;
+
+function totalTopics(){ return MODULES.reduce((s,m)=>s+m.topics.length,0); }
+function doneTopics(){ return MODULES.reduce((s,m)=>s+checked[m.id].size,0); }
+function modDone(id){ return checked[id].size; }
+function modTotal(id){ return MODULES[id].topics.length; }
+
+// Build module bars
+function buildBars(){
+  const wrap = document.getElementById('module-bars');
+  wrap.innerHTML = '';
+  MODULES.forEach(m=>{
+    const pct = Math.round(modDone(m.id)/modTotal(m.id)*100);
+    const row = document.createElement('div'); row.className='mbar-row';
+    row.innerHTML=`<div class="mbar-label">${m.num}</div>
+      <div class="mbar-track" onclick="openModule(${m.id})" title="${m.title}">
+        <div class="mbar-fill ${m.fillClass}" id="bar-${m.id}" style="width:${pct}%"></div>
+      </div>
+      <div class="mbar-pct" id="barpct-${m.id}">${pct}%</div>`;
+    wrap.appendChild(row);
+  });
+}
+
+// Build module cards
+function buildCards(){
+  const grid = document.getElementById('mod-grid');
+  grid.innerHTML = '';
+  MODULES.forEach(m=>{
+    const done=modDone(m.id),total=modTotal(m.id);
+    const card=document.createElement('div');
+    card.className='mod-card'+(activeModule===m.id?' active-mod':'');
+    card.style.color=m.color;
+    card.onclick=()=>openModule(m.id);
+    card.innerHTML=`<div class="mc-top">
+        <div class="mc-num" style="color:${m.color}">${m.emoji} ${m.num}</div>
+        <div class="mc-title">${m.title}</div>
+        <div class="mc-tags">${m.tags.map(t=>`<span class="mtag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="mc-bot">
+        <div class="mc-topics-count">${done}/${total} topics done</div>
+        <span class="mc-badge" style="background:${m.badgeBg};color:${m.badgeColor};border:0.5px solid ${m.badgeColor}30">${m.badge}</span>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// Open module detail
+function openModule(id){
+  activeModule=id;
+  const m=MODULES[id];
+  document.getElementById('dp-icon').textContent=m.emoji;
+  document.getElementById('dp-icon').style.background=m.light;
+  document.getElementById('dp-title').textContent=m.title;
+  document.getElementById('dp-sub').textContent=`${m.num} · ${m.topics.length} topics · Click to mark complete`;
+  const list=document.getElementById('topics-list');
+  list.innerHTML='';
+  m.topics.forEach((t,i)=>{
+    const done=checked[id].has(i);
+    const item=document.createElement('div');item.className='topic-item';item.style.padding='10px 4px';
+    item.onclick=()=>toggleTopic(id,i);
+    item.innerHTML=`<div class="topic-check ${done?'checked':''}" id="chk-${id}-${i}"></div>
+      <div class="topic-info">
+        <div class="topic-name" style="${done?'text-decoration:line-through;color:var(--color-text-secondary)':''}">${t.name}</div>
+        <div class="topic-desc">${t.desc}</div>
+        <span class="topic-code">${t.code}</span>
+      </div>`;
+    list.appendChild(item);
+  });
+  buildCards();
+}
+
+function toggleTopic(modId,topicIdx){
+  if(checked[modId].has(topicIdx)) checked[modId].delete(topicIdx);
+  else checked[modId].add(topicIdx);
+  refreshAll();
+  openModule(modId);
+}
+
+function clearAll(){
+  if(activeModule===null)return;
+  checked[activeModule].clear();
+  refreshAll();
+  openModule(activeModule);
+}
+
+function refreshAll(){
+  const done=doneTopics(),total=totalTopics();
+  document.getElementById('done-count').textContent=done;
+  document.getElementById('total-count').textContent=total;
+  MODULES.forEach(m=>{
+    const pct=Math.round(modDone(m.id)/modTotal(m.id)*100);
+    const bar=document.getElementById('bar-'+m.id);if(bar)bar.style.width=pct+'%';
+    const barpct=document.getElementById('barpct-'+m.id);if(barpct)barpct.textContent=pct+'%';
+  });
+}
+
+// Build quick ref
+function buildQR(){
+  const grid=document.getElementById('qr-grid');
+  QR.forEach(r=>{
+    const box=document.createElement('div');box.className='qr-box';
+    box.onclick=()=>sendPrompt('Explain Python '+r.cmd+' with examples');
+    box.innerHTML=`<div class="qr-cmd">${r.cmd}</div><div class="qr-desc">${r.desc}</div>`;
+    grid.appendChild(box);
+  });
+}
+
+// INIT
+buildBars();
+buildCards();
+buildQR();
+refreshAll();
+document.getElementById('done-count').textContent='0';
+document.getElementById('total-count').textContent=totalTopics();
+</script>

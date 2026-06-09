@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>C Language — Interactive Learning Hub</title>
+    <title>Java Microservices — Interactive Learning Hub</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500;700&display=swap"
@@ -22,8 +22,8 @@
         --bg: #0d0f14;
         --sidebar: #111318;
         --sidebar-border: #1e2130;
-        --accent: #5b6ef5;
-        --accent-glow: rgba(91, 110, 245, 0.18);
+        --accent: #f97316;
+        --accent-glow: rgba(249, 115, 22, 0.18);
         --accent2: #f0c040;
         --accent3: #10b981;
         --text: #e8eaf2;
@@ -102,7 +102,7 @@
       .brand-icon {
         width: 44px;
         height: 44px;
-        background: linear-gradient(135deg, #5b6ef5, #3b4fd8);
+        background: linear-gradient(135deg, #f97316, #ea580c);
         border-radius: 12px;
         display: flex;
         align-items: center;
@@ -158,7 +158,7 @@
       }
       .nav-item:hover {
         color: var(--text);
-        background: rgba(91, 110, 245, 0.06);
+        background: rgba(249, 115, 22, 0.06);
       }
       .nav-item.active {
         color: var(--accent);
@@ -180,7 +180,7 @@
       }
       .nav-item:hover .ni-icon,
       .nav-item.active .ni-icon {
-        background: rgba(91, 110, 245, 0.15);
+        background: rgba(249, 115, 22, 0.15);
       }
       .nav-badge {
         margin-left: auto;
@@ -188,8 +188,8 @@
         font-size: 0.58rem;
         padding: 2px 6px;
         border-radius: 100px;
-        background: rgba(91, 110, 245, 0.15);
-        color: #a0aaea;
+        background: rgba(249, 115, 22, 0.15);
+        color: #fca5a5;
       }
       .nav-badge.new {
         background: rgba(16, 185, 129, 0.2);
@@ -261,7 +261,7 @@
         height: 600px;
         background: radial-gradient(
           circle,
-          rgba(91, 110, 245, 0.1) 0%,
+          rgba(249, 115, 22, 0.1) 0%,
           transparent 65%
         );
         pointer-events: none;
@@ -286,7 +286,7 @@
         align-items: center;
         gap: 0.5rem;
         background: var(--accent-glow);
-        border: 1px solid rgba(91, 110, 245, 0.25);
+        border: 1px solid rgba(249, 115, 22, 0.25);
         color: var(--accent);
         font-size: 0.72rem;
         font-weight: 600;
@@ -355,7 +355,7 @@
         border-radius: 14px;
         background: linear-gradient(
           135deg,
-          var(--card-accent-start, rgba(91, 110, 245, 0.06)) 0%,
+          var(--card-accent-start, rgba(249, 115, 22, 0.06)) 0%,
           transparent 60%
         );
         opacity: 0;
@@ -447,7 +447,7 @@
         gap: 1rem;
         background: linear-gradient(
           180deg,
-          rgba(91, 110, 245, 0.05) 0%,
+          rgba(249, 115, 22, 0.05) 0%,
           transparent 100%
         );
       }
@@ -633,9 +633,9 @@
           </svg>
           Back to Portfolio
         </a>
-        <div class="brand-icon">C</div>
-        <div class="brand-name">C Language Hub</div>
-        <div class="brand-sub">interactive learning guide</div>
+        <div class="brand-icon">J</div>
+        <div class="brand-name">Java Microservices Hub</div>
+        <div class="brand-sub">distributed systems learning</div>
       </div>
 
       <nav class="nav">
@@ -653,149 +653,39 @@
 
         <div
           class="nav-item"
-          data-target="topic-loops"
-          onclick="loadTopic('topic-loops','c_loops_guide.html','C Loops','for · while · do-while','🔄')"
+          data-target="topic-architect"
+          onclick="loadTopic('topic-architect','java_microservice_architect_learning.html','Microservice Architecture','design patterns · principles','🏗️')"
+        >
+          <div class="ni-icon">🏗️</div>
+          Architecture
+          <span class="nav-badge">design</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-12week"
+          onclick="loadTopic('topic-12week','java_microservices_12week_plan.html','12-Week Plan','learning roadmap','📅')"
+        >
+          <div class="ni-icon">📅</div>
+          12-Week Plan
+          <span class="nav-badge">roadmap</span>
+        </div>
+
+        <div
+          class="nav-item"
+          data-target="topic-saga"
+          onclick="loadTopic('topic-saga','saga_pattern_simulator.html','Saga Pattern','distributed transactions','🔄')"
         >
           <div class="ni-icon">🔄</div>
-          Loops
-          <span class="nav-badge">for · while</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-break"
-          onclick="loadTopic('topic-break','c_break_continue.html','Break & Continue','loop control flow','⚡')"
-        >
-          <div class="ni-icon">⚡</div>
-          Break & Continue
-          <span class="nav-badge">control</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-nested"
-          onclick="loadTopic('topic-nested','c_nested_loops_multiplication.html','Nested Loops','multiplication table builder','⊞')"
-        >
-          <div class="ni-icon">⊞</div>
-          Nested Loops
+          Saga Pattern
           <span class="nav-badge new">interactive</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-arrays"
-          onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')"
-        >
-          <div class="ni-icon">🧮</div>
-          Arrays
-          <span class="nav-badge">data structures</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-pointers"
-          onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')"
-        >
-          <div class="ni-icon">📍</div>
-          Pointers
-          <span class="nav-badge">memory</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-functions"
-          onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')"
-        >
-          <div class="ni-icon">🔧</div>
-          Functions
-          <span class="nav-badge">modular</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-strings"
-          onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')"
-        >
-          <div class="ni-icon">📝</div>
-          Strings
-          <span class="nav-badge">text</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-char-arrays"
-          onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')"
-        >
-          <div class="ni-icon">🔡</div>
-          Char Arrays
-          <span class="nav-badge">strings</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-break-loops"
-          onclick="loadTopic('topic-break-loops','c_menu_loop_break.html','Break In Loops','Break Control','⚡')"
-        >
-          <div class="ni-icon">⚡</div>
-          Break In Loops
-          <span class="nav-badge">interactive</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-linked-lists"
-          onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')"
-        >
-          <div class="ni-icon">🔗</div>
-          Linked Lists
-          <span class="nav-badge">advanced</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-recursion"
-          onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')"
-        >
-          <div class="ni-icon">🔀</div>
-          Recursion
-          <span class="nav-badge">problem-solving</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-recursion-vs-iter"
-          onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')"
-        >
-          <div class="ni-icon">⚖️</div>
-          Recursion vs Iteration
-          <span class="nav-badge">comparison</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-file-handling"
-          onclick="loadTopic('topic-file-handling','c_file_handling.html','File Handling','reading and writing files','📁')"
-        >
-          <div class="ni-icon">📁</div>
-          File Handling
-          <span class="nav-badge">I/O</span>
-        </div>
-
-        <div
-          class="nav-item"
-          data-target="topic-full-quiz"
-          onclick="loadTopic('topic-full-quiz','c_programming_full_quiz.html','C Programming Full Quiz','comprehensive assessment','🎯')"
-        >
-          <div class="ni-icon">🎯</div>
-          Full Quiz
-          <span class="nav-badge">assessment</span>
         </div>
       </nav>
 
       <div class="sidebar-footer">
-        Part of <a href="index.html">Samiran Paul's</a> learning hub<br />
+        Part of <a href="../index.html">Samiran Paul's</a> learning hub<br />
         <span style="margin-top: 0.3rem; display: block; color: #3a3f52"
-          >C Language · 14 topics</span
+          >Java Microservices · 3 topics</span
         >
       </div>
     </aside>
@@ -809,574 +699,135 @@
             <svg width="7" height="7" viewBox="0 0 8 8">
               <circle cx="4" cy="4" r="4" fill="#10b981" />
             </svg>
-            Interactive · Step-by-step · C Programming
+            Interactive · Hands-on · Microservices Architecture
           </div>
 
           <h1 class="hero-title">
-            Learn <span class="c-accent">C Language</span><br />
-            the <span class="c-green">interactive</span> way
+            Master <span class="c-accent">Java Microservices</span><br />
+            with <span class="c-green">interactive</span> learning
           </h1>
 
           <p class="hero-desc">
-            Explore C programming through hands-on, animated guides. Watch code
-            execute step by step, track variables in real time, and build
-            intuition for how C actually works under the hood.
+            Dive deep into microservices architecture with real-world patterns,
+            design principles, and interactive simulations. Learn how to build
+            scalable distributed systems with Java.
           </p>
 
           <div class="stats-row">
             <div class="stat-pill">
-              <div class="dot" style="background: #5b6ef5"></div>
-              13 Topics
+              <div class="dot" style="background: #f97316"></div>
+              3 Core Topics
             </div>
             <div class="stat-pill">
               <div class="dot" style="background: #10b981"></div>
-              Step-by-step execution
+              Distributed Design
             </div>
             <div class="stat-pill">
               <div class="dot" style="background: #f59e0b"></div>
-              Live variable tracking
+              Saga Pattern Simulator
             </div>
           </div>
 
           <div class="topics-grid">
-            <!-- Loops -->
+            <!-- Architecture -->
             <div
               class="topic-card"
-              style="--tc-color: #6366f1"
-              onclick="loadTopic('topic-loops','c_loops_guide.html','C Loops','for · while · do-while','🔄')"
+              style="--tc-color: #f97316"
+              onclick="loadTopic('topic-architect','java_microservice_architect_learning.html','Microservice Architecture','design patterns · principles','🏗️')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">🏗️</div>
+                <span
+                  class="tc-chip"
+                  style="color: #fed7aa; border-color: rgba(254, 215, 170, 0.3)"
+                  >Fundamentals</span
+                >
+              </div>
+              <div class="tc-title">Architecture Principles</div>
+              <div class="tc-desc">
+                Learn core microservices architecture concepts, design patterns,
+                and how to decompose monolithic systems into scalable services.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- 12-Week Plan -->
+            <div
+              class="topic-card"
+              style="--tc-color: #06b6d4"
+              onclick="loadTopic('topic-12week','java_microservices_12week_plan.html','12-Week Plan','learning roadmap','📅')"
+            >
+              <div class="tc-top">
+                <div class="tc-icon">📅</div>
+                <span
+                  class="tc-chip"
+                  style="color: #a5f3fc; border-color: rgba(165, 243, 252, 0.3)"
+                  >Roadmap</span
+                >
+              </div>
+              <div class="tc-title">12-Week Learning Plan</div>
+              <div class="tc-desc">
+                A comprehensive week-by-week curriculum designed to take you
+                from basics to advanced microservices development with Java.
+              </div>
+              <div class="tc-footer">
+                <span></span>
+                <div class="tc-arrow">
+                  <svg
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Saga Pattern -->
+            <div
+              class="topic-card"
+              style="--tc-color: #8b5cf6"
+              onclick="loadTopic('topic-saga','saga_pattern_simulator.html','Saga Pattern','distributed transactions','🔄')"
             >
               <div class="tc-top">
                 <div class="tc-icon">🔄</div>
                 <span
                   class="tc-chip"
-                  style="color: #a78bfa; border-color: rgba(167, 139, 250, 0.3)"
-                  >Fundamentals</span
-                >
-              </div>
-              <div class="tc-title">Loops in C</div>
-              <div class="tc-desc">
-                Master for, while, and do-while loops with interactive
-                step-by-step execution and flowcharts.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Break & Continue -->
-            <div
-              class="topic-card"
-              style="--tc-color: #f59e0b"
-              onclick="loadTopic('topic-break','c_break_continue.html','Break & Continue','loop control flow','⚡')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">⚡</div>
-                <span
-                  class="tc-chip"
-                  style="color: #fbbf24; border-color: rgba(251, 191, 36, 0.3)"
-                  >Control Flow</span
-                >
-              </div>
-              <div class="tc-title">Break & Continue</div>
-              <div class="tc-desc">
-                Understand how break exits loops and continue skips iterations —
-                with live code highlighting.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Nested Loops -->
-            <div
-              class="topic-card"
-              style="--tc-color: #10b981"
-              onclick="loadTopic('topic-nested','c_nested_loops_multiplication.html','Nested Loops','multiplication table builder','⊞')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">⊞</div>
-                <span
-                  class="tc-chip"
-                  style="color: #34d399; border-color: rgba(52, 211, 153, 0.3)"
-                  >Interactive</span
-                >
-              </div>
-              <div class="tc-title">Nested Loops</div>
-              <div class="tc-desc">
-                Build a multiplication table step by step. Watch the outer and
-                inner loops interact with real-time tracking.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Arrays -->
-            <div
-              class="topic-card"
-              style="--tc-color: #8b5cf6"
-              onclick="loadTopic('topic-arrays','c_arrays_guide.html','Arrays Guide','indexed collections in C','🧮')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">🧮</div>
-                <span
-                  class="tc-chip"
-                  style="color: #c4b5fd; border-color: rgba(196, 181, 253, 0.3)"
-                  >Data Structures</span
-                >
-              </div>
-              <div class="tc-title">Arrays in C</div>
-              <div class="tc-desc">
-                Explore fixed-size arrays, indexing, and element access with
-                clear examples and live memory mapping.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Pointers -->
-            <div
-              class="topic-card"
-              style="--tc-color: #ec4899"
-              onclick="loadTopic('topic-pointers','c_pointers_guide.html','Pointers Guide','addresses and memory','📍')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">📍</div>
-                <span
-                  class="tc-chip"
-                  style="color: #fbcfe8; border-color: rgba(251, 207, 232, 0.3)"
-                  >Memory</span
-                >
-              </div>
-              <div class="tc-title">Pointers</div>
-              <div class="tc-desc">
-                Learn pointer declaration, dereference, and pointer arithmetic
-                with animated memory diagrams.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Functions -->
-            <div
-              class="topic-card"
-              style="--tc-color: #14b8a6"
-              onclick="loadTopic('topic-functions','unit6_functions_practice.html','Functions Practice','modular code and reuse','🔧')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">🔧</div>
-                <span
-                  class="tc-chip"
-                  style="color: #5eead4; border-color: rgba(94, 234, 212, 0.3)"
-                  >Modularity</span
-                >
-              </div>
-              <div class="tc-title">Functions</div>
-              <div class="tc-desc">
-                Practice writing reusable functions, passing arguments, and
-                returning values with interactive examples.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Strings -->
-            <div
-              class="topic-card"
-              style="--tc-color: #f97316"
-              onclick="loadTopic('topic-strings','c_string_manipulation.html','Strings in C','text, characters, and operations','📝')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">📝</div>
-                <span
-                  class="tc-chip"
-                  style="color: #fdba74; border-color: rgba(253, 186, 116, 0.3)"
-                  >Text</span
-                >
-              </div>
-              <div class="tc-title">String Manipulation</div>
-              <div class="tc-desc">
-                Discover C strings, concatenation, and common library functions
-                with data-driven visual examples.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Char Arrays & Strings -->
-            <div
-              class="topic-card"
-              style="--tc-color: #0ea5e9"
-              onclick="loadTopic('topic-char-arrays','c_char_arrays_strings.html','Char Arrays & Strings','characters, arrays, and text','🔡')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">🔡</div>
-                <span
-                  class="tc-chip"
-                  style="color: #7dd3fc; border-color: rgba(125, 211, 252, 0.3)"
-                  >Strings</span
-                >
-              </div>
-              <div class="tc-title">Char Arrays & Strings</div>
-              <div class="tc-desc">
-                Compare char arrays and string literals, then practice working
-                with text in C programs.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!--  Loops Break -->
-            <div
-              class="topic-card"
-              style="--tc-color: #6366f1"
-              onclick="loadTopic('topic-nested','c_menu_loop_break.html','Breaks Loops','Break Control','⊞')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">⚡</div>
-                <span
-                  class="tc-chip"
-                  style="color: #a78bfa; border-color: rgba(167, 139, 250, 0.3)"
-                  >Interactive</span
-                >
-              </div>
-              <div class="tc-title">Break In Loops</div>
-              <div class="tc-desc">
-                Live demo of Break in loops step by step.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Linked Lists -->
-            <div
-              class="topic-card"
-              style="--tc-color: #d946ef"
-              onclick="loadTopic('topic-linked-lists','c_pointers_unit_linked_list.html','Linked Lists','dynamic memory structures','🔗')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">🔗</div>
-                <span
-                  class="tc-chip"
-                  style="color: #f0abfc; border-color: rgba(240, 171, 252, 0.3)"
-                  >Advanced</span
-                >
-              </div>
-              <div class="tc-title">Linked Lists</div>
-              <div class="tc-desc">
-                Build dynamic linked list structures using pointers. Learn node
-                creation, traversal, and manipulation.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Recursion -->
-            <div
-              class="topic-card"
-              style="--tc-color: #ca8a04"
-              onclick="loadTopic('topic-recursion','c_recursion_guide.html','Recursion Guide','functions calling themselves','🔀')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">🔀</div>
-                <span
-                  class="tc-chip"
-                  style="color: #fcd34d; border-color: rgba(252, 211, 77, 0.3)"
-                  >Problem-Solving</span
-                >
-              </div>
-              <div class="tc-title">Recursion</div>
-              <div class="tc-desc">
-                Master recursive functions with base cases, call stacks, and
-                factorial/Fibonacci examples.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Recursion vs Iteration -->
-            <div
-              class="topic-card"
-              style="--tc-color: #06b6d4"
-              onclick="loadTopic('topic-recursion-vs-iter','recursion_iterative_comparison_and_quiz.html','Recursion vs Iteration','compare approaches','⚖️')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">⚖️</div>
-                <span
-                  class="tc-chip"
-                  style="color: #a5f3fc; border-color: rgba(165, 243, 252, 0.3)"
-                  >Comparison</span
-                >
-              </div>
-              <div class="tc-title">Recursion vs Iteration</div>
-              <div class="tc-desc">
-                Compare recursive and iterative solutions side-by-side with
-                performance analysis and quiz.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- File Handling -->
-            <div
-              class="topic-card"
-              style="--tc-color: #84cc16"
-              onclick="loadTopic('topic-file-handling','c_file_handling.html','File Handling','reading and writing files','📁')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">📁</div>
-                <span
-                  class="tc-chip"
-                  style="color: #d4fc79; border-color: rgba(212, 252, 121, 0.3)"
-                  >I/O</span
-                >
-              </div>
-              <div class="tc-title">File Handling</div>
-              <div class="tc-desc">
-                Learn to read from and write to files using C's file I/O
-                functions. Master fopen, fclose, fread, and fwrite.
-              </div>
-              <div class="tc-footer">
-                <span></span>
-                <div class="tc-arrow">
-                  <svg
-                    width="10"
-                    height="10"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- C Programming Full Quiz -->
-            <div
-              class="topic-card"
-              style="--tc-color: #8b5cf6"
-              onclick="loadTopic('topic-full-quiz','c_programming_full_quiz.html','C Programming Full Quiz','comprehensive assessment','🎯')"
-            >
-              <div class="tc-top">
-                <div class="tc-icon">🎯</div>
-                <span
-                  class="tc-chip"
                   style="color: #d8b4fe; border-color: rgba(216, 180, 254, 0.3)"
-                  >Assessment</span
+                  >Interactive</span
                 >
               </div>
-              <div class="tc-title">Full Quiz</div>
+              <div class="tc-title">Saga Pattern Simulator</div>
               <div class="tc-desc">
-                Test your comprehensive C programming knowledge with this
-                full-length assessment covering loops, arrays, pointers,
-                functions, strings, and more.
+                Explore the Saga pattern for managing distributed transactions
+                across microservices with an interactive simulator and visual
+                demonstrations.
               </div>
               <div class="tc-footer">
                 <span></span>
@@ -1535,7 +986,7 @@
         <div style="font-family:var(--font-mono);font-size:.8rem;color:#f87171;padding:2rem;
           background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;line-height:1.8;">
           <strong>Could not load ${filename}</strong><br>
-          Make sure the file is in the same folder as c_master.html.<br><br>
+          Make sure the file is in the same folder as java_microservice_master.html.<br><br>
           <span style="color:#6b7080;">Error: ${e.message}</span>
         </div>`;
         }

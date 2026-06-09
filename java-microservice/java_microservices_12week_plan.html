@@ -1,0 +1,292 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.5rem 0;font-family:var(--font-sans)}
+.phase-header{display:flex;align-items:center;gap:10px;margin:1.5rem 0 0.75rem}
+.phase-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.phase-label{font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--color-text-secondary)}
+.week-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.week-card:hover{border-color:var(--color-border-secondary)}
+.week-card.open{border-color:var(--color-border-primary)}
+.week-header{display:flex;align-items:center;gap:12px;padding:12px 16px}
+.week-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.week-meta{flex:1;min-width:0}
+.week-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.week-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.week-toggle{font-size:16px;color:var(--color-text-tertiary);transition:transform .2s;flex-shrink:0}
+.week-card.open .week-toggle{transform:rotate(180deg)}
+.week-body{display:none;border-top:0.5px solid var(--color-border-tertiary);padding:14px 16px;background:var(--color-background-secondary)}
+.week-card.open .week-body{display:block}
+.day-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.day-label{font-size:11px;font-weight:500;color:var(--color-text-tertiary);min-width:28px;padding-top:2px;text-transform:uppercase}
+.day-content{font-size:13px;color:var(--color-text-secondary);line-height:1.6;flex:1}
+.day-content strong{font-weight:500;color:var(--color-text-primary)}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px}
+.tag-blue{background:#E6F1FB;color:#0C447C}
+.tag-teal{background:#E1F5EE;color:#085041}
+.tag-purple{background:#EEEDFE;color:#3C3489}
+.tag-amber{background:#FAEEDA;color:#633806}
+.tag-coral{background:#FAECE7;color:#712B13}
+.deliverable{margin-top:10px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;color:var(--color-text-secondary)}
+.deliverable strong{color:var(--color-text-primary);font-weight:500}
+.progress-bar{height:4px;background:var(--color-border-tertiary);border-radius:2px;margin:1rem 0 0.25rem}
+.progress-fill{height:100%;border-radius:2px;transition:width .3s}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-bottom:1.5rem}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.stat-n{font-size:22px;font-weight:500;color:var(--color-text-primary)}
+.stat-l{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.filt-btn{background:transparent;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:5px 12px;font-size:12px;cursor:pointer;color:var(--color-text-secondary);transition:all .15s}
+.filt-btn:hover{background:var(--color-background-secondary)}
+.filt-btn.on{border-color:#378ADD;background:#E6F1FB;color:#0C447C;font-weight:500}
+</style>
+
+<div class="wrap">
+<h2 class="sr-only">12-week Java microservice architecture study plan, week by week.</h2>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n">12</div><div class="stat-l">weeks</div></div>
+  <div class="stat"><div class="stat-n">~8</div><div class="stat-l">hrs / week</div></div>
+  <div class="stat"><div class="stat-n">4</div><div class="stat-l">phases</div></div>
+  <div class="stat"><div class="stat-n">1</div><div class="stat-l">capstone project</div></div>
+</div>
+
+<div class="filter-row">
+  <button class="filt-btn on" onclick="filterPhase(0,this)">All weeks</button>
+  <button class="filt-btn" onclick="filterPhase(1,this)">Phase 1 — foundations</button>
+  <button class="filt-btn" onclick="filterPhase(2,this)">Phase 2 — spring cloud</button>
+  <button class="filt-btn" onclick="filterPhase(3,this)">Phase 3 — advanced</button>
+  <button class="filt-btn" onclick="filterPhase(4,this)">Phase 4 — production</button>
+</div>
+
+<div id="plan"></div>
+
+<div style="margin-top:1.5rem;display:flex;gap:8px;flex-wrap:wrap;">
+  <button style="background:transparent;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 14px;font-size:13px;cursor:pointer;color:var(--color-text-secondary)" onclick="sendPrompt('Give me a hands-on project idea to practice Java microservices')">Project ideas ↗</button>
+  <button style="background:transparent;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 14px;font-size:13px;cursor:pointer;color:var(--color-text-secondary)" onclick="sendPrompt('What are the best books and resources for Java microservice architecture?')">Recommended books ↗</button>
+  <button style="background:transparent;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:6px 14px;font-size:13px;cursor:pointer;color:var(--color-text-secondary)" onclick="sendPrompt('Explain the Saga pattern in Java microservices with a detailed example')">Deep dive: Saga ↗</button>
+</div>
+</div>
+
+<script>
+const weeks = [
+  {
+    phase:1, phaseLabel:"Phase 1 — Foundations", phaseColor:"#378ADD", phaseBg:"#E6F1FB", phaseText:"#0C447C",
+    title:"Microservice fundamentals & Spring Boot review",
+    sub:"What microservices are, when to use them, and Spring Boot baseline",
+    days:[
+      {d:"Mon", t:"Read: Martin Fowler's microservices article + the 12-Factor App. Understand <strong>service decomposition</strong> and bounded contexts."},
+      {d:"Tue", t:"Build a simple Spring Boot REST service: User Service with CRUD endpoints, JPA + H2, Actuator health endpoint."},
+      {d:"Wed", t:"Add <strong>validation</strong> (@Valid), global exception handling with @ControllerAdvice, and structured JSON error responses."},
+      {d:"Thu", t:"Write unit tests (JUnit 5 + Mockito) and integration tests (Spring Boot Test + MockMvc). Aim for 80%+ coverage."},
+      {d:"Fri–Sat", t:"<strong>Mini project:</strong> Build an Order Service alongside the User Service. Each with its own H2 DB. Call User from Order using RestTemplate."},
+    ],
+    tags:["Spring Boot","REST","JPA","JUnit 5","MockMvc"],
+    deliverable:"Two standalone services (User + Order) communicating over HTTP."
+  },
+  {
+    phase:1,
+    title:"Service communication & API design",
+    sub:"REST best practices, OpenFeign, versioning, and OpenAPI docs",
+    days:[
+      {d:"Mon", t:"Learn REST maturity model (Richardson). Apply proper HTTP verbs, status codes, and HATEOAS basics to your services."},
+      {d:"Tue", t:"Replace RestTemplate with <strong>OpenFeign</strong>. Add @FeignClient, fallback class, and configure timeouts."},
+      {d:"Wed", t:"Add <strong>Springdoc OpenAPI</strong> (Swagger UI). Document all endpoints with @Operation, @ApiResponse annotations."},
+      {d:"Thu", t:"Implement API versioning via URI path (/v1/orders) and explore header-based versioning trade-offs."},
+      {d:"Fri–Sat", t:"Add <strong>pagination</strong> (Pageable), sorting, and filtering to list endpoints. Write contract tests with Spring Cloud Contract."},
+    ],
+    tags:["OpenFeign","OpenAPI","Springdoc","Contract Testing","Versioning"],
+    deliverable:"Fully documented APIs with Feign client and contract tests."
+  },
+  {
+    phase:2, phaseLabel:"Phase 2 — Spring Cloud", phaseColor:"#1D9E75", phaseBg:"#E1F5EE", phaseText:"#085041",
+    title:"Service discovery & centralized config",
+    sub:"Netflix Eureka, Spring Cloud Config Server, and dynamic refresh",
+    days:[
+      {d:"Mon", t:"Set up a <strong>Spring Cloud Config Server</strong> backed by a local Git repo. Store application.yml files per service."},
+      {d:"Tue", t:"Connect your services to Config Server. Test <strong>@RefreshScope</strong> and /actuator/refresh to reload config without restart."},
+      {d:"Wed", t:"Set up <strong>Netflix Eureka Server</strong>. Register User Service and Order Service with @EnableDiscoveryClient."},
+      {d:"Thu", t:"Update OpenFeign clients to use service names (not hardcoded URLs). Watch load balancing across two instances."},
+      {d:"Fri–Sat", t:"Add an <strong>Inventory Service</strong> to your system. Wire all three services through Eureka. Simulate service-down scenarios."},
+    ],
+    tags:["Eureka","Config Server","@RefreshScope","Service Discovery","Load Balancing"],
+    deliverable:"Three services discovering each other dynamically via Eureka."
+  },
+  {
+    phase:2,
+    title:"API Gateway",
+    sub:"Spring Cloud Gateway — routing, filters, rate limiting, auth",
+    days:[
+      {d:"Mon", t:"Create a <strong>Spring Cloud Gateway</strong> project. Configure routes to User, Order, Inventory services by service name."},
+      {d:"Tue", t:"Write a custom <strong>GlobalFilter</strong> that adds request ID headers and logs request/response timing."},
+      {d:"Wed", t:"Implement a <strong>JWT auth filter</strong>: validate token, extract claims, pass X-User-Id header to downstream services."},
+      {d:"Thu", t:"Configure <strong>rate limiting</strong> with Redis-backed RequestRateLimiter filter. Test with a load generator (Apache Bench)."},
+      {d:"Fri–Sat", t:"Add <strong>circuit breaker filter</strong> on the gateway. Configure fallback routes for degraded services. Test failure scenarios."},
+    ],
+    tags:["Spring Cloud Gateway","JWT","Rate Limiting","GlobalFilter","Circuit Breaker"],
+    deliverable:"Gateway handling auth, rate limiting, and fallbacks for all services."
+  },
+  {
+    phase:2,
+    title:"Resilience patterns",
+    sub:"Resilience4j: circuit breaker, retry, bulkhead, time limiter",
+    days:[
+      {d:"Mon", t:"Add <strong>Resilience4j</strong> to Order Service. Wrap all Feign calls with @CircuitBreaker. Configure thresholds in application.yml."},
+      {d:"Tue", t:"Implement <strong>@Retry</strong> with exponential backoff on transient HTTP errors (5xx). Test with a flaky stub server."},
+      {d:"Wed", t:"Add <strong>@Bulkhead</strong> (thread pool isolation) to prevent one slow service from exhausting all threads."},
+      {d:"Thu", t:"Study circuit breaker state machine (CLOSED → OPEN → HALF-OPEN). Expose state via Actuator metrics and Grafana."},
+      {d:"Fri–Sat", t:"<strong>Chaos test:</strong> kill Inventory Service, verify Order Service degrades gracefully with fallback data instead of 500 errors."},
+    ],
+    tags:["Resilience4j","@CircuitBreaker","@Retry","@Bulkhead","@TimeLimiter"],
+    deliverable:"Fully resilient inter-service calls with measurable circuit breaker metrics."
+  },
+  {
+    phase:2,
+    title:"Asynchronous messaging with Kafka",
+    sub:"Event-driven architecture, producers, consumers, error handling",
+    days:[
+      {d:"Mon", t:"Run <strong>Kafka + Zookeeper</strong> with Docker Compose. Understand topics, partitions, consumer groups, and offsets."},
+      {d:"Tue", t:"Add <strong>spring-kafka</strong>. Publish an OrderPlaced event from Order Service when an order is created."},
+      {d:"Wed", t:"Consume OrderPlaced in Inventory Service to decrement stock, and in Notification Service to send a confirmation email."},
+      {d:"Thu", t:"Implement <strong>dead letter topic</strong> (DLT) handling. Retry failed messages 3 times then route to a DLT consumer."},
+      {d:"Fri–Sat", t:"Implement the <strong>Outbox Pattern</strong>: write event to an outbox table in same DB transaction, then relay to Kafka via polling."},
+    ],
+    tags:["Kafka","spring-kafka","Dead Letter Topic","Outbox Pattern","Event-Driven"],
+    deliverable:"Order placement triggers async stock reservation and email notification via Kafka."
+  },
+  {
+    phase:3, phaseLabel:"Phase 3 — Advanced Patterns", phaseColor:"#7F77DD", phaseBg:"#EEEDFE", phaseText:"#3C3489",
+    title:"Distributed data & CQRS",
+    sub:"Database-per-service, CQRS read models, and polyglot persistence",
+    days:[
+      {d:"Mon", t:"Migrate each service to its own <strong>PostgreSQL database</strong> in Docker. Remove all cross-DB joins. Enforce boundaries strictly."},
+      {d:"Tue", t:"Implement a <strong>CQRS read model</strong>: Order Service publishes events; a separate read-side service builds a denormalized view in MongoDB."},
+      {d:"Wed", t:"Add a <strong>Redis cache</strong> layer for the read model. Implement cache invalidation on update events."},
+      {d:"Thu", t:"Study eventual consistency trade-offs. Handle read-your-writes with version tokens and conditional reads."},
+      {d:"Fri–Sat", t:"Build an <strong>API Composition</strong> service that aggregates data from User, Order, and Inventory for a dashboard query."},
+    ],
+    tags:["CQRS","PostgreSQL","MongoDB","Redis","API Composition","Eventual Consistency"],
+    deliverable:"CQRS read model with Redis cache, separate from the write-side service."
+  },
+  {
+    phase:3,
+    title:"Distributed transactions — Saga pattern",
+    sub:"Choreography-based and orchestration-based Sagas",
+    days:[
+      {d:"Mon", t:"Study the Saga pattern vs 2-phase commit. Understand <strong>compensating transactions</strong> and why they replace rollbacks."},
+      {d:"Tue", t:"Implement a <strong>choreography Saga</strong>: OrderPlaced → InventoryReserved → PaymentProcessed → OrderConfirmed (each service reacts to events)."},
+      {d:"Wed", t:"Implement failure path: PaymentFailed → trigger InventoryCancelled → OrderCancelled with compensating events."},
+      {d:"Thu", t:"Refactor to an <strong>orchestration Saga</strong>: create an OrderSagaOrchestrator that drives each step and manages compensation."},
+      {d:"Fri–Sat", t:"Test Saga failure scenarios end-to-end. Add <strong>idempotency keys</strong> to prevent duplicate processing on retries."},
+    ],
+    tags:["Saga","Choreography","Orchestration","Compensating Transactions","Idempotency"],
+    deliverable:"End-to-end order flow with saga that handles failures and compensates correctly."
+  },
+  {
+    phase:3,
+    title:"Security & authentication",
+    sub:"OAuth2, JWT, Spring Security, and service-to-service auth",
+    days:[
+      {d:"Mon", t:"Set up <strong>Keycloak</strong> as an OAuth2 / OIDC authorization server. Create realms, clients, and user roles."},
+      {d:"Tue", t:"Secure all services with <strong>spring-security-oauth2-resource-server</strong>. Validate JWTs and enforce role-based access."},
+      {d:"Wed", t:"Configure the Gateway to act as an OAuth2 client: redirect unauthenticated users, pass tokens downstream."},
+      {d:"Thu", t:"Implement <strong>service-to-service auth</strong> with client credentials grant. Feign clients attach bearer tokens automatically."},
+      {d:"Fri–Sat", t:"Add <strong>method-level security</strong> (@PreAuthorize). Write security integration tests with @WithMockUser and real JWT tokens."},
+    ],
+    tags:["Keycloak","OAuth2","JWT","Spring Security","@PreAuthorize","Client Credentials"],
+    deliverable:"All services secured with Keycloak. Service-to-service calls use client credentials."
+  },
+  {
+    phase:4, phaseLabel:"Phase 4 — Production-Ready", phaseColor:"#D85A30", phaseBg:"#FAECE7", phaseText:"#712B13",
+    title:"Observability — metrics, tracing, logging",
+    sub:"Micrometer, Prometheus, Grafana, Zipkin, ELK stack",
+    days:[
+      {d:"Mon", t:"Add <strong>Micrometer + Prometheus</strong>. Expose /actuator/prometheus. Configure custom counters and timers for business events."},
+      {d:"Tue", t:"Deploy <strong>Prometheus + Grafana</strong> via Docker Compose. Build a dashboard: request rate, error rate, p99 latency per service."},
+      {d:"Wed", t:"Add <strong>Micrometer Tracing + Zipkin</strong>. Verify trace IDs propagate across Feign calls and Kafka consumer threads."},
+      {d:"Thu", t:"Set up <strong>structured JSON logging</strong> with Logback. Ship logs to Elasticsearch via Logstash. Query in Kibana."},
+      {d:"Fri–Sat", t:"Create a <strong>runbook</strong> for your system: alert thresholds, on-call playbook, and a worked failure diagnosis using traces + logs."},
+    ],
+    tags:["Micrometer","Prometheus","Grafana","Zipkin","ELK","Structured Logging"],
+    deliverable:"Full observability stack: metrics dashboard, distributed traces, and log search."
+  },
+  {
+    phase:4,
+    title:"Containers & Kubernetes",
+    sub:"Dockerizing services, K8s deployments, Helm, and health probes",
+    days:[
+      {d:"Mon", t:"Write multi-stage <strong>Dockerfiles</strong> for each service. Minimize image size. Use JLink or Spring Boot layered JARs."},
+      {d:"Tue", t:"Write <strong>Kubernetes manifests</strong>: Deployment, Service, ConfigMap, Secret for each microservice. Apply to a local cluster (kind/minikube)."},
+      {d:"Wed", t:"Configure <strong>liveness, readiness, and startup probes</strong> via Actuator endpoints. Test rolling deployment and self-healing."},
+      {d:"Thu", t:"Package everything into a <strong>Helm chart</strong>. Parameterize environment-specific values. Deploy to a dev and prod namespace."},
+      {d:"Fri–Sat", t:"Set up a basic <strong>CI/CD pipeline</strong> (GitHub Actions): build → test → Docker build → push → Helm upgrade on merge to main."},
+    ],
+    tags:["Docker","Kubernetes","Helm","Health Probes","CI/CD","GitHub Actions"],
+    deliverable:"All services running in Kubernetes, deployed via Helm through a CI/CD pipeline."
+  },
+  {
+    phase:4,
+    title:"Capstone project & architecture review",
+    sub:"Build a complete system, document decisions, present trade-offs",
+    days:[
+      {d:"Mon", t:"Design your capstone: an <strong>e-commerce platform</strong> with User, Product, Order, Payment, Notification services. Draw the architecture."},
+      {d:"Tue", t:"Write <strong>Architecture Decision Records</strong> (ADRs) for 5 key decisions: messaging choice, auth strategy, data model, deployment model, resilience."},
+      {d:"Wed", t:"Implement the full happy-path flow end-to-end. Verify with an integration test that places an order and confirms all downstream effects."},
+      {d:"Thu", t:"Run <strong>failure scenarios</strong>: kill each service one at a time. Document how the system degrades. Fix any gaps found."},
+      {d:"Fri–Sat", t:"Write a 1-page <strong>architecture summary</strong>. Present your system to a peer or record a Loom walkthrough. Review all 12 weeks."},
+    ],
+    tags:["Capstone","ADR","E-Commerce","Integration Testing","Architecture Review"],
+    deliverable:"Complete, documented microservice system with ADRs and a recorded walkthrough."
+  }
+];
+
+let currentPhase = 0;
+
+function filterPhase(phase, btn) {
+  currentPhase = phase;
+  document.querySelectorAll('.filt-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+function toggle(idx) {
+  const card = document.getElementById('wc'+idx);
+  card.classList.toggle('open');
+}
+
+function render() {
+  const plan = document.getElementById('plan');
+  let html = '';
+  let lastPhase = -1;
+  weeks.forEach((w, i) => {
+    if (currentPhase !== 0 && w.phase !== currentPhase) return;
+    if (w.phaseLabel && w.phase !== lastPhase) {
+      lastPhase = w.phase;
+      html += `<div class="phase-header"><div class="phase-dot" style="background:${w.phaseColor}"></div><span class="phase-label">${w.phaseLabel}</span></div>`;
+    }
+    const pct = Math.round(((i+1)/12)*100);
+    html += `<div class="week-card" id="wc${i}" onclick="toggle(${i})">
+      <div class="week-header">
+        <div class="week-num" style="background:${w.phaseBg};color:${w.phaseText}">${i+1}</div>
+        <div class="week-meta">
+          <div class="week-title">${w.title}</div>
+          <div class="week-sub">${w.sub}</div>
+        </div>
+        <i class="ti ti-chevron-down week-toggle" aria-hidden="true"></i>
+      </div>
+      <div class="week-body">
+        ${w.days.map(d=>`<div class="day-row"><span class="day-label">${d.d}</span><span class="day-content">${d.t}</span></div>`).join('')}
+        <div class="tags">${w.tags.map(t=>{
+          const cls = w.phase===1?'tag-blue':w.phase===2?'tag-teal':w.phase===3?'tag-purple':'tag-coral';
+          return `<span class="tag ${cls}">${t}</span>`;
+        }).join('')}</div>
+        <div class="deliverable"><strong><i class="ti ti-check" style="font-size:13px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>Week deliverable:</strong> ${w.deliverable}</div>
+      </div>
+    </div>`;
+  });
+  plan.innerHTML = html;
+}
+
+render();
+</script>
