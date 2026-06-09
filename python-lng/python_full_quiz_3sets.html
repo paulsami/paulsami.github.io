@@ -1,0 +1,600 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:1rem 0}
+/* HOME */
+.home{display:block}
+.hero{background:linear-gradient(135deg,#1e3a5f 0%,#1a5276 50%,#2e86c1 100%);border-radius:var(--border-radius-lg);padding:20px 24px;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(255,255,255,.06) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(255,255,255,.04) 0%,transparent 40%);pointer-events:none}
+.hero-inner{position:relative;z-index:1}
+.hero-title{font-family:var(--font-mono);font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:4px}
+.hero-sub{font-size:.76rem;color:#aed6f1;margin-bottom:14px;line-height:1.5}
+.hero-pills{display:flex;gap:7px;flex-wrap:wrap}
+.hpill{font-family:var(--font-mono);font-size:.6rem;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.13);color:#d6eaf8;border:0.5px solid rgba(255,255,255,.2)}
+.best-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.best-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:10px 14px;text-align:center}
+.best-lbl{font-family:var(--font-mono);font-size:.6rem;color:var(--color-text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.best-val{font-family:var(--font-mono);font-size:1.25rem;font-weight:700}
+.set-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem}
+.set-card{border-radius:var(--border-radius-lg);border:1.5px solid;padding:18px 16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.set-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+.set-card:hover::before{opacity:1}
+.sc1{border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.05)}
+.sc1::before{background:rgba(99,102,241,.06)}
+.sc2{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.05)}
+.sc2::before{background:rgba(16,185,129,.06)}
+.sc3{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.05)}
+.sc3::before{background:rgba(245,158,11,.06)}
+.sc-emoji{font-size:1.6rem;margin-bottom:8px}
+.sc-num{font-family:var(--font-mono);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.sc-title{font-family:var(--font-mono);font-size:.78rem;font-weight:600;color:var(--color-text-primary);margin-bottom:6px}
+.sc-desc{font-size:.71rem;color:var(--color-text-secondary);line-height:1.55;margin-bottom:10px}
+.sc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.sc-tag{font-family:var(--font-mono);font-size:.58rem;padding:2px 7px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.sc-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary)}
+.sc-marks{font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-secondary)}
+.sc-best{font-family:var(--font-mono);font-size:.72rem;font-weight:600}
+/* QUIZ */
+.quiz-screen{display:none}
+.qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.qhdr-left{display:flex;align-items:center;gap:10px}
+.qhdr-title{font-family:var(--font-mono);font-size:.8rem;font-weight:600;color:var(--color-text-primary)}
+.module-pip{font-family:var(--font-mono);font-size:.6rem;padding:2px 8px;border-radius:var(--border-radius-md);color:#fff}
+.score-row{display:flex;gap:8px;align-items:center}
+.sbox{font-family:var(--font-mono);font-size:.7rem;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary)}
+.btn{font-family:var(--font-mono);font-size:.68rem;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn.pr{background:#6366f1;border-color:#6366f1;color:#fff}
+.prog-wrap{margin-bottom:1.25rem}
+.prog-track{height:6px;background:var(--color-border-tertiary);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .35s cubic-bezier(.4,0,.2,1)}
+.pf1{background:linear-gradient(90deg,#6366f1,#8b5cf6)}
+.pf2{background:linear-gradient(90deg,#10b981,#06b6d4)}
+.pf3{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.prog-labels{display:flex;justify-content:space-between;margin-top:4px}
+.prog-lbl{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary)}
+/* Q card */
+.q-card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:1rem}
+.q-head{padding:10px 16px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.qnum-badge{font-family:var(--font-mono);font-size:.65rem;font-weight:700;color:#fff;padding:3px 10px;border-radius:var(--border-radius-md)}
+.qtopic-badge{font-family:var(--font-mono);font-size:.6rem;padding:2px 8px;border-radius:var(--border-radius-md);border:0.5px solid}
+.qmark{font-family:var(--font-mono);font-size:.6rem;padding:2px 8px;border-radius:var(--border-radius-md);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);margin-left:auto}
+.q-body{padding:16px}
+.q-txt{font-size:.82rem;color:var(--color-text-primary);line-height:1.65;margin-bottom:12px}
+pre.qc{font-family:var(--font-mono);font-size:.7rem;line-height:1.8;padding:10px 14px;background:#0d1117;border-radius:var(--border-radius-md);overflow-x:auto;white-space:pre;margin-bottom:12px;color:#e6edf3}
+.py-kw{color:#ff7b72}.py-str{color:#a5d6ff}.py-num{color:#79c0ff}.py-fn{color:#d2a8ff}.py-cm{color:#8b949e;font-style:italic}.py-bi{color:#ffa657}
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.opt{font-family:var(--font-mono);font-size:.74rem;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;transition:all .15s;text-align:left;line-height:1.5}
+.opt:hover:not(:disabled){background:var(--color-background-secondary);border-color:#6366f1}
+.opt.correct{background:#d1fae5;border-color:#10b981;color:#065f46;cursor:default}
+.opt.wrong{background:#fef2f2;border-color:#ef4444;color:#991b1b;cursor:default}
+.fill-wrap{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.fill-in{font-family:var(--font-mono);font-size:.8rem;padding:8px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);outline:none;flex:1;min-width:80px;max-width:240px}
+.fill-in:focus{border-color:#6366f1}
+.fill-in.ok{border-color:#10b981;background:#d1fae5;color:#065f46}
+.fill-in.bad{border-color:#ef4444;background:#fef2f2;color:#991b1b}
+.fb{border-radius:var(--border-radius-md);padding:10px 14px;font-size:.76rem;line-height:1.6;margin-top:8px;display:none}
+.fb.show{display:block}
+.fb.ok{background:#d1fae5;border:0.5px solid #10b981;color:#065f46}
+.fb.bad{background:#fef2f2;border:0.5px solid #ef4444;color:#991b1b}
+.q-nav{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap}
+/* RESULT */
+.result-panel{display:none;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:24px;text-align:center}
+.result-panel.show{display:block}
+.res-ring{width:100px;height:100px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;border:4px solid;position:relative}
+.res-pct{font-family:var(--font-mono);font-size:1.6rem;font-weight:700}
+.res-score{font-family:var(--font-mono);font-size:.9rem;color:var(--color-text-secondary);margin-bottom:6px}
+.res-msg{font-size:.82rem;color:var(--color-text-primary);margin-bottom:16px;line-height:1.6}
+.review-title{font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.review-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:18px}
+.rv{border-radius:var(--border-radius-md);padding:8px 4px;text-align:center;font-family:var(--font-mono);font-size:.65rem;border:0.5px solid}
+.rv.ok{background:#d1fae5;border-color:#10b981;color:#065f46}
+.rv.bad{background:#fef2f2;border-color:#ef4444;color:#991b1b}
+.rv.sk{background:var(--color-background-primary);border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
+.res-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+/* module breakdown */
+.mod-breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
+.mb-cell{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 6px;text-align:center}
+.mb-lbl{font-family:var(--font-mono);font-size:.58rem;color:var(--color-text-secondary);margin-bottom:3px}
+.mb-score{font-family:var(--font-mono);font-size:.9rem;font-weight:600}
+@media(max-width:540px){.set-grid{grid-template-columns:1fr}.best-row{grid-template-columns:repeat(2,1fr)}.review-grid{grid-template-columns:repeat(5,1fr)}.mod-breakdown{grid-template-columns:repeat(3,1fr)}}
+</style>
+
+<div class="root">
+
+<!-- HOME -->
+<div id="home" class="home">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-title">🐍 Python Engineering Quiz</div>
+      <div class="hero-sub">3 complete sets · 10 marks each · All 5 modules covered<br>Fundamentals · Data Structures · Functions · OOP · File Handling</div>
+      <div class="hero-pills">
+        <span class="hpill">M1: Fundamentals</span>
+        <span class="hpill">M2: Data Structures</span>
+        <span class="hpill">M3: Functions</span>
+        <span class="hpill">M4: OOP</span>
+        <span class="hpill">M5: File &amp; Exceptions</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="best-row">
+    <div class="best-box"><div class="best-lbl">Set 1 Best</div><div class="best-val" id="b1" style="color:#6366f1">—</div></div>
+    <div class="best-box"><div class="best-lbl">Set 2 Best</div><div class="best-val" id="b2" style="color:#10b981">—</div></div>
+    <div class="best-box"><div class="best-lbl">Set 3 Best</div><div class="best-val" id="b3" style="color:#f59e0b">—</div></div>
+    <div class="best-box"><div class="best-lbl">Overall Best</div><div class="best-val" id="bb" style="color:var(--color-text-primary)">—</div></div>
+  </div>
+
+  <div class="set-grid">
+    <div class="set-card sc1" onclick="startSet(0)">
+      <div class="sc-emoji">🟣</div>
+      <div class="sc-num" style="color:#6366f1">Set 01</div>
+      <div class="sc-title">Core Python</div>
+      <div class="sc-desc">Variables, loops, strings, lists, functions and basics of exception handling</div>
+      <div class="sc-tags"><span class="sc-tag">loops</span><span class="sc-tag">strings</span><span class="sc-tag">lists</span><span class="sc-tag">functions</span><span class="sc-tag">exceptions</span></div>
+      <div class="sc-footer"><span class="sc-marks">10 questions · 1 mark each</span><span class="sc-best" style="color:#6366f1" id="sc-b1">—</span></div>
+    </div>
+    <div class="set-card sc2" onclick="startSet(1)">
+      <div class="sc-emoji">🟢</div>
+      <div class="sc-num" style="color:#10b981">Set 02</div>
+      <div class="sc-title">Data Structures & OOP</div>
+      <div class="sc-desc">Tuples, sets, dicts, classes, inheritance, polymorphism and file operations</div>
+      <div class="sc-tags"><span class="sc-tag">tuples</span><span class="sc-tag">dicts</span><span class="sc-tag">classes</span><span class="sc-tag">OOP</span><span class="sc-tag">files</span></div>
+      <div class="sc-footer"><span class="sc-marks">10 questions · 1 mark each</span><span class="sc-best" style="color:#10b981" id="sc-b2">—</span></div>
+    </div>
+    <div class="set-card sc3" onclick="startSet(2)">
+      <div class="sc-emoji">🟡</div>
+      <div class="sc-num" style="color:#d97706">Set 03</div>
+      <div class="sc-title">Advanced Mixed</div>
+      <div class="sc-desc">Recursion, lambda, modules, advanced OOP, decorators, CSV and tricky output tracing</div>
+      <div class="sc-tags"><span class="sc-tag">recursion</span><span class="sc-tag">lambda</span><span class="sc-tag">modules</span><span class="sc-tag">decorators</span><span class="sc-tag">mixed</span></div>
+      <div class="sc-footer"><span class="sc-marks">10 questions · 1 mark each</span><span class="sc-best" style="color:#d97706" id="sc-b3">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen" class="quiz-screen">
+  <div class="qhdr">
+    <div class="qhdr-left">
+      <div class="qhdr-title" id="q-title">Set 1</div>
+      <div class="module-pip" id="q-mod-pip">M1</div>
+    </div>
+    <div class="score-row">
+      <div class="sbox">✓ <span id="q-c">0</span></div>
+      <div class="sbox">✗ <span id="q-w">0</span></div>
+      <div class="sbox">Q <span id="q-n">1</span>/10</div>
+      <button class="btn" onclick="goHome()" style="padding:4px 10px;font-size:.62rem">⌂ Home</button>
+    </div>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill pf1" id="q-prog" style="width:0%"></div></div>
+    <div class="prog-labels"><span class="prog-lbl" id="prog-l">Q1 of 10</span><span class="prog-lbl" id="prog-r">0%</span></div>
+  </div>
+  <div id="q-area"></div>
+  <div class="result-panel" id="result-panel">
+    <div class="res-ring" id="res-ring"><span class="res-pct" id="res-pct">0%</span></div>
+    <div class="res-score" id="res-score">0/10 marks</div>
+    <div class="res-msg" id="res-msg"></div>
+    <div class="review-title">Question Review</div>
+    <div class="review-grid" id="review-grid"></div>
+    <div class="review-title">Module Breakdown</div>
+    <div class="mod-breakdown" id="mod-breakdown"></div>
+    <div class="res-actions">
+      <button class="btn pr" onclick="restartCurrent()">↺ Try Again</button>
+      <button class="btn" onclick="goHome()">⌂ All Sets</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// QUIZ DATA
+// ═══════════════════════════════════════════
+const SETS = [
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SET 1 — Core Python
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[
+{mod:'M1',topic:'Variables',type:'output',
+ q:'What is the output of the following code?',
+ code:`<span class="py-bi">x</span> = <span class="py-num">5</span>
+<span class="py-bi">y</span> = <span class="py-num">2</span>
+<span class="py-bi">print</span>(x ** y, x // y, x % y)`,
+ opts:['25 2 1','10 2 1','25 2.5 1','7 2 1'],ans:0,
+ ex:'** is exponentiation: 5²=25. // is floor division: 5//2=2. % is modulo: 5%2=1. Output: 25 2 1'},
+
+{mod:'M1',topic:'Loops',type:'output',
+ q:'How many times is "Hi" printed?',
+ code:`<span class="py-kw">for</span> i <span class="py-kw">in</span> <span class="py-bi">range</span>(<span class="py-num">1</span>, <span class="py-num">10</span>, <span class="py-num">3</span>):
+    <span class="py-bi">print</span>(<span class="py-str">"Hi"</span>)`,
+ opts:['3','4','9','10'],ans:0,
+ ex:'range(1,10,3) generates: 1, 4, 7. When next would be 10, 10 is not < 10, so stops. Three values → "Hi" printed 3 times.'},
+
+{mod:'M1',topic:'Control Flow',type:'mcq',
+ q:'What does the continue statement do inside a loop?',
+ opts:['Exits the loop immediately','Skips the rest of the current iteration and moves to the next','Pauses execution','Acts as a no-operation placeholder'],ans:1,
+ ex:'continue skips the remaining code in the current iteration and jumps to the next loop cycle. break exits the loop entirely. pass is a no-op placeholder.'},
+
+{mod:'M2',topic:'Strings',type:'output',
+ q:'What does this code print?',
+ code:`<span class="py-bi">s</span> = <span class="py-str">"Engineering"</span>
+<span class="py-bi">print</span>(s[<span class="py-num">0</span>], s[-<span class="py-num">1</span>], s[<span class="py-num">2</span>:<span class="py-num">5</span>])`,
+ opts:['E g gin','E g ngi','E g gin','E g nee'],ans:0,
+ ex:'s[0]="E", s[-1]="g" (last char), s[2:5]="gin" (indices 2,3,4). Output: E g gin'},
+
+{mod:'M2',topic:'Lists',type:'output',
+ q:'What is the output?',
+ code:`<span class="py-bi">a</span> = [<span class="py-num">10</span>, <span class="py-num">20</span>, <span class="py-num">30</span>, <span class="py-num">40</span>]
+a.<span class="py-bi">append</span>(<span class="py-num">50</span>)
+a.<span class="py-bi">remove</span>(<span class="py-num">20</span>)
+<span class="py-bi">print</span>(a[<span class="py-num">1</span>])`,
+ opts:['20','30','10','50'],ans:1,
+ ex:'After append: [10,20,30,40,50]. After remove(20): [10,30,40,50]. a[1] = 30.'},
+
+{mod:'M2',topic:'List Comp',type:'output',
+ q:'What does this list comprehension produce?',
+ code:`<span class="py-bi">result</span> = [x*x <span class="py-kw">for</span> x <span class="py-kw">in</span> <span class="py-bi">range</span>(<span class="py-num">1</span>,<span class="py-num">5</span>) <span class="py-kw">if</span> x % <span class="py-num">2</span> == <span class="py-num">0</span>]
+<span class="py-bi">print</span>(result)`,
+ opts:['[1,4,9,16]','[4,16]','[2,4]','[1,9]'],ans:1,
+ ex:'range(1,5) = [1,2,3,4]. Filter: only even (2,4). Square them: [4,16].'},
+
+{mod:'M3',topic:'Functions',type:'output',
+ q:'What is printed?',
+ code:`<span class="py-kw">def</span> <span class="py-fn">greet</span>(name, msg=<span class="py-str">"Hello"</span>):
+    <span class="py-kw">return</span> f<span class="py-str">"{msg}, {name}!"</span>
+
+<span class="py-bi">print</span>(<span class="py-fn">greet</span>(<span class="py-str">"Alice"</span>))
+<span class="py-bi">print</span>(<span class="py-fn">greet</span>(<span class="py-str">"Bob"</span>, <span class="py-str">"Hi"</span>))`,
+ opts:['Hello, Alice!\nHi, Bob!','Hello Alice\nHi Bob','Alice Hello\nBob Hi','Compile error'],ans:0,
+ ex:'"Hello" is the default value for msg. greet("Alice") uses default → "Hello, Alice!". greet("Bob","Hi") overrides → "Hi, Bob!"'},
+
+{mod:'M3',topic:'Scope',type:'mcq',
+ q:'What keyword is needed to modify a global variable inside a function?',
+ opts:['local','extern','global','nonlocal'],ans:2,
+ ex:'The global keyword tells Python that the variable refers to the one in the global scope, not a new local variable. nonlocal is for enclosing (not global) scope in nested functions.'},
+
+{mod:'M5',topic:'Exceptions',type:'mcq',
+ q:'Which block always executes whether an exception occurs or not?',
+ opts:['try','except','else','finally'],ans:3,
+ ex:'finally always runs regardless of whether an exception was raised or caught. It is used for cleanup like closing files. else runs only when NO exception occurs.'},
+
+{mod:'M5',topic:'File Handling',type:'fill',
+ q:'Complete: To safely open a file that automatically closes when done, use the <code>___</code> statement.',
+ blanks:[{id:'s1f1',ans:'with',hint:'keyword'}],
+ ex:'"with open(filename) as f:" is the context manager pattern. It automatically calls f.close() even if an exception occurs — safer than manually calling close().'},
+],
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SET 2 — Data Structures & OOP
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[
+{mod:'M2',topic:'Tuples',type:'mcq',
+ q:'Which statement about tuples is CORRECT?',
+ opts:['Tuples are mutable','Tuples use square brackets','Tuples are immutable ordered sequences','Tuples cannot hold different data types'],ans:2,
+ ex:'Tuples are immutable (cannot be changed after creation), ordered, and can hold any data type. They use parentheses () not brackets []. Their immutability makes them hashable (usable as dict keys).'},
+
+{mod:'M2',topic:'Sets',type:'output',
+ q:'What does this print?',
+ code:`<span class="py-bi">a</span> = {<span class="py-num">1</span>, <span class="py-num">2</span>, <span class="py-num">3</span>, <span class="py-num">4</span>}
+<span class="py-bi">b</span> = {<span class="py-num">3</span>, <span class="py-num">4</span>, <span class="py-num">5</span>, <span class="py-num">6</span>}
+<span class="py-bi">print</span>(a & b)
+<span class="py-bi">print</span>(a | b)`,
+ opts:['{3,4}\n{1,2,3,4,5,6}','{1,2,3,4,5,6}\n{3,4}','{1,2}\n{5,6}','{3,4,5,6}\n{1,2}'],ans:0,
+ ex:'& is intersection (common elements): {3,4}. | is union (all unique elements): {1,2,3,4,5,6}.'},
+
+{mod:'M2',topic:'Dictionaries',type:'output',
+ q:'What is the output?',
+ code:`<span class="py-bi">d</span> = {<span class="py-str">"x"</span>: <span class="py-num">10</span>, <span class="py-str">"y"</span>: <span class="py-num">20</span>}
+d[<span class="py-str">"z"</span>] = <span class="py-num">30</span>
+<span class="py-kw">del</span> d[<span class="py-str">"x"</span>]
+<span class="py-bi">print</span>(<span class="py-bi">len</span>(d), d.<span class="py-bi">get</span>(<span class="py-str">"x"</span>, <span class="py-str">"NA"</span>))`,
+ opts:['2 NA','3 NA','2 10','3 10'],ans:0,
+ ex:'After adding "z": 3 items. After del "x": 2 items. d.get("x","NA") returns "NA" because "x" no longer exists. Output: 2 NA'},
+
+{mod:'M4',topic:'Classes',type:'mcq',
+ q:'What is the role of __init__ in a Python class?',
+ opts:['Destroys an object','Initialises instance attributes when an object is created','Defines class-level variables only','Makes a class abstract'],ans:1,
+ ex:'__init__ is the constructor — it is automatically called when you create an object with MyClass(). It sets up instance attributes using self. Example: self.name = name.'},
+
+{mod:'M4',topic:'Inheritance',type:'output',
+ q:'What is printed?',
+ code:`<span class="py-kw">class</span> <span class="py-fn">Animal</span>:
+    <span class="py-kw">def</span> <span class="py-fn">speak</span>(self):
+        <span class="py-kw">return</span> <span class="py-str">"..."</span>
+
+<span class="py-kw">class</span> <span class="py-fn">Dog</span>(<span class="py-fn">Animal</span>):
+    <span class="py-kw">def</span> <span class="py-fn">speak</span>(self):
+        <span class="py-kw">return</span> <span class="py-str">"Woof"</span>
+
+<span class="py-bi">d</span> = <span class="py-fn">Dog</span>()
+<span class="py-bi">print</span>(d.<span class="py-fn">speak</span>())`,
+ opts:['...','Woof','Animal','Error'],ans:1,
+ ex:'Dog overrides speak(). When d.speak() is called on a Dog object, Python uses Dog\'s version → "Woof". This is method overriding (polymorphism).'},
+
+{mod:'M4',topic:'Encapsulation',type:'mcq',
+ q:'In Python, a name starting with __ (double underscore) inside a class is:',
+ opts:['A public attribute','A protected attribute','Subject to name mangling (private)','A class method'],ans:2,
+ ex:'Double underscore (__) triggers name mangling: __var becomes _ClassName__var. This makes it harder to access accidentally from outside. Single _ is convention for "protected". Neither is truly private like in Java.'},
+
+{mod:'M4',topic:'OOP',type:'output',
+ q:'What does this print?',
+ code:`<span class="py-kw">class</span> <span class="py-fn">Counter</span>:
+    count = <span class="py-num">0</span>
+    <span class="py-kw">def</span> <span class="py-fn">__init__</span>(self):
+        <span class="py-fn">Counter</span>.count += <span class="py-num">1</span>
+
+<span class="py-fn">Counter</span>()
+<span class="py-fn">Counter</span>()
+<span class="py-fn">Counter</span>()
+<span class="py-bi">print</span>(<span class="py-fn">Counter</span>.count)`,
+ opts:['0','1','2','3'],ans:3,
+ ex:'count is a class variable shared across all instances. Each Counter() call triggers __init__ which increments Counter.count. After 3 calls, count = 3.'},
+
+{mod:'M5',topic:'File Reading',type:'mcq',
+ q:'Which method reads the entire file content as a single string?',
+ opts:['readline()','readlines()','read()','getline()'],ans:2,
+ ex:'read() returns the whole file as one string. readline() reads one line. readlines() returns a list of lines. getline() does not exist in Python\'s standard file API.'},
+
+{mod:'M5',topic:'Exceptions',type:'output',
+ q:'What is printed?',
+ code:`<span class="py-kw">try</span>:
+    x = <span class="py-bi">int</span>(<span class="py-str">"abc"</span>)
+<span class="py-kw">except</span> <span class="py-bi">ValueError</span>:
+    <span class="py-bi">print</span>(<span class="py-str">"Bad value"</span>)
+<span class="py-kw">else</span>:
+    <span class="py-bi">print</span>(<span class="py-str">"Success"</span>)
+<span class="py-kw">finally</span>:
+    <span class="py-bi">print</span>(<span class="py-str">"Done"</span>)`,
+ opts:['Bad value\nDone','Success\nDone','Bad value\nSuccess\nDone','Done'],ans:0,
+ ex:'int("abc") raises ValueError → except runs ("Bad value"). else is skipped (exception occurred). finally always runs ("Done"). Output: Bad value\\nDone'},
+
+{mod:'M2',topic:'Strings',type:'fill',
+ q:'The string method that splits a string into a list at each space is <code>___()</code>.',
+ blanks:[{id:'s2f1',ans:'split',hint:'method name'}],
+ ex:'"hello world".split() returns ["hello","world"]. You can specify a delimiter: "a,b,c".split(",") returns ["a","b","c"]. The reverse is join(): " ".join(["a","b"]) returns "a b".'},
+],
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SET 3 — Advanced Mixed
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[
+{mod:'M3',topic:'Recursion',type:'output',
+ q:'What does fib(5) return using this recursive definition?',
+ code:`<span class="py-kw">def</span> <span class="py-fn">fib</span>(n):
+    <span class="py-kw">if</span> n <= <span class="py-num">1</span>:
+        <span class="py-kw">return</span> n
+    <span class="py-kw">return</span> <span class="py-fn">fib</span>(n-<span class="py-num">1</span>) + <span class="py-fn">fib</span>(n-<span class="py-num">2</span>)`,
+ opts:['3','5','8','13'],ans:1,
+ ex:'Fibonacci: 0,1,1,2,3,5,... → fib(5)=5. Chain: fib(5)=fib(4)+fib(3)=3+2=5.'},
+
+{mod:'M3',topic:'Lambda',type:'output',
+ q:'What does this code print?',
+ code:`<span class="py-bi">nums</span> = [<span class="py-num">3</span>, <span class="py-num">1</span>, <span class="py-num">4</span>, <span class="py-num">1</span>, <span class="py-num">5</span>]
+<span class="py-bi">result</span> = <span class="py-bi">list</span>(<span class="py-bi">filter</span>(<span class="py-kw">lambda</span> x: x > <span class="py-num">2</span>, nums))
+<span class="py-bi">print</span>(result)`,
+ opts:['[3,4,5]','[1,1]','[3,1,4,1,5]','[4,5]'],ans:0,
+ ex:'filter applies the lambda to each element. lambda x: x>2 keeps elements greater than 2. From [3,1,4,1,5]: 3>2✓, 1>2✗, 4>2✓, 1>2✗, 5>2✓ → [3,4,5].'},
+
+{mod:'M3',topic:'*args',type:'output',
+ q:'What is the output?',
+ code:`<span class="py-kw">def</span> <span class="py-fn">total</span>(*args):
+    <span class="py-kw">return</span> <span class="py-bi">sum</span>(args)
+
+<span class="py-bi">print</span>(<span class="py-fn">total</span>(<span class="py-num">1</span>, <span class="py-num">2</span>, <span class="py-num">3</span>))
+<span class="py-bi">print</span>(<span class="py-fn">total</span>(<span class="py-num">10</span>, <span class="py-num">20</span>))`,
+ opts:['6\n30','123\n1020','Error\nError','6\n20'],ans:0,
+ ex:'*args collects all positional arguments as a tuple. sum(args) adds them. total(1,2,3)→sum((1,2,3))=6. total(10,20)→sum((10,20))=30.'},
+
+{mod:'M4',topic:'super()',type:'mcq',
+ q:'What does super().__init__() do inside a child class?',
+ opts:['Creates a new parent object','Calls the parent class constructor to initialise inherited attributes','Overrides the parent class','Deletes the parent class'],ans:1,
+ ex:'super().__init__() calls the parent\'s __init__ so inherited attributes are properly set up. Without it, the parent\'s setup code won\'t run and you may miss initialisation of inherited fields.'},
+
+{mod:'M4',topic:'Polymorphism',type:'output',
+ q:'What is printed?',
+ code:`<span class="py-kw">class</span> <span class="py-fn">Shape</span>:
+    <span class="py-kw">def</span> <span class="py-fn">area</span>(self): <span class="py-kw">return</span> <span class="py-num">0</span>
+
+<span class="py-kw">class</span> <span class="py-fn">Square</span>(<span class="py-fn">Shape</span>):
+    <span class="py-kw">def</span> <span class="py-fn">__init__</span>(self,s): self.s=s
+    <span class="py-kw">def</span> <span class="py-fn">area</span>(self): <span class="py-kw">return</span> self.s**<span class="py-num">2</span>
+
+<span class="py-bi">shapes</span> = [<span class="py-fn">Shape</span>(), <span class="py-fn">Square</span>(<span class="py-num">4</span>)]
+<span class="py-kw">for</span> sh <span class="py-kw">in</span> shapes:
+    <span class="py-bi">print</span>(sh.<span class="py-fn">area</span>())`,
+ opts:['0\n16','0\n4','16\n0','0\n8'],ans:0,
+ ex:'Shape.area()→0. Square(4).area()→4²=16. Polymorphism: same method name area() behaves differently per class. Output: 0 then 16.'},
+
+{mod:'M3',topic:'Modules',type:'mcq',
+ q:'Which import style brings only the sqrt function from the math module?',
+ opts:['import math','import sqrt from math','from math import sqrt','from math import *'],ans:2,
+ ex:'"from math import sqrt" imports only sqrt, so you can call sqrt(16) directly without math.sqrt(16). "import math" needs math.sqrt(). "import *" imports everything (bad practice). Option B is invalid syntax.'},
+
+{mod:'M5',topic:'CSV',type:'mcq',
+ q:'Which Python module is used to read and write CSV files?',
+ opts:['json','csv','pickle','pandas'],ans:1,
+ ex:'The built-in csv module handles CSV files: csv.reader() to read, csv.writer() to write. pandas (not built-in) also works but needs installation. json handles JSON, pickle handles binary serialisation.'},
+
+{mod:'M1',topic:'Operators',type:'output',
+ q:'What does this print?',
+ code:`<span class="py-bi">x</span> = <span class="py-num">10</span>
+<span class="py-bi">print</span>(x >> <span class="py-num">1</span>)
+<span class="py-bi">print</span>(x << <span class="py-num">1</span>)
+<span class="py-bi">print</span>(<span class="py-str">"py"</span> <span class="py-kw">in</span> <span class="py-str">"python"</span>)`,
+ opts:['5\n20\nTrue','5\n20\nFalse','2\n40\nTrue','20\n5\nTrue'],ans:0,
+ ex:'>> shifts bits right: 10 (1010) >> 1 = 5 (0101). << shifts left: 10 << 1 = 20. "py" in "python" → True (membership operator).'},
+
+{mod:'M2',topic:'Dict Comprehension',type:'output',
+ q:'What does this print?',
+ code:`<span class="py-bi">squares</span> = {x: x**<span class="py-num">2</span> <span class="py-kw">for</span> x <span class="py-kw">in</span> <span class="py-bi">range</span>(<span class="py-num">1</span>,<span class="py-num">4</span>)}
+<span class="py-bi">print</span>(squares[<span class="py-num">3</span>])`,
+ opts:['9','6','3','KeyError'],ans:0,
+ ex:'Dict comprehension: {1:1, 2:4, 3:9}. squares[3] = 3² = 9.'},
+
+{mod:'M5',topic:'Custom Exception',type:'fill',
+ q:'To create a custom exception class, it must inherit from the built-in <code>___</code> class.',
+ blanks:[{id:'s3f1',ans:'Exception',hint:'base class'}],
+ ex:'class MyError(Exception): pass — all custom exceptions inherit from Exception (or a subclass of it). This ensures they work with try/except and have standard exception features like args and str representation.'},
+]
+];
+
+// ══════════════════════
+// STATE
+// ══════════════════════
+let activeSet=0, curr=0, correct=0, wrong=0, answered=[];
+const bests=[null,null,null];
+const MOD_COLORS={'M1':'#6366f1','M2':'#0ea5e9','M3':'#10b981','M4':'#f59e0b','M5':'#ef4444'};
+const PF=['pf1','pf2','pf3'];
+const SET_TITLES=['Set 1 — Core Python','Set 2 — Data Structures & OOP','Set 3 — Advanced Mixed'];
+
+function startSet(idx){
+  activeSet=idx;curr=0;correct=0;wrong=0;answered=[];
+  document.getElementById('home').style.display='none';
+  const qs=document.getElementById('quiz-screen');qs.style.display='block';
+  document.getElementById('result-panel').className='result-panel';
+  document.getElementById('q-area').style.display='block';
+  document.getElementById('q-title').textContent=SET_TITLES[idx];
+  const pf=document.getElementById('q-prog');pf.className='prog-fill '+PF[idx];
+  ['q-c','q-w'].forEach(id=>document.getElementById(id).textContent='0');
+  renderQ();
+}
+
+function renderQ(){
+  const q=SETS[activeSet][curr];
+  document.getElementById('q-n').textContent=curr+1;
+  document.getElementById('q-prog').style.width=(curr/10*100)+'%';
+  document.getElementById('prog-l').textContent=`Q${curr+1} of 10`;
+  document.getElementById('prog-r').textContent=Math.round(curr/10*100)+'%';
+  const mc=MOD_COLORS[q.mod]||'#6366f1';
+  document.getElementById('q-mod-pip').textContent=q.mod+' · '+q.topic;
+  document.getElementById('q-mod-pip').style.background=mc;
+  const nb=['#6366f1','#10b981','#d97706'][activeSet];
+  const html=`<div class="q-card">
+    <div class="q-head">
+      <span class="qnum-badge" style="background:${nb}">Q${curr+1}</span>
+      <span class="qtopic-badge" style="color:${mc};border-color:${mc}40;background:${mc}12">${q.topic}</span>
+      <span class="qmark">1 mark</span>
+    </div>
+    <div class="q-body">
+      <div class="q-txt">${q.q}</div>
+      ${q.code?`<pre class="qc">${q.code}</pre>`:''}
+      ${q.type==='fill'?renderFill(q):renderOpts(q)}
+      <div class="q-nav">
+        ${q.type==='fill'?`<button class="btn pr" onclick="checkFill(${curr})">Check ›</button>`:'<span></span>'}
+        <button class="btn" onclick="skipQ()">Skip →</button>
+      </div>
+      <div class="fb" id="fb-${curr}"></div>
+    </div>
+  </div>`;
+  document.getElementById('q-area').innerHTML=html;
+}
+
+function renderOpts(q){
+  return `<div class="opts">${q.opts.map((o,i)=>`<button class="opt" id="opt-${curr}-${i}" onclick="pickOpt(${curr},${i})">${o}</button>`).join('')}</div>`;
+}
+function renderFill(q){
+  return `<div class="fill-wrap">${q.blanks.map(b=>`<input class="fill-in" id="${b.id}" placeholder="${b.hint}" onkeydown="if(event.key==='Enter')checkFill(${curr})">`).join('')}</div>`;
+}
+
+function pickOpt(qi,chosen){
+  if(answered[qi]!==undefined)return;
+  const q=SETS[activeSet][qi];answered[qi]=chosen;
+  const ok=chosen===q.ans;
+  if(ok)correct++;else wrong++;updateScore();
+  q.opts.forEach((_,i)=>{const b=document.getElementById('opt-'+qi+'-'+i);if(!b)return;b.disabled=true;
+    if(i===q.ans)b.className='opt correct';else if(i===chosen&&!ok)b.className='opt wrong';});
+  showFb(qi,ok,q.ex);setTimeout(advance,2000);
+}
+function checkFill(qi){
+  if(answered[qi]!==undefined)return;
+  const q=SETS[activeSet][qi];let ok=true;
+  q.blanks.forEach(b=>{
+    const inp=document.getElementById(b.id);if(!inp)return;
+    const v=inp.value.trim().toLowerCase();const a=b.ans.toLowerCase();
+    inp.className='fill-in '+(v===a?'ok':'bad');inp.disabled=true;if(v!==a)ok=false;
+  });
+  answered[qi]=ok?'ok':'bad';if(ok)correct++;else wrong++;updateScore();
+  showFb(qi,ok,q.ex);setTimeout(advance,2200);
+}
+function showFb(qi,ok,ex){
+  const fb=document.getElementById('fb-'+qi);if(!fb)return;
+  fb.className='fb show '+(ok?'ok':'bad');
+  fb.innerHTML=(ok?'✓ Correct! ':'✗ Not quite. ')+ex;
+}
+function skipQ(){answered[curr]=answered[curr]??'skip';advance();}
+function advance(){curr++;if(curr>=10){showResult();return;}renderQ();}
+function updateScore(){
+  document.getElementById('q-c').textContent=correct;
+  document.getElementById('q-w').textContent=wrong;
+}
+
+function showResult(){
+  document.getElementById('q-area').style.display='none';
+  document.getElementById('q-prog').style.width='100%';
+  document.getElementById('prog-l').textContent='Complete!';
+  document.getElementById('prog-r').textContent='100%';
+  const panel=document.getElementById('result-panel');panel.className='result-panel show';
+  const pct=correct*10;
+  const ring=document.getElementById('res-ring');
+  const col=pct>=80?'#10b981':pct>=60?'#f59e0b':'#ef4444';
+  ring.style.borderColor=col;
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-pct').style.color=col;
+  document.getElementById('res-score').textContent=correct+'/10 marks';
+  const msgs=[[90,'🎉 Outstanding! You have strong command of Python.'],[70,'👍 Good work! Review the questions you missed.'],[50,'📚 Getting there! Focus on your weak modules.'],[0,'💡 Keep practicing! Go through the guide and try again.']];
+  document.getElementById('res-msg').textContent=msgs.find(([t])=>pct>=t)[1];
+  // review grid
+  const rg=document.getElementById('review-grid');rg.innerHTML='';
+  SETS[activeSet].forEach((q,i)=>{
+    const a=answered[i];const ok=a===q.ans||a==='ok';const sk=!ok&&(a==='skip'||a===undefined);
+    const d=document.createElement('div');d.className='rv '+(sk?'sk':ok?'ok':'bad');
+    d.innerHTML=`Q${i+1}<br>${sk?'—':ok?'✓':'✗'}`;rg.appendChild(d);
+  });
+  // module breakdown
+  const modScores={};
+  SETS[activeSet].forEach((q,i)=>{
+    if(!modScores[q.mod])modScores[q.mod]={done:0,total:0};
+    modScores[q.mod].total++;
+    const a=answered[i];if(a===q.ans||a==='ok')modScores[q.mod].done++;
+  });
+  const mb=document.getElementById('mod-breakdown');mb.innerHTML='';
+  Object.entries(modScores).forEach(([mod,s])=>{
+    const col=MOD_COLORS[mod]||'#6366f1';
+    const cell=document.createElement('div');cell.className='mb-cell';
+    cell.innerHTML=`<div class="mb-lbl">${mod}</div><div class="mb-score" style="color:${col}">${s.done}/${s.total}</div>`;
+    mb.appendChild(cell);
+  });
+  // save best
+  if(bests[activeSet]===null||correct>bests[activeSet])bests[activeSet]=correct;
+  updateBests();
+}
+
+function updateBests(){
+  [0,1,2].forEach(i=>{
+    const v=bests[i];const s=v!==null?v+'/10':'—';
+    const ids=[['b1','sc-b1'],['b2','sc-b2'],['b3','sc-b3']][i];
+    ids.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=s;});
+  });
+  const filled=bests.filter(b=>b!==null);
+  document.getElementById('bb').textContent=filled.length?Math.max(...filled)+'/10':'—';
+}
+
+function restartCurrent(){
+  curr=0;correct=0;wrong=0;answered=[];
+  document.getElementById('result-panel').className='result-panel';
+  document.getElementById('q-area').style.display='block';
+  ['q-c','q-w'].forEach(id=>document.getElementById(id).textContent='0');
+  document.getElementById('q-n').textContent='1';
+  document.getElementById('q-prog').style.width='0%';
+  document.getElementById('prog-l').textContent='Q1 of 10';
+  document.getElementById('prog-r').textContent='0%';
+  renderQ();
+}
+function goHome(){
+  document.getElementById('home').style.display='block';
+  document.getElementById('quiz-screen').style.display='none';
+}
+</script>
