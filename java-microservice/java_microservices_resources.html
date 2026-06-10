@@ -1,222 +1,491 @@
-
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-.wrap{padding:1.5rem 0;font-family:var(--font-sans)}
-.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem}
-.filt{background:transparent;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:5px 13px;font-size:12px;cursor:pointer;color:var(--color-text-secondary);transition:all .15s}
-.filt:hover{background:var(--color-background-secondary)}
-.filt.on{font-weight:500}
-.filt.on.all{background:#E6F1FB;border-color:#378ADD;color:#0C447C}
-.filt.on.books{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
-.filt.on.courses{background:#E1F5EE;border-color:#1D9E75;color:#085041}
-.filt.on.free{background:#FAEEDA;border-color:#EF9F27;color:#633806}
-.filt.on.blogs{background:#FAECE7;border-color:#D85A30;color:#712B13}
-.section-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--color-text-tertiary);margin:1.25rem 0 .6rem}
-.section-label:first-of-type{margin-top:0}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:.9rem 1.1rem;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:border-color .15s}
-.card:hover{border-color:var(--color-border-secondary)}
-.card-icon{width:38px;height:38px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.card-body{flex:1;min-width:0}
-.card-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
-.card-sub{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.tag{font-size:11px;padding:1px 7px;border-radius:99px}
-.tag-books{background:#EEEDFE;color:#3C3489}
-.tag-courses{background:#E1F5EE;color:#085041}
-.tag-free{background:#FAEEDA;color:#633806}
-.tag-blogs{background:#FAECE7;color:#712B13}
-.tag-must{background:#E6F1FB;color:#0C447C}
-.star{color:#EF9F27;font-size:12px;margin-left:4px}
-.hidden{display:none}
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  .wrap {
+    padding: 1.5rem 0;
+    font-family: var(--font-sans);
+  }
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .filt {
+    background: transparent;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 5px 13px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    transition: all 0.15s;
+  }
+  .filt:hover {
+    background: var(--color-background-secondary);
+  }
+  .filt.on {
+    font-weight: 500;
+  }
+  .filt.on.all {
+    background: #e6f1fb;
+    border-color: #378add;
+    color: #0c447c;
+  }
+  .filt.on.books {
+    background: #eeedfe;
+    border-color: #7f77dd;
+    color: #3c3489;
+  }
+  .filt.on.courses {
+    background: #e1f5ee;
+    border-color: #1d9e75;
+    color: #085041;
+  }
+  .filt.on.free {
+    background: #faeeda;
+    border-color: #ef9f27;
+    color: #633806;
+  }
+  .filt.on.blogs {
+    background: #faece7;
+    border-color: #d85a30;
+    color: #712b13;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-tertiary);
+    margin: 1.25rem 0 0.6rem;
+  }
+  .section-label:first-of-type {
+    margin-top: 0;
+  }
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 0.9rem 1.1rem;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .card:hover {
+    border-color: var(--color-border-secondary);
+  }
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .card-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-bottom: 3px;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .tag {
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 99px;
+  }
+  .tag-books {
+    background: #eeedfe;
+    color: #3c3489;
+  }
+  .tag-courses {
+    background: #e1f5ee;
+    color: #085041;
+  }
+  .tag-free {
+    background: #faeeda;
+    color: #633806;
+  }
+  .tag-blogs {
+    background: #faece7;
+    color: #712b13;
+  }
+  .tag-must {
+    background: #e6f1fb;
+    color: #0c447c;
+  }
+  .star {
+    color: #ef9f27;
+    font-size: 12px;
+    margin-left: 4px;
+  }
+  .hidden {
+    display: none;
+  }
 </style>
 
 <div class="wrap">
-<h2 class="sr-only">Curated books, courses, free resources, and blogs for Java microservice architecture.</h2>
+  <h2 class="sr-only">
+    Curated books, courses, free resources, and blogs for Java microservice
+    architecture.
+  </h2>
 
-<div class="filter-row">
-  <button class="filt on all" onclick="filter('all',this)">All resources</button>
-  <button class="filt books" onclick="filter('books',this)"><i class="ti ti-book" aria-hidden="true" style="font-size:12px;margin-right:3px"></i>Books</button>
-  <button class="filt courses" onclick="filter('courses',this)"><i class="ti ti-video" aria-hidden="true" style="font-size:12px;margin-right:3px"></i>Courses</button>
-  <button class="filt free" onclick="filter('free',this)"><i class="ti ti-currency-dollar-off" aria-hidden="true" style="font-size:12px;margin-right:3px"></i>Free</button>
-  <button class="filt blogs" onclick="filter('blogs',this)"><i class="ti ti-rss" aria-hidden="true" style="font-size:12px;margin-right:3px"></i>Blogs & docs</button>
-</div>
+  <div class="filter-row">
+    <button class="filt on all" onclick="filter('all',this)">
+      All resources
+    </button>
+    <button class="filt books" onclick="filter('books',this)">
+      <i
+        class="ti ti-book"
+        aria-hidden="true"
+        style="font-size: 12px; margin-right: 3px"
+      ></i
+      >Books
+    </button>
+    <button class="filt courses" onclick="filter('courses',this)">
+      <i
+        class="ti ti-video"
+        aria-hidden="true"
+        style="font-size: 12px; margin-right: 3px"
+      ></i
+      >Courses
+    </button>
+    <button class="filt free" onclick="filter('free',this)">
+      <i
+        class="ti ti-currency-dollar-off"
+        aria-hidden="true"
+        style="font-size: 12px; margin-right: 3px"
+      ></i
+      >Free
+    </button>
+    <button class="filt blogs" onclick="filter('blogs',this)">
+      <i
+        class="ti ti-rss"
+        aria-hidden="true"
+        style="font-size: 12px; margin-right: 3px"
+      ></i
+      >Blogs & docs
+    </button>
+  </div>
 
-<div id="resource-list"></div>
+  <div id="resource-list"></div>
 </div>
 
 <script>
-const resources = [
-  {
-    category:'books', must:true,
-    icon:'<i class="ti ti-book-2" aria-hidden="true"></i>', iconBg:'#EEEDFE', iconColor:'#3C3489',
-    title:'Microservices Patterns — Chris Richardson',
-    sub:'The definitive book on microservice architecture. Covers 44 patterns with full Java examples — Saga, CQRS, Outbox, API Gateway, and more. Built around a realistic e-commerce app.',
-    tags:['books','must-read'],
-    action:()=>openLink('https://microservices.io/book')
-  },
-  {
-    category:'books', must:true,
-    icon:'<i class="ti ti-book-2" aria-hidden="true"></i>', iconBg:'#EEEDFE', iconColor:'#3C3489',
-    title:'Building Microservices (2nd ed.) — Sam Newman',
-    sub:'The conceptual bible. Language-agnostic but essential for understanding decomposition, team topology, and the trade-offs of distributed systems. Read before you write a single line of code.',
-    tags:['books','must-read'],
-    action:()=>openLink('https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/')
-  },
-  {
-    category:'books',
-    icon:'<i class="ti ti-book-2" aria-hidden="true"></i>', iconBg:'#EEEDFE', iconColor:'#3C3489',
-    title:'Microservices with Spring Boot 3 & Spring Cloud (3rd ed.) — Magnus Larsson',
-    sub:'The most comprehensive Java-specific book. Covers Spring Cloud, Kubernetes, Istio, OAuth 2.1, Kafka, and the EFK logging stack. Updated for Spring Boot 3 and Java 17.',
-    tags:['books','spring','kubernetes'],
-    action:()=>openLink('https://www.packtpub.com/product/microservices-with-spring-boot-3-and-spring-cloud-third-edition/9781805128694')
-  },
-  {
-    category:'books',
-    icon:'<i class="ti ti-book-2" aria-hidden="true"></i>', iconBg:'#EEEDFE', iconColor:'#3C3489',
-    title:'Cloud Native Patterns — Cornelia Davis',
-    sub:'Focuses on the runtime behaviour of cloud-native systems: retry, fallback, service discovery, event-driven. Excellent for understanding why patterns exist, not just how to implement them.',
-    tags:['books','cloud-native'],
-    action:()=>openLink('https://www.manning.com/books/cloud-native-patterns')
-  },
-  {
-    category:'books',
-    icon:'<i class="ti ti-book-2" aria-hidden="true"></i>', iconBg:'#EEEDFE', iconColor:'#3C3489',
-    title:'Designing Distributed Systems — Brendan Burns',
-    sub:'Free PDF from Microsoft. Concise and patterns-focused: sidecars, ambassadors, adapters, scatter-gather. Written by a Kubernetes co-creator. A fast but deep read.',
-    tags:['books','free','distributed-systems'],
-    action:()=>openLink('https://azure.microsoft.com/en-us/resources/designing-distributed-systems/')
-  },
-  {
-    category:'books',
-    icon:'<i class="ti ti-book-2" aria-hidden="true"></i>', iconBg:'#EEEDFE', iconColor:'#3C3489',
-    title:'Release It! (2nd ed.) — Michael Nygard',
-    sub:'Production war stories turned into patterns: circuit breakers, bulkheads, timeouts, and stability anti-patterns. The book that taught the industry how to build resilient systems.',
-    tags:['books','resilience'],
-    action:()=>openLink('https://pragprog.com/titles/mnee2/release-it-second-edition/')
-  },
-  {
-    category:'courses', must:true,
-    icon:'<i class="ti ti-video" aria-hidden="true"></i>', iconBg:'#E1F5EE', iconColor:'#085041',
-    title:'Master Microservices with Spring Boot & Spring Cloud — Ranga Karanam (Udemy)',
-    sub:'The most popular Java microservices course on Udemy with 100k+ students. Covers Eureka, Zuul/Gateway, Config Server, Docker, and Kubernetes end-to-end with hands-on projects.',
-    tags:['courses','spring','paid'],
-    action:()=>openLink('https://www.udemy.com/course/microservices-with-spring-boot-and-spring-cloud/')
-  },
-  {
-    category:'courses',
-    icon:'<i class="ti ti-video" aria-hidden="true"></i>', iconBg:'#E1F5EE', iconColor:'#085041',
-    title:'Spring Boot 3, Spring 6 & Hibernate for Beginners — Chad Darby (Udemy)',
-    sub:'440k+ students, 91k+ five-star reviews. The gold standard Spring Boot foundation course. Master this before moving to microservice-specific content.',
-    tags:['courses','spring','paid'],
-    action:()=>openLink('https://www.udemy.com/course/spring-hibernate-tutorial/')
-  },
-  {
-    category:'courses',
-    icon:'<i class="ti ti-video" aria-hidden="true"></i>', iconBg:'#E1F5EE', iconColor:'#085041',
-    title:'Java Brains — YouTube (Koushik Kothagal)',
-    sub:'Free, methodical video series on Spring, microservices, and Kafka. One of the best free channels for enterprise Java — clear pacing, no hand-waving, goes deep on the why.',
-    tags:['courses','free','youtube'],
-    action:()=>openLink('https://www.youtube.com/@Java.Brains')
-  },
-  {
-    category:'courses',
-    icon:'<i class="ti ti-brand-youtube" aria-hidden="true"></i>', iconBg:'#E1F5EE', iconColor:'#085041',
-    title:'Amigoscode — YouTube (Nelson Djalo)',
-    sub:'Project-based tutorials covering Spring Boot, microservices, Docker, and Kubernetes. Excellent for developers who learn by building. Free playlist: "Microservices with Spring Boot".',
-    tags:['courses','free','youtube'],
-    action:()=>openLink('https://www.youtube.com/@amigoscode')
-  },
-  {
-    category:'courses',
-    icon:'<i class="ti ti-brand-youtube" aria-hidden="true"></i>', iconBg:'#E1F5EE', iconColor:'#085041',
-    title:'SpringDeveloper — Official Spring YouTube',
-    sub:'Conference talks, live coding sessions, and deep dives from the Spring engineering team. Watch SpringOne talks for architecture-level insights you won\'t find in tutorials.',
-    tags:['courses','free','youtube','official'],
-    action:()=>openLink('https://www.youtube.com/@SpringSourceDev')
-  },
-  {
-    category:'free', must:false,
-    icon:'<i class="ti ti-world" aria-hidden="true"></i>', iconBg:'#FAEEDA', iconColor:'#633806',
-    title:'microservices.io — Chris Richardson',
-    sub:'The canonical patterns catalogue. Every major microservice pattern with intent, motivation, and solution diagrams. Bookmark this — you\'ll come back to it constantly.',
-    tags:['free','reference','patterns'],
-    action:()=>openLink('https://microservices.io')
-  },
-  {
-    category:'free',
-    icon:'<i class="ti ti-world" aria-hidden="true"></i>', iconBg:'#FAEEDA', iconColor:'#633806',
-    title:'Spring official documentation & guides',
-    sub:'Spring\'s getting-started guides are underrated. Each is a self-contained working project. Start with "Building a RESTful Web Service", then work up to the Cloud guides.',
-    tags:['free','official','reference'],
-    action:()=>openLink('https://spring.io/guides')
-  },
-  {
-    category:'free',
-    icon:'<i class="ti ti-world" aria-hidden="true"></i>', iconBg:'#FAEEDA', iconColor:'#633806',
-    title:'12factor.net',
-    sub:'The twelve-factor methodology for building cloud-native apps. Short, dense, foundational. Every microservice architect should be able to recite these principles.',
-    tags:['free','principles'],
-    action:()=>openLink('https://12factor.net')
-  },
-  {
-    category:'blogs',
-    icon:'<i class="ti ti-rss" aria-hidden="true"></i>', iconBg:'#FAECE7', iconColor:'#712B13',
-    title:'Baeldung — Java & Spring tutorials',
-    sub:'The most comprehensive Java tutorial site. Deep, code-first articles on every Spring Cloud component, Resilience4j, Kafka, and security. Reliable, well-maintained, and searchable.',
-    tags:['blogs','free','reference'],
-    action:()=>openLink('https://www.baeldung.com')
-  },
-  {
-    category:'blogs',
-    icon:'<i class="ti ti-rss" aria-hidden="true"></i>', iconBg:'#FAECE7', iconColor:'#712B13',
-    title:'Martin Fowler\'s blog — martinfowler.com',
-    sub:'Essential architectural thinking. Read "Microservices" (2014, with James Lewis), "Strangler Fig Application", "CQRS", and "Event Sourcing" — the articles that defined the vocabulary.',
-    tags:['blogs','free','architecture'],
-    action:()=>openLink('https://martinfowler.com/microservices/')
-  },
-  {
-    category:'blogs',
-    icon:'<i class="ti ti-rss" aria-hidden="true"></i>', iconBg:'#FAECE7', iconColor:'#712B13',
-    title:'Devoxx & InfoQ talks — YouTube / InfoQ.com',
-    sub:'Conference talks from Netflix, Uber, Amazon engineers on how they actually run microservices at scale. Search "Kafka microservices", "Saga pattern", or "Netflix resilience".',
-    tags:['blogs','free','talks'],
-    action:()=>openLink('https://www.infoq.com/microservices/')
-  },
-  {
-    category:'blogs',
-    icon:'<i class="ti ti-rss" aria-hidden="true"></i>', iconBg:'#FAECE7', iconColor:'#712B13',
-    title:'Netflix Tech Blog',
-    sub:'The engineers who invented many of the patterns you\'re learning (Hystrix, Eureka, Ribbon) write about what they\'ve learned in production. Invaluable for understanding scale trade-offs.',
-    tags:['blogs','free','production'],
-    action:()=>openLink('https://netflixtechblog.com')
-  },
-];
+  const resources = [
+    {
+      category: "books",
+      must: true,
+      icon: '<i class="ti ti-book-2" aria-hidden="true"></i>',
+      iconBg: "#EEEDFE",
+      iconColor: "#3C3489",
+      title: "Microservices Patterns — Chris Richardson",
+      sub: "The definitive book on microservice architecture. Covers 44 patterns with full Java examples — Saga, CQRS, Outbox, API Gateway, and more. Built around a realistic e-commerce app.",
+      tags: ["books", "must-read"],
+      action: () => openLink("https://microservices.io/book"),
+    },
+    {
+      category: "books",
+      must: true,
+      icon: '<i class="ti ti-book-2" aria-hidden="true"></i>',
+      iconBg: "#EEEDFE",
+      iconColor: "#3C3489",
+      title: "Building Microservices (2nd ed.) — Sam Newman",
+      sub: "The conceptual bible. Language-agnostic but essential for understanding decomposition, team topology, and the trade-offs of distributed systems. Read before you write a single line of code.",
+      tags: ["books", "must-read"],
+      action: () =>
+        openLink(
+          "https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/"
+        ),
+    },
+    {
+      category: "books",
+      icon: '<i class="ti ti-book-2" aria-hidden="true"></i>',
+      iconBg: "#EEEDFE",
+      iconColor: "#3C3489",
+      title:
+        "Microservices with Spring Boot 3 & Spring Cloud (3rd ed.) — Magnus Larsson",
+      sub: "The most comprehensive Java-specific book. Covers Spring Cloud, Kubernetes, Istio, OAuth 2.1, Kafka, and the EFK logging stack. Updated for Spring Boot 3 and Java 17.",
+      tags: ["books", "spring", "kubernetes"],
+      action: () =>
+        openLink(
+          "https://www.packtpub.com/product/microservices-with-spring-boot-3-and-spring-cloud-third-edition/9781805128694"
+        ),
+    },
+    {
+      category: "books",
+      icon: '<i class="ti ti-book-2" aria-hidden="true"></i>',
+      iconBg: "#EEEDFE",
+      iconColor: "#3C3489",
+      title: "Cloud Native Patterns — Cornelia Davis",
+      sub: "Focuses on the runtime behaviour of cloud-native systems: retry, fallback, service discovery, event-driven. Excellent for understanding why patterns exist, not just how to implement them.",
+      tags: ["books", "cloud-native"],
+      action: () =>
+        openLink("https://www.manning.com/books/cloud-native-patterns"),
+    },
+    {
+      category: "books",
+      icon: '<i class="ti ti-book-2" aria-hidden="true"></i>',
+      iconBg: "#EEEDFE",
+      iconColor: "#3C3489",
+      title: "Designing Distributed Systems — Brendan Burns",
+      sub: "Free PDF from Microsoft. Concise and patterns-focused: sidecars, ambassadors, adapters, scatter-gather. Written by a Kubernetes co-creator. A fast but deep read.",
+      tags: ["books", "free", "distributed-systems"],
+      action: () =>
+        openLink(
+          "https://azure.microsoft.com/en-us/resources/designing-distributed-systems/"
+        ),
+    },
+    {
+      category: "books",
+      icon: '<i class="ti ti-book-2" aria-hidden="true"></i>',
+      iconBg: "#EEEDFE",
+      iconColor: "#3C3489",
+      title: "Release It! (2nd ed.) — Michael Nygard",
+      sub: "Production war stories turned into patterns: circuit breakers, bulkheads, timeouts, and stability anti-patterns. The book that taught the industry how to build resilient systems.",
+      tags: ["books", "resilience"],
+      action: () =>
+        openLink(
+          "https://pragprog.com/titles/mnee2/release-it-second-edition/"
+        ),
+    },
+    {
+      category: "courses",
+      must: true,
+      icon: '<i class="ti ti-video" aria-hidden="true"></i>',
+      iconBg: "#E1F5EE",
+      iconColor: "#085041",
+      title:
+        "Master Microservices with Spring Boot & Spring Cloud — Ranga Karanam (Udemy)",
+      sub: "The most popular Java microservices course on Udemy with 100k+ students. Covers Eureka, Zuul/Gateway, Config Server, Docker, and Kubernetes end-to-end with hands-on projects.",
+      tags: ["courses", "spring", "paid"],
+      action: () =>
+        openLink(
+          "https://www.udemy.com/course/microservices-with-spring-boot-and-spring-cloud/"
+        ),
+    },
+    {
+      category: "courses",
+      icon: '<i class="ti ti-video" aria-hidden="true"></i>',
+      iconBg: "#E1F5EE",
+      iconColor: "#085041",
+      title:
+        "Spring Boot 3, Spring 6 & Hibernate for Beginners — Chad Darby (Udemy)",
+      sub: "440k+ students, 91k+ five-star reviews. The gold standard Spring Boot foundation course. Master this before moving to microservice-specific content.",
+      tags: ["courses", "spring", "paid"],
+      action: () =>
+        openLink("https://www.udemy.com/course/spring-hibernate-tutorial/"),
+    },
+    {
+      category: "courses",
+      icon: '<i class="ti ti-video" aria-hidden="true"></i>',
+      iconBg: "#E1F5EE",
+      iconColor: "#085041",
+      title: "Java Brains — YouTube (Koushik Kothagal)",
+      sub: "Free, methodical video series on Spring, microservices, and Kafka. One of the best free channels for enterprise Java — clear pacing, no hand-waving, goes deep on the why.",
+      tags: ["courses", "free", "youtube"],
+      action: () => openLink("https://www.youtube.com/@Java.Brains"),
+    },
+    {
+      category: "courses",
+      icon: '<i class="ti ti-brand-youtube" aria-hidden="true"></i>',
+      iconBg: "#E1F5EE",
+      iconColor: "#085041",
+      title: "Amigoscode — YouTube (Nelson Djalo)",
+      sub: 'Project-based tutorials covering Spring Boot, microservices, Docker, and Kubernetes. Excellent for developers who learn by building. Free playlist: "Microservices with Spring Boot".',
+      tags: ["courses", "free", "youtube"],
+      action: () => openLink("https://www.youtube.com/@amigoscode"),
+    },
+    {
+      category: "courses",
+      icon: '<i class="ti ti-brand-youtube" aria-hidden="true"></i>',
+      iconBg: "#E1F5EE",
+      iconColor: "#085041",
+      title: "SpringDeveloper — Official Spring YouTube",
+      sub: "Conference talks, live coding sessions, and deep dives from the Spring engineering team. Watch SpringOne talks for architecture-level insights you won't find in tutorials.",
+      tags: ["courses", "free", "youtube", "official"],
+      action: () => openLink("https://www.youtube.com/@SpringSourceDev"),
+    },
+    {
+      category: "free",
+      must: false,
+      icon: '<i class="ti ti-world" aria-hidden="true"></i>',
+      iconBg: "#FAEEDA",
+      iconColor: "#633806",
+      title: "microservices.io — Chris Richardson",
+      sub: "The canonical patterns catalogue. Every major microservice pattern with intent, motivation, and solution diagrams. Bookmark this — you'll come back to it constantly.",
+      tags: ["free", "reference", "patterns"],
+      action: () => openLink("https://microservices.io"),
+    },
+    {
+      category: "free",
+      icon: '<i class="ti ti-world" aria-hidden="true"></i>',
+      iconBg: "#FAEEDA",
+      iconColor: "#633806",
+      title: "Spring official documentation & guides",
+      sub: 'Spring\'s getting-started guides are underrated. Each is a self-contained working project. Start with "Building a RESTful Web Service", then work up to the Cloud guides.',
+      tags: ["free", "official", "reference"],
+      action: () => openLink("https://spring.io/guides"),
+    },
+    {
+      category: "free",
+      icon: '<i class="ti ti-world" aria-hidden="true"></i>',
+      iconBg: "#FAEEDA",
+      iconColor: "#633806",
+      title: "12factor.net",
+      sub: "The twelve-factor methodology for building cloud-native apps. Short, dense, foundational. Every microservice architect should be able to recite these principles.",
+      tags: ["free", "principles"],
+      action: () => openLink("https://12factor.net"),
+    },
+    {
+      category: "blogs",
+      icon: '<i class="ti ti-rss" aria-hidden="true"></i>',
+      iconBg: "#FAECE7",
+      iconColor: "#712B13",
+      title: "Baeldung — Java & Spring tutorials",
+      sub: "The most comprehensive Java tutorial site. Deep, code-first articles on every Spring Cloud component, Resilience4j, Kafka, and security. Reliable, well-maintained, and searchable.",
+      tags: ["blogs", "free", "reference"],
+      action: () => openLink("https://www.baeldung.com"),
+    },
+    {
+      category: "blogs",
+      icon: '<i class="ti ti-rss" aria-hidden="true"></i>',
+      iconBg: "#FAECE7",
+      iconColor: "#712B13",
+      title: "Martin Fowler's blog — martinfowler.com",
+      sub: 'Essential architectural thinking. Read "Microservices" (2014, with James Lewis), "Strangler Fig Application", "CQRS", and "Event Sourcing" — the articles that defined the vocabulary.',
+      tags: ["blogs", "free", "architecture"],
+      action: () => openLink("https://martinfowler.com/microservices/"),
+    },
+    {
+      category: "blogs",
+      icon: '<i class="ti ti-rss" aria-hidden="true"></i>',
+      iconBg: "#FAECE7",
+      iconColor: "#712B13",
+      title: "Devoxx & InfoQ talks — YouTube / InfoQ.com",
+      sub: 'Conference talks from Netflix, Uber, Amazon engineers on how they actually run microservices at scale. Search "Kafka microservices", "Saga pattern", or "Netflix resilience".',
+      tags: ["blogs", "free", "talks"],
+      action: () => openLink("https://www.infoq.com/microservices/"),
+    },
+    {
+      category: "blogs",
+      icon: '<i class="ti ti-rss" aria-hidden="true"></i>',
+      iconBg: "#FAECE7",
+      iconColor: "#712B13",
+      title: "Netflix Tech Blog",
+      sub: "The engineers who invented many of the patterns you're learning (Hystrix, Eureka, Ribbon) write about what they've learned in production. Invaluable for understanding scale trade-offs.",
+      tags: ["blogs", "free", "production"],
+      action: () => openLink("https://netflixtechblog.com"),
+    },
+  ];
 
-const catOrder = ['books','courses','free','blogs'];
-const catLabel = {books:'Books', courses:'Courses & videos', free:'Free online resources', blogs:'Blogs, docs & talks'};
+  const catOrder = ["books", "courses", "free", "blogs"];
+  const catLabel = {
+    books: "Books",
+    courses: "Courses & videos",
+    free: "Free online resources",
+    blogs: "Blogs, docs & talks",
+  };
 
-function filter(cat, btn) {
-  document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on', cat);
-  renderList(cat);
-}
+  function openLink(url) {
+    window.open(url, "_blank");
+  }
 
-function renderList(cat) {
-  const list = document.getElementById('resource-list');
-  let html = '';
-  catOrder.forEach(c => {
-    const items = resources.filter(r => (cat==='all' || r.category===cat || r.tags.includes(cat)) && r.category===c);
-    if(!items.length) return;
-    html += `<div class="section-label">${catLabel[c]}</div>`;
-    items.forEach(r => {
-      const tagHtml = r.tags.map(t => {
-        const cls = t==='must-read'?'tag-must':t==='books'?'tag-books':t==='courses'||t==='youtube'||t==='paid'?'tag-courses':t==='free'?'tag-free':'tag-blogs';
-        const label = t==='must-read'?'must-read':t==='paid'?'paid':t==='youtube'?'youtube':t==='official'?'official':t==='reference'?'reference':t==='patterns'?'patterns':t==='spring'?'spring':t==='kubernetes'?'k8s':t==='cloud-native'?'cloud-native':t==='resilience'?'resilience':t==='distributed-systems'?'distributed':t==='architecture'?'architecture':t==='production'?'production':t==='talks'?'talks':t==='principles'?'principles':null;
-        return label?`<span class="tag ${cls}">${label}</span>`:'';
-      }).join('');
-      const mustStar = r.must ? '<span class="star" title="Must-read"><i class="ti ti-star" aria-hidden="true" style="font-size:12px"></i></span>':''
-      html += `<div class="card" onclick="(${r.action.toString()})()">
-        <div class="card-icon" style="background:${r.iconBg};color:${r.iconColor}">${r.icon}</div>
+  function filter(cat, btn) {
+    document.querySelectorAll(".filt").forEach((b) => b.classList.remove("on"));
+    btn.classList.add("on", cat);
+    renderList(cat);
+  }
+
+  function renderList(cat) {
+    const list = document.getElementById("resource-list");
+    let html = "";
+    catOrder.forEach((c) => {
+      const items = resources.filter(
+        (r) =>
+          (cat === "all" || r.category === cat || r.tags.includes(cat)) &&
+          r.category === c
+      );
+      if (!items.length) return;
+      html += `<div class="section-label">${catLabel[c]}</div>`;
+      items.forEach((r) => {
+        const tagHtml = r.tags
+          .map((t) => {
+            const cls =
+              t === "must-read"
+                ? "tag-must"
+                : t === "books"
+                ? "tag-books"
+                : t === "courses" || t === "youtube" || t === "paid"
+                ? "tag-courses"
+                : t === "free"
+                ? "tag-free"
+                : "tag-blogs";
+            const label =
+              t === "must-read"
+                ? "must-read"
+                : t === "paid"
+                ? "paid"
+                : t === "youtube"
+                ? "youtube"
+                : t === "official"
+                ? "official"
+                : t === "reference"
+                ? "reference"
+                : t === "patterns"
+                ? "patterns"
+                : t === "spring"
+                ? "spring"
+                : t === "kubernetes"
+                ? "k8s"
+                : t === "cloud-native"
+                ? "cloud-native"
+                : t === "resilience"
+                ? "resilience"
+                : t === "distributed-systems"
+                ? "distributed"
+                : t === "architecture"
+                ? "architecture"
+                : t === "production"
+                ? "production"
+                : t === "talks"
+                ? "talks"
+                : t === "principles"
+                ? "principles"
+                : null;
+            return label ? `<span class="tag ${cls}">${label}</span>` : "";
+          })
+          .join("");
+        const mustStar = r.must
+          ? '<span class="star" title="Must-read"><i class="ti ti-star" aria-hidden="true" style="font-size:12px"></i></span>'
+          : "";
+        html += `<div class="card" onclick="(${r.action.toString()})()">
+        <div class="card-icon" style="background:${r.iconBg};color:${
+          r.iconColor
+        }">${r.icon}</div>
         <div class="card-body">
           <div class="card-title">${r.title}${mustStar}</div>
           <div class="card-sub">${r.sub}</div>
@@ -224,10 +493,10 @@ function renderList(cat) {
         </div>
         <i class="ti ti-external-link" aria-hidden="true" style="font-size:14px;color:var(--color-text-tertiary);flex-shrink:0;margin-top:2px"></i>
       </div>`;
+      });
     });
-  });
-  list.innerHTML = html;
-}
+    list.innerHTML = html;
+  }
 
-renderList('all');
+  renderList("all");
 </script>
