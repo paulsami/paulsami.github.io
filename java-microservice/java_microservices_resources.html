@@ -424,6 +424,20 @@
   window.openLink = openLink;
   window.filter = filter;
   window.renderList = renderList;
+  // Global invoker to call the action function stored on each resource
+  window.resourcesInvoke = function (i) {
+    try {
+      if (
+        resources &&
+        resources[i] &&
+        typeof resources[i].action === "function"
+      ) {
+        resources[i].action();
+      }
+    } catch (e) {
+      console.error("resourcesInvoke error", e);
+    }
+  };
 
   function renderList(cat) {
     const list = document.getElementById("resource-list");
@@ -487,11 +501,9 @@
         const mustStar = r.must
           ? '<span class="star" title="Must-read"><i class="ti ti-star" aria-hidden="true" style="font-size:12px"></i></span>'
           : "";
-        // Extract URL from action function (supports single or double quotes)
-        const urlMatch = r.action.toString().match(/(['"])(.*?)\1/);
-        const url = urlMatch ? urlMatch[2] : "#";
-        const safeUrl = JSON.stringify(url);
-        html += `<div class="card" onclick='openLink(${safeUrl})'>
+        // Use index-based invoker to avoid serializing functions into strings
+        const idx = resources.indexOf(r);
+        html += `<div class="card" onclick='resourcesInvoke(${idx})'>
         <div class="card-icon" style="background:${r.iconBg};color:${r.iconColor}">${r.icon}</div>
         <div class="card-body">
           <div class="card-title">${r.title}${mustStar}</div>
