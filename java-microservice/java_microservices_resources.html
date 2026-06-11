@@ -488,9 +488,7 @@
           ? '<span class="star" title="Must-read"><i class="ti ti-star" aria-hidden="true" style="font-size:12px"></i></span>'
           : "";
         // Extract URL from action function (supports single or double quotes)
-        const urlMatch = r.action
-          .toString()
-          .match(/(['"])(.*?)\1/);
+        const urlMatch = r.action.toString().match(/(['"])(.*?)\1/);
         const url = urlMatch ? urlMatch[2] : "#";
         const safeUrl = JSON.stringify(url);
         html += `<div class="card" onclick='openLink(${safeUrl})'>
